@@ -375,28 +375,46 @@ The video touches all four viewport edges. No margin, border, radius, container,
 - Gradient, unchanged: `linear-gradient(180deg, transparent 0%, transparent 62%, rgba(10,10,10,0.5) 100%)`. Bottom only.
 - Controls (`#heroRestartBtn`, `#heroPauseBtn`, `#heroMuteToggle`) remain **bottom-right at every breakpoint** — positioned to clear both navigation and on-screen faces.
 
-**Copy — safe zone within the gradient**
+**No copy on the video. This is absolute.**
 
-@1440 × 900: `left: 72px`, `bottom: 72–96px`, max width 760–850px.
+The hero contains exactly four things: the video, the overlaid navigation (§16), the three video controls, and the scroll indicator. **No eyebrow, no headline, no deck, no CTA, no magazine cover, no decorative graphics on the footage.** All editorial copy lives in §17.1, in normal flow beneath the video.
 
-| Element | Specification |
-|---|---|
-| Eyebrow | Bebas Neue, `--gold`, caps, 12–14px, tracking 0.12–0.18em |
-| Headline | Anton, `--off-white`, `clamp(72px, 7vw, 118px)`, line-height 0.88–0.96, letter-spacing −0.025em to −0.045em, max 4 lines |
-| Deck | Archivo, 18–22px, line-height 1.4–1.55, width 480–620px |
-| CTA row | 28–36px below deck. Primary `.btn-primary`, secondary `.btn-gold`. Height 46–50px. Radius 0–4px. |
+This is a standing owner directive, stated repeatedly: *"Everything on top of the embedded hero video should be pushed down to under the video. I do not require a nav bar or a logo at the top — put the menu options on top of the video itself."* The video carries the opening frame alone. Any proposal to place type over it is rejected without further discussion.
 
-**Entrance choreography** — video visible at 0ms; never a blank frame
+**Entrance choreography — navigation only** — video visible at 0ms; never a blank frame
 
 | Time | Event |
 |---|---|
 | 100–250ms | Navigation fades + translates in, 6–10px |
-| 250ms | Eyebrow mask-reveals |
-| 350–900ms | **Headline lines rise independently from clipped containers. Travel 80–110% of line-height. Stagger 70–110ms per line.** `cubic-bezier(0.16, 1, 0.3, 1)` |
-| 700–1050ms | Deck fades up ~16px |
-| 850–1200ms | CTA row fades up |
+| 250–400ms | Controls and scroll indicator fade in |
 
-No rotation, bounce, or 3D transform.
+Nothing else animates over the video. No rotation, bounce, or 3D transform.
+
+## §17.1 Hero Intro — Editorial Block Below the Video
+
+Ground `--black` · full-width · padding 96–120px vertical. Sits immediately beneath the hero, in normal flow. **Not visible before first scroll** (§43).
+
+Centered composition, max width 860px.
+
+| Element | Specification |
+|---|---|
+| Eyebrow | Bebas Neue, `--gold`, caps, 13–14px, tracking 0.18–0.22em |
+| Headline | Anton, `--off-white`, `clamp(40px, 8vw, 108px)`, line-height 0.92–0.96 |
+| Deck | Archivo, `--gray`, 18px, max width 560px |
+| CTA row | 14px gap. Primary `.btn-primary`, secondary `.btn-gold`. |
+
+**Entrance choreography — fires on scroll-in, not page load**
+
+| Offset | Event |
+|---|---|
+| 0ms | Eyebrow mask-reveals |
+| 100–650ms | **Headline lines rise independently from clipped containers. Travel 80–110% of line-height. Stagger 70–110ms per line.** `cubic-bezier(0.16, 1, 0.3, 1)` |
+| 450–800ms | Deck fades up ~16px |
+| 600–950ms | CTA row fades up |
+
+This is where the elaborate text choreography belongs — below the video, where it does not compete with the footage.
+
+**VERIFY §17.1** — Assert zero text nodes inside the hero section other than nav links, control `aria-label`s, and the scroll cue. Assert the intro block's top edge sits at or below `100svh` at 1440×900 and 390×844. Assert its reveal triggers on intersection, not on load.
 
 **Scroll behavior.** Across the first 250–500px: video may scale 1.00 → 1.025 or translate marginally. Headline may translate at a differential rate for depth. Subtle only.
 
@@ -720,9 +738,9 @@ Mobile is not a reduction of desktop. Every section is recomposed per its own sp
 
 At **1440 × 900** and **390 × 844**, screenshot immediately after load.
 
-**Must contain:** full-bleed hero video · transparent navigation over it · logo · eyebrow · headline · deck · CTA row.
+**Must contain:** full-bleed hero video · transparent navigation over it · logo · three video controls, bottom-right · scroll indicator.
 
-**Must not contain:** any portion of §22 · any light strip beneath the video · browser-style margins around the video · a floating or rounded hero container · a cookie banner obscuring composition.
+**Must not contain:** **any editorial copy over the video — no eyebrow, headline, deck, or CTA** (§17) · any portion of §17.1 or §22 · any light strip beneath the video · browser-style margins around the video · a floating or rounded hero container · a cookie banner obscuring composition.
 
 **Composition test — OWNER JUDGMENT, not an automated assertion.** With all text hidden, the page should still read as an art-directed film publication. With all imagery hidden, the typography and grid should still read as a world-class editorial system.
 
@@ -980,7 +998,7 @@ A PR with a failing CI check or an unaddressed failing assertion is not ready fo
 
 1. **Zero pixels of §22 visible before first scroll.** §17, §43.
 2. **The primary hero encode's bitrate and resolution never regress.** §6. A supplementary smaller mobile source (§6.1) is delivery optimization and is explicitly permitted.
-3. **No magazine object, no slideshow, no animated overlay on the hero video.** §17.
+3. **Nothing on the hero video but the menu, the three controls, and the scroll cue.** No headline, no eyebrow, no deck, no CTA, no magazine object, no slideshow, no animated overlay. All copy and all text choreography live below the video in §17.1. Standing owner directive — §17.
 4. **Only the colors and typefaces in §4.** No exceptions.
 5. **Text animation is required** — directional and deliberate, never scattered. §14, §17.
 6. **Upper bound of every spacing range.** §13.
