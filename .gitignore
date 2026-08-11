@@ -1,0 +1,11 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Raw original upload — duplicate of assets/hero-video.mp4 (same content,
+# already remuxed/optimized for the web). Kept on disk but not tracked in
+# git to avoid doubling up ~300MB of near-identical video in the repo.
+assets/video-hero.MP4
+
+# Editor
+.vscode/

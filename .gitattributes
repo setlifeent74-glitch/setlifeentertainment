@@ -1,0 +1,7 @@
+# Large video assets go through Git LFS — GitHub hard-blocks any file over
+# 100MB pushed as a normal blob, and the hero video is ~309MB at full
+# uncompressed quality.
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.MP4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+*.MOV filter=lfs diff=lfs merge=lfs -text
