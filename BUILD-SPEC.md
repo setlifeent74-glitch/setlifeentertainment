@@ -344,7 +344,7 @@ Positioned **inside** the hero, layered over the video. No separate bar above th
 - **Hero state:** transparent ground, `--off-white` type, no blur, no shadow
 - **Scroll transition:** begins 70–100px; complete by 160–200px. Ground → `--black` at 94–98%. Height 92 → 72px. Logo scales proportionally. 300–450ms.
 - **Hover:** label translates up 1–2px; `--gold` underline draws left→right (extend `.top-nav a::after`). 180–250ms.
-- **Active:** `--red` type and underline.
+- **Active:** `--off-white` label + `--red` underline. **Not red type.** `--red` on `--black` measures 3.91:1 — below the 4.5:1 AA floor for 14px text. Bebas Neue ships single-weight (400), so the large-text exception is unreachable without a 24px label, which would shift nav item widths page to page as the active item changes. Red remains the active signal, carried on the rule. This also satisfies WCAG 1.4.1 — the underline is a non-color indicator, so active state does not depend on color perception alone.
 - **Click:** retain `.nav-pulse`.
 - **Mega menu:** 100vw ground, 1280–1360px content column, `--black`, height 340–460px. Category list, latest story, featured thumbnail, popular destinations. `opacity` + `translateY(8–12px)`, 220–300ms.
 
@@ -353,7 +353,7 @@ Positioned **inside** the hero, layered over the video. No separate bar above th
 - Height 72px · padding 20px · logo left · search + menu icons right
 - Full-screen menu: `100vw × 100dvh`, `--black`, 30–38px editorial links, generous rhythm, utility links below
 
-**VERIFY §16** — At 1440 and 390: screenshot at scroll 0 — transparent nav over video, no opaque bar. At scroll 200px — opaque nav, reduced height. Tab all links — visible gold focus ring on each. Open mega menu by keyboard — opens, traps focus, closes on `Escape`.
+**VERIFY §16** — At 1440 and 390: screenshot at scroll 0 — transparent nav over video, no opaque bar. At scroll 200px — opaque nav, reduced height. Tab all links — visible gold focus ring on each. Open mega menu by keyboard — opens, traps focus, closes on `Escape`. Assert every nav label in the scrolled state measures ≥ 4.5:1 against the nav ground. Assert active state is distinguishable with color disabled (grayscale render) — the underline must carry it.
 
 ## §17 Hero — Full Viewport
 
@@ -918,8 +918,8 @@ One branch, one pull request, one verification gate, one owner confirmation per 
 
 | # | Branch | Scope | Gate |
 |---|---|---|---|
-| 0 | `chore/ci-harness` | Playwright, Lighthouse CI, axe-core wired to PR checks. §49.1. **Before feature work.** | §49.1 |
-| 1 | `feat/nextjs-migration` | Scaffold Next.js. Port existing pages 1:1. Zero visual change. Mobile video encode + poster optimization (§6.1). | §7 · §5 · §6 |
+| 0 | `chore/ci-harness` | Playwright, Lighthouse CI, axe-core wired to PR checks. Capture baseline. Diagnose CLS/LCP root cause. §49.1, §49.2. **Before feature work.** | §49.1 · §49.2 |
+| 1 | `feat/nextjs-migration` | Scaffold Next.js. Port existing pages 1:1. Zero visual change. **`next/font` replacing the CSS `@import`** (§49.2). Mobile video encode + poster optimization (§6.1). **Performance thresholds harden on merge.** | §7 · §5 · §6 · §41 |
 | 2 | `feat/supabase-foundation` | Provision Supabase. Schema §44. RLS. Env vars. URL architecture §8. | §44 · §8 |
 | 3 | `feat/design-system` | Tokenize §4, §12, §13, §14. Component primitives. | §4 |
 | 4 | `feat/homepage-hero` | §16 navigation, §17 hero. **Highest risk. Do not compress.** | §16 · §17 · §43 |
@@ -954,7 +954,33 @@ Every mechanically testable VERIFY assertion becomes an automated test at the ph
 
 **The §17 hero suite is the highest-value regression target in the build.** The pointer-events defect that disabled the video controls in production reached users precisely because nothing automatically re-tested it. Encode it as a test in Phase 4 and never remove it.
 
+**Rendering determinism — required.** Visual-regression baselines and CI runs must execute in an identical environment. macOS and Linux rasterize fonts differently; baselines captured on a contributor's machine will not match Linux CI, producing failures with no underlying defect. Run Playwright in the official container both locally and in CI so screenshots are byte-comparable. Flaky visual tests get muted, and a muted suite makes this entire section decorative.
+
+**Containers are for verification only.** Vercel builds from source and does not accept container images. Docker's scope in this project is Playwright and Lighthouse. Do not containerize the application for deployment — it adds a permanent maintenance surface with no benefit on this platform.
+
 **Gate:** a PR with a failing CI check is not reviewable. The §43 composition test is excluded — it is owner judgment and cannot be scripted.
+
+### §49.2 Baseline & Threshold Activation
+
+The current static site passes accessibility, SEO, and best-practices, and fails performance, LCP, and CLS. CI is established in Phase 0 against that site. Enforcement is therefore staged.
+
+| Check | Phase 0 → Phase 1 | From Phase 1 merge |
+|---|---|---|
+| Accessibility (§40) | **Blocking** | Blocking |
+| SEO · Best Practices | **Blocking** | Blocking |
+| Visual regression | **Blocking** | Blocking |
+| Performance · LCP · CLS · TBT (§41) | **Collected and reported, non-blocking** | **Blocking at full §41 thresholds** |
+
+**This activation is a commitment, not an intention.** Performance thresholds harden the moment Phase 1 merges. They do not slip to a later phase.
+
+**The baseline serves two distinct purposes — do not conflate them:**
+
+- **Visual baseline is a match target.** Phase 1 must render pixel-identical to it.
+- **Performance baseline is a floor to beat, never to match.** "No regression" is insufficient for these metrics. Phase 1 must *improve* them to §41 thresholds. A Phase 1 build that merely equals the legacy CLS has failed, regardless of how the diff reads.
+
+**Root-cause identification is required in Phase 0 — diagnosis only, no remediation of legacy code.** Record the dominant CLS and LCP contributors in the Phase 0 PR. Defects that originate in shared assets or shared loading strategy survive the migration; those that originate in markup do not. Phase 1 must target the former deliberately.
+
+**Known likely contributor — verify and confirm.** `style.css` loads Anton, Bebas Neue, and Archivo via a CSS `@import` with `display=swap`. This creates a multi-hop request waterfall (stylesheet → font CSS → font files) and a fallback-to-webfont swap. Applied to display type at `clamp(40px, 8vw, 108px)` in a face as metrically distinct as Anton, the swap reflow is a probable primary CLS source. **If confirmed, this carries into Phase 1 unchanged unless addressed.** The remediation is `next/font` — self-hosted, waterfall eliminated, with size-adjusted fallback metrics so the swap does not shift layout. Phase 1 scope includes this explicitly.
 
 **VERIFY §49.1** — After Phase 4, deliberately reintroduce the pointer-events defect on a scratch branch. Assert CI catches it and blocks the PR. Revert. This proves the harness works before it is relied upon.
 

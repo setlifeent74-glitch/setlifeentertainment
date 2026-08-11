@@ -10,3 +10,9 @@ assets/hero-video-web.mp4
 
 # Editor
 .vscode/
+
+# Node / CI harness (Phase 0 — §49.1)
+node_modules/
+playwright-report/
+test-results/
+.lighthouseci/

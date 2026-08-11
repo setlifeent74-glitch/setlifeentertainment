@@ -158,7 +158,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 }
 .top-nav a:hover, .top-nav a:focus-visible{ color: var(--gold); }
 .top-nav a:hover::after, .top-nav a:focus-visible::after{ transform: scaleX(1); }
-.top-nav a.active{ color: var(--red); }
+.top-nav a.active{ color: var(--off-white); }
 .top-nav a.active::after{ background: var(--red); transform: scaleX(1); }
 /* Click "press" animation — a quick pop, separate from the color change */
 .top-nav a:active{
@@ -253,6 +253,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 .hero-controls{
   position: absolute;
   bottom: 24px; right: 24px;
+  /* Must stay above .top-nav--overlay's z-index (4) — the nav's
+     pointer-events:none only protects the "empty gap" of its own box; if
+     these controls ever end up under the nav in stacking order (e.g. a
+     future §16 mega menu raising nav's z-index), the nav intercepts clicks
+     again regardless. Both layers are required. Regression-tested in
+     tests/e2e/hero-controls.spec.ts. */
   z-index: 6;
   display: flex;
   gap: 8px;
@@ -630,7 +636,7 @@ footer.site-footer{
 }
 .value-card .num{
   font-family: 'Anton', sans-serif;
-  color: var(--line);
+  color: var(--gold);
   font-size: 36px;
   margin-bottom: 14px;
 }
