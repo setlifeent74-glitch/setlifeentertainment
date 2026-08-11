@@ -253,6 +253,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 .hero-controls{
   position: absolute;
   bottom: 24px; right: 24px;
+  /* Must stay above .top-nav--overlay's z-index (4) — the nav's
+     pointer-events:none only protects the "empty gap" of its own box; if
+     these controls ever end up under the nav in stacking order (e.g. a
+     future §16 mega menu raising nav's z-index), the nav intercepts clicks
+     again regardless. Both layers are required. Regression-tested in
+     tests/e2e/hero-controls.spec.ts. */
   z-index: 6;
   display: flex;
   gap: 8px;
