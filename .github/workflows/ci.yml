@@ -52,11 +52,26 @@ jobs:
 
       - run: npm run build
 
-      # §49.2 — performance/CLS/TBT and desktop LCP are blocking (error) as
-      # of this Phase 1 PR; mobile LCP stays non-blocking (warn) — close but
-      # not fully there on 3/5 routes. Accessibility/best practices/SEO have
-      # been blocking since Phase 0. See tests/README.md's Enforcement table.
-      - run: npm run lhci
+      # Two independent steps, not `npm run lhci` (which chains mobile &&
+      # desktop) — that chain meant a mobile failure silently skipped
+      # desktop entirely, so a real CI run reported only half the picture.
+      # continue-on-error lets both run regardless of each other; the final
+      # step below fails the job if either did. Each config's
+      # blocking/non-blocking assertions are documented in
+      # tests/README.md's Enforcement table.
+      - name: Lighthouse mobile
+        id: lhci_mobile
+        run: npm run lhci:mobile
+        continue-on-error: true
+
+      - name: Lighthouse desktop
+        id: lhci_desktop
+        run: npm run lhci:desktop
+        continue-on-error: true
+
+      - name: Fail if either Lighthouse run failed
+        if: steps.lhci_mobile.outcome == 'failure' || steps.lhci_desktop.outcome == 'failure'
+        run: exit 1
 
       - name: Upload Lighthouse reports
         if: always()

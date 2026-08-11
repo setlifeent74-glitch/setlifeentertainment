@@ -51,9 +51,13 @@ Per §49.2, the flip only happens for assertions actually proven to pass — "a 
 
 | Assertion | Desktop | Mobile | Status |
 |---|---|---|---|
-| `categories:performance` | ≥0.90 on all 5 routes | ≥0.80 on all 5 routes | **`error`** both configs |
+| `categories:performance` | 0.88–0.89 on `/issues`; ≥0.90 elsewhere | ≥0.80 on all 5 (holds under `numberOfRuns:3` median) | **`error`** mobile, **`warn`** desktop |
 | `cumulative-layout-shift` | ≤0.1 on all 5 | ≤0.1 on all 5 | **`error`** both configs |
-| `total-blocking-time` | ≤200ms on all 5 | ≤200ms on all 5 | **`error`** both configs |
-| `largest-contentful-paint` | ≤2.5s on all 5 | 2.68s–4.6s on 3/5 (home, issues, submit) | **`error`** desktop, **`warn`** mobile |
+| `total-blocking-time` | ≤200ms on all 5 | didn't hold on `ubuntu-latest` (744ms on home) despite passing locally | **`error`** desktop, **`warn`** mobile |
+| `largest-contentful-paint` | ≤2.5s on all 5 | 2.5s–5.7s+ on 3/5 (home, issues, submit), high run-to-run variance | **`error`** desktop, **`warn`** mobile |
 
-Mobile LCP improved enormously (`/issues` was 12.7s before the `sharp` fix, now ~3.2s) but three routes still land a few hundred milliseconds to ~2s over the 2.5s ceiling under Lighthouse's mobile throttling profile. Desktop clears every threshold on every route with zero exceptions, so desktop is fully blocking. Mobile LCP stays `warn` until that last gap closes — likely needs `priority`/preload tuning on whichever image actually wins "largest" per page (not necessarily the hero poster, which is already optimized per §6.1), not a new root cause. Flagged as follow-up, not swept under the non-blocking rug.
+**This flip round-tripped once already, and the reason is worth keeping.** The very first version of this table flipped `categories:performance` and `total-blocking-time` to `error` on mobile based on `numberOfRuns: 1` runs that happened to pass locally and in a Docker/amd64 container. The merge commit's own CI run on `ubuntu-latest` then failed — TBT hit 744ms (vs. the 200ms ceiling) on the home route, a real result, not a fluke, because GitHub's shared runners are measurably slower/noisier than the machines this was validated on. Re-testing with `numberOfRuns: 3` (median aggregation, the standard LHCI fix for exactly this) also surfaced that desktop `categories:performance` on `/issues` was never reliably above 0.90 either — it consistently lands at 0.88–0.89 across repeated runs; the one clean pass recorded earlier was luck, not signal. Both are now `warn` again, honestly. `numberOfRuns` was also bumped from 1 to 3 for both configs generally, since single-sample Lighthouse runs on CI hardware are not reliable enough to gate a merge on.
+
+Mobile LCP improved enormously from the pre-`sharp`-fix baseline (`/issues` was 12.7s) but remains the most variable metric and the furthest from its ceiling — stays `warn`. Flagged as follow-up (likely `priority`/preload tuning on whichever image actually wins "largest" per route), not swept under the non-blocking rug.
+
+**Separately:** the GitHub Actions workflow no longer runs `npm run lhci` (which chains `lhci:mobile && lhci:desktop`) as a single step — that chain meant a mobile failure silently skipped desktop entirely, so the failing run above only ever showed half the picture. `lighthouse` job now runs both configs as independent steps (`continue-on-error`, with an explicit pass/fail check afterward), so a failure in one is never allowed to hide the other's result again.
