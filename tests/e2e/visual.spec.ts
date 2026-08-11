@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { ROUTES } from './routes';
 
 /**
  * Visual regression baseline (§49.1 table: "Playwright screenshots at
@@ -7,11 +8,9 @@ import { test, expect } from '@playwright/test';
  *
  * First run: `npm run test:e2e:update-snapshots` to commit the baselines.
  */
-const routes = ['index.html', 'issues.html', 'about.html', 'submit.html', 'contact.html'];
-
-for (const route of routes) {
-  test(`${route} matches visual baseline`, async ({ page }) => {
-    await page.goto(`/${route}`);
+for (const route of ROUTES) {
+  test(`${route.label} matches visual baseline`, async ({ page }) => {
+    await page.goto(route.path);
     // Marquee animation makes full-page screenshots nondeterministic; freeze it.
     await page.addStyleTag({
       content: `*, *::before, *::after { animation-play-state: paused !important; transition: none !important; }`,
@@ -30,7 +29,7 @@ for (const route of routes) {
       await heroVideo.evaluate((v: HTMLVideoElement) => v.pause());
       mask.push(heroVideo);
     }
-    await expect(page).toHaveScreenshot(`${route.replace('.html', '')}.png`, {
+    await expect(page).toHaveScreenshot(`${route.label}.png`, {
       fullPage: true,
       maxDiffPixelRatio: 0.02,
       mask,

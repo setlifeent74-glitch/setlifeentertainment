@@ -19,7 +19,13 @@ jobs:
 
       - run: npm ci
 
-      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+
+      # `chromium` (the default install) is an open-source build without
+      # H.264 decode support — the hero video never becomes playable under
+      # it. `chrome` is real Google Chrome, matching the codec support the
+      # site's actual visitors have. See playwright.config.ts.
+      - run: npx playwright install --with-deps chrome
 
       - run: npx playwright test
 
@@ -44,10 +50,12 @@ jobs:
 
       - run: npm ci
 
-      # §49.2 — performance/LCP/CLS/TBT are non-blocking (warn) until the
-      # Phase 1 (feat/nextjs-migration) PR merges, at which point they flip
-      # to blocking (error) in lighthouserc.*.json. Accessibility/best
-      # practices/SEO are blocking now. See tests/README.md.
+      - run: npm run build
+
+      # §49.2 — performance/CLS/TBT and desktop LCP are blocking (error) as
+      # of this Phase 1 PR; mobile LCP stays non-blocking (warn) — close but
+      # not fully there on 3/5 routes. Accessibility/best practices/SEO have
+      # been blocking since Phase 0. See tests/README.md's Enforcement table.
       - run: npm run lhci
 
       - name: Upload Lighthouse reports

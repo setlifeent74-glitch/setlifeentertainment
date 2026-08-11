@@ -8,4 +8,5 @@
 # hero-video.mp4 is now a web-optimized ~40MB file, well under GitHub's
 # 100MB cap — keep it as a normal tracked blob instead of LFS so it isn't
 # subject to GitHub's 1GB/month free LFS bandwidth limit.
-assets/hero-video.mp4 filter= diff= merge= -text
+public/assets/hero-video.mp4 filter= diff= merge= -text
+public/assets/hero-video-mobile.mp4 filter= diff= merge= -text

@@ -3,7 +3,10 @@
    Black / crimson / gold editorial magazine look
 ================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+/* Fonts (Anton, Bebas Neue, Archivo) are self-hosted via next/font/google in
+   app/layout.tsx, which applies --font-anton / --font-bebas / --font-archivo
+   as CSS custom properties on <html> — replacing the render-blocking Google
+   Fonts @import diagnosed in Phase 0 (BUILD-SPEC.md §49.2). */
 
 :root{
   --black: #0a0a0a;
@@ -27,7 +30,7 @@ body{
   margin: 0;
   background: var(--black);
   color: var(--off-white);
-  font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-archivo), -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -52,7 +55,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 }
 
 .headline, .display{
-  font-family: 'Anton', 'Bebas Neue', sans-serif;
+  font-family: var(--font-anton), var(--font-bebas), sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.01em;
   line-height: 0.95;
@@ -60,7 +63,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 }
 
 .eyebrow{
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-size: 13px;
@@ -76,7 +79,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   align-items: center;
   gap: 8px;
   padding: 14px 28px;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.12em;
   font-size: 15px;
   text-transform: uppercase;
@@ -112,7 +115,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 .marquee-track{
   display: inline-block;
   padding: 7px 0;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.15em;
   font-size: 13px;
   animation: scroll-left 32s linear infinite;
@@ -135,7 +138,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   z-index: 5;
 }
 .top-nav a{
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.14em;
   font-size: 14px;
   text-transform: uppercase;
@@ -235,7 +238,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   bottom: 26px; left: 50%;
   transform: translateX(-50%);
   z-index: 2;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.2em;
   font-size: 12px;
   color: rgba(244,241,234,0.7);
@@ -249,6 +252,30 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   background: linear-gradient(180deg, rgba(244,241,234,0.8), transparent);
   animation: scroll-hint 1.8s ease-in-out infinite;
 }
+
+/* §6.1 Save-Data — shown instead of autoplaying; the poster remains visible
+   behind it until the visitor opts in. */
+.hero-play-affordance{
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  border: 2px solid rgba(244,241,234,0.7);
+  background: rgba(10,10,10,0.55);
+  backdrop-filter: blur(3px);
+  color: var(--off-white);
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 0 4px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.hero-play-affordance:hover{ border-color: var(--red); background: rgba(10,10,10,0.75); }
+.hero-play-affordance[hidden]{ display: none; }
 
 .hero-controls{
   position: absolute;
@@ -334,20 +361,20 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 .cover-card:hover{ transform: translateY(-6px); border-color: var(--red); }
 .cover-card:hover::before{ opacity: 1; }
 .cover-card .issue-no{
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   font-size: 12px;
   letter-spacing: 0.14em;
   color: var(--gold);
 }
 .cover-card .card-title{
-  font-family: 'Anton', sans-serif;
+  font-family: var(--font-anton), sans-serif;
   font-size: 15px;
   letter-spacing: 0.02em;
   color: var(--gray);
   text-transform: uppercase;
 }
 .cover-card .card-name{
-  font-family: 'Anton', sans-serif;
+  font-family: var(--font-anton), sans-serif;
   font-size: 30px;
   text-transform: uppercase;
   line-height: 0.95;
@@ -416,12 +443,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 }
 .stat:last-child{ border-right: none; }
 .stat .num{
-  font-family: 'Anton', sans-serif;
+  font-family: var(--font-anton), sans-serif;
   font-size: 40px;
   color: var(--red);
 }
 .stat .label{
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.14em;
   font-size: 12px;
   color: var(--gray);
@@ -445,7 +472,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   position: relative;
 }
 .two-col .panel .clap-big{
-  font-family: 'Anton', sans-serif;
+  font-family: var(--font-anton), sans-serif;
   font-size: 120px;
   color: var(--line);
 }
@@ -466,7 +493,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 /* ---------- Categories pills ---------- */
 .pill-row{ display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
 .pill{
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.1em;
   font-size: 13px;
   text-transform: uppercase;
@@ -485,7 +512,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   padding: 90px 0;
 }
 .quote-block blockquote{
-  font-family: 'Anton', sans-serif;
+  font-family: var(--font-anton), sans-serif;
   font-size: clamp(26px, 4vw, 44px);
   text-transform: uppercase;
   line-height: 1.15;
@@ -494,7 +521,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 }
 .quote-block cite{
   font-style: normal;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.14em;
   color: var(--gold);
   font-size: 14px;
@@ -505,7 +532,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 .field{ margin-bottom: 22px; }
 .field label{
   display: block;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.1em;
   font-size: 13px;
   text-transform: uppercase;
@@ -518,7 +545,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   border: 1px solid var(--line);
   color: var(--off-white);
   padding: 14px 16px;
-  font-family: 'Archivo', sans-serif;
+  font-family: var(--font-archivo), sans-serif;
   font-size: 15px;
 }
 .field input:focus, .field select:focus, .field textarea:focus{
@@ -554,7 +581,7 @@ footer.site-footer{
   padding-bottom: 40px;
 }
 .footer-grid h4{
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.14em;
   font-size: 13px;
   text-transform: uppercase;
@@ -618,7 +645,7 @@ footer.site-footer{
   border: none;
   color: var(--off-white);
   width: 100%;
-  font-family: 'Archivo', sans-serif;
+  font-family: var(--font-archivo), sans-serif;
   font-size: 14px;
 }
 .search-box input:focus{ outline: none; }
@@ -635,13 +662,13 @@ footer.site-footer{
   background: var(--black-2);
 }
 .value-card .num{
-  font-family: 'Anton', sans-serif;
+  font-family: var(--font-anton), sans-serif;
   color: var(--gold);
   font-size: 36px;
   margin-bottom: 14px;
 }
 .value-card h4{
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.08em;
   font-size: 18px;
   text-transform: uppercase;
@@ -662,7 +689,7 @@ footer.site-footer{
   border-radius: 50%;
 }
 .tl-item .eyebrow{ display: block; margin-bottom: 6px; }
-.tl-item h4{ font-family: 'Anton', sans-serif; text-transform: uppercase; font-size: 22px; margin: 0 0 8px; }
+.tl-item h4{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 22px; margin: 0 0 8px; }
 .tl-item p{ color: var(--gray); margin: 0; max-width: 520px; }
 
 /* ---------- CTA band ---------- */

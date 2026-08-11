@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { ROUTES } from './routes';
 
 /**
  * §40 VERIFY — axe-core on every route, zero critical/serious violations.
@@ -7,11 +8,9 @@ import AxeBuilder from '@axe-core/playwright';
  * itself reports a pass/fail violation list, so the enforceable form of the
  * same requirement is: zero violations at critical or serious impact.
  */
-const routes = ['index.html', 'issues.html', 'about.html', 'submit.html', 'contact.html'];
-
-for (const route of routes) {
-  test(`${route} has no critical or serious accessibility violations`, async ({ page }) => {
-    await page.goto(`/${route}`);
+for (const route of ROUTES) {
+  test(`${route.label} has no critical or serious accessibility violations`, async ({ page }) => {
+    await page.goto(route.path);
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
@@ -25,7 +24,7 @@ for (const route of routes) {
       const detail = blocking
         .map((v) => `- [${v.impact}] ${v.id}: ${v.help} (${v.nodes.length} node(s))`)
         .join('\n');
-      throw new Error(`Accessibility violations on ${route}:\n${detail}`);
+      throw new Error(`Accessibility violations on ${route.label}:\n${detail}`);
     }
   });
 }
