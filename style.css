@@ -693,4 +693,7 @@ footer.site-footer{
   .cover-grid{ grid-template-columns: 1fr 1fr; }
   .field-row{ grid-template-columns: 1fr; }
   .footer-grid{ grid-template-columns: 1fr; }
+  /* Nav links wrap to 2 lines on narrow/tall (9:16) screens — drop the
+     video controls below the wrapped nav so they stop overlapping it. */
+  .hero-controls{ top: 100px; right: 16px; }
 }
