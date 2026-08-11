@@ -252,7 +252,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 
 .hero-controls{
   position: absolute;
-  top: 24px; right: 24px;
+  bottom: 24px; right: 24px;
   z-index: 6;
   display: flex;
   gap: 8px;
@@ -687,13 +687,10 @@ footer.site-footer{
   .value-grid{ grid-template-columns: 1fr; }
   .top-nav{ gap: 18px; padding: 18px 16px; }
   .top-nav a{ font-size: 12px; }
-  .hero-controls{ top: 16px; right: 16px; }
+  .hero-controls{ bottom: 16px; right: 16px; }
 }
 @media (max-width: 600px){
   .cover-grid{ grid-template-columns: 1fr 1fr; }
   .field-row{ grid-template-columns: 1fr; }
   .footer-grid{ grid-template-columns: 1fr; }
-  /* Nav links wrap to 2 lines on narrow/tall (9:16) screens — drop the
-     video controls below the wrapped nav so they stop overlapping it. */
-  .hero-controls{ top: 100px; right: 16px; }
 }

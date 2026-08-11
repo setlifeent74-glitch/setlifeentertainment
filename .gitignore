@@ -2,10 +2,11 @@
 .DS_Store
 Thumbs.db
 
-# Raw original upload — duplicate of assets/hero-video.mp4 (same content,
-# already remuxed/optimized for the web). Kept on disk but not tracked in
-# git to avoid doubling up ~300MB of near-identical video in the repo.
+# Raw original upload (4K/60fps/54Mbps, ~309MB) — kept on disk as the
+# source master but not tracked in git; assets/hero-video.mp4 is the
+# web-optimized 1080p/30fps encode actually served on the site.
 assets/video-hero.MP4
+assets/hero-video-web.mp4
 
 # Editor
 .vscode/
