@@ -2,21 +2,33 @@
   "name": "setlifeentertainment",
   "private": true,
   "version": "0.0.0",
-  "description": "Set Life Entertainment — CI harness (Phase 0). Static site today; Next.js from Phase 1.",
+  "description": "Set Life Entertainment — Next.js App Router (Phase 1).",
   "scripts": {
-    "serve": "http-server . -p 4173 -s",
-    "serve:ci": "http-server . -p 4173",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -p 4173",
+    "lint": "eslint .",
     "test:e2e": "playwright test",
     "test:e2e:update-snapshots": "playwright test --update-snapshots",
+    "test:e2e:local": "npm run build && npm run test:e2e",
     "lhci:mobile": "lhci autorun --config=lighthouserc.mobile.json",
     "lhci:desktop": "lhci autorun --config=lighthouserc.desktop.json",
     "lhci": "npm run lhci:mobile && npm run lhci:desktop",
-    "ci": "npm run test:e2e && npm run lhci"
+    "ci": "npm run build && npm run test:e2e && npm run lhci"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
     "@lhci/cli": "^0.14.0",
     "@playwright/test": "^1.48.0",
-    "http-server": "^14.1.1"
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "eslint-config-next": "^16.3.0"
+  },
+  "dependencies": {
+    "next": "^16.3.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "sharp": "^0.35.3"
   }
 }

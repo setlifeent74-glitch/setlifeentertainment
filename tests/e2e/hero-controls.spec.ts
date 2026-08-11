@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
  */
 test.describe('Hero video controls', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto('/');
     // Autoplay video needs a moment to actually start in a headless browser.
     await page.locator('#heroVideo').evaluate((v: HTMLVideoElement) =>
       v.play().catch(() => {})
