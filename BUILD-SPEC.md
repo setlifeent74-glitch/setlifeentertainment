@@ -44,9 +44,9 @@ Distributed editorial team: **5 contributors** across Memphis, Atlanta, Orlando,
 
 This is a functioning newsroom, and it drives three architectural requirements:
 
-1. **Multi-contributor CMS with roles and an approval workflow** (§40). Not single-admin.
-2. **Author attribution and author profile pages** (§41). Bylines matter to a distributed team and compound SEO value.
-3. **Shared media library** (§40). Multiple people uploading concurrently.
+1. **A shared-access CMS, reachable only through the live site itself** (§45). One login shared by the team, matching the shared-GitHub-account model in §5. No roles, no approval workflow, no tiered permissions — whoever has the login can edit any section. Contributors never touch Supabase, Vercel, or GitHub; those exist for the developer only. A contributor's entire interface is `setlifeentertainment.com/admin`.
+2. **Author attribution and author profile pages** (§46). Bylines matter to a distributed team and compound SEO value — attribution is an editorial field on the post, not an access-control identity.
+3. **Shared media library** (§45). Multiple people uploading concurrently.
 
 Geographic distribution across two major production hubs — Atlanta and Los Angeles — plus three regional markets is a genuine editorial asset. Regional festival and production coverage is achievable without travel budget.
 
@@ -106,15 +106,15 @@ All three load via Google Fonts, already imported at the head of `style.css`.
 | Host | Vercel · project `setlifeentertainment` · team "Seal of the King" · Hobby · auto-deploy on push to `main` |
 | Domain | `setlifeentertainment.com` → 308 → `www.setlifeentertainment.com` · live · SSL provisioned · GoDaddy DNS → Vercel |
 
-**Deploy constraint — Hobby plan.** Deployment is blocked if the commit author identity does not match the connected GitHub account. Author all commits as:
+**Decision — staying on Hobby.** Confirmed by owner: no Pro upgrade, budget constraint. This is a deliberate, permanent operating constraint for the build, not a pending question.
 
-```
-setlifeent74-glitch <315593387+setlifeent74-glitch@users.noreply.github.com>
-```
+**Operating model — shared account, not individual identities.** All 5–9 contributors work under the single `setlifeent74-glitch` GitHub login, not separate personal accounts. This sidesteps the Hobby-plan deploy-identity block entirely by construction — every commit is already authored as the connected identity, since there is only one identity. No per-contributor git config, no `CONTRIBUTING.md` workaround, nothing to set up. The earlier version of this section speced a fix for a problem this team's actual workflow doesn't have.
 
-**Escalate:** a 5–9 person team requires multiple contributors pushing. Hobby-plan collaboration limits will become binding. Raise the Pro upgrade question during Phase 1.
+**Known trade-off, noted and accepted, not re-litigated:** a shared login means no per-person audit trail in commit history or GitHub's UI, and credential rotation for one departing contributor means rotating for everyone. This is the same pattern already in use across this account's other client projects (Bella Vida, etc.), so it's an established operating choice, not a new risk being introduced here.
 
-**VERIFY §5** — After first push: deployment status `Ready`, not `Blocked`. A blocked deploy halts all work.
+**Commercial-use terms (separate issue, still accepted risk).** Vercel's Hobby plan terms restrict it to non-commercial use. This site is a media business with planned commerce (Stripe, Phase 12) — running it on Hobby is technically outside the license. No free-tier technical fix exists for this. Revisit Pro when Phase 12 (Stripe) goes live and there's actual revenue to weigh against the $20/seat/month cost.
+
+**VERIFY §5** — Deployment status `Ready`, not `Blocked`, on every push to `main`.
 
 ## §6 Hero Video — Protected Asset
 
@@ -166,7 +166,7 @@ A ~40 MB non-lazy hero and a mobile Performance floor of 80 are in tension. This
 |---|---|---|
 | Framework | **Next.js, App Router** | Vercel-native; zero additional hosting configuration |
 | Database | **Supabase Postgres** | Editorial and commerce data |
-| Auth | **Supabase Auth** | Multi-contributor, role-gated |
+| Auth | **Supabase Auth** | One shared login, flat access. No roles. Gates write access only — never exposed as a Supabase/Vercel/GitHub credential to contributors. |
 | Storage | **Supabase Storage** | Editor uploads, covers, product media, digital goods |
 | Payments | **Stripe Checkout** | Hosted, redirect-based. No PCI scope. |
 
@@ -755,7 +755,7 @@ This is a design review, deliberately subjective, and it is classified separatel
 Most editorial surfaces are one content type with a category discriminator. A single article editor drives all of them.
 
 **`posts`**
-`id` · `slug` (unique, immutable once published) · `title` · `dek` · `category` (enum below) · `placement` (enum below) · `body` (rich block content) · `hero_image_url` · `author_id` (FK → `authors`) · `status` (`draft` | `in_review` | `scheduled` | `published`) · `published_at` · `scheduled_for` · `featured` · `related_issue_id` (FK, nullable) · `seo_title` · `seo_description` · `og_image_url` · `reading_time` (derived on save) · `meta` (JSON — review score, opportunity deadline and compensation, festival dates, production status)
+`id` · `slug` (unique, immutable once published) · `title` · `dek` · `category` (enum below) · `placement` (enum below) · `body` (rich block content) · `hero_image_url` · `author_id` (FK → `authors`) · `status` (`draft` | `scheduled` | `published`) · `published_at` · `scheduled_for` · `featured` · `related_issue_id` (FK, nullable) · `seo_title` · `seo_description` · `og_image_url` · `reading_time` (derived on save) · `meta` (JSON — review score, opportunity deadline and compensation, festival dates, production status)
 
 **`posts.category`** — what the piece *is*:
 `article` · `news` · `spotlight` · `review` · `opportunity` · `festival` · `below_the_line` · `production` · `video` · `behind_the_lens`
@@ -779,11 +779,11 @@ Placement is set by an editor in the CMS, defaulting from category. **§9 conten
 
 §34 renders when `honorees` contains published rows for the current `list_year` **and** an admin has enabled the section.
 
-**`authors`**
-`id` · `slug` · `name` · `role` · `bio` · `avatar_url` · `location` · `social_links` (JSON) · `user_id` (FK → Supabase Auth)
+**`authors`** — a byline roster, not a user-account table. With one shared login there is no per-person Supabase Auth identity to hang a byline on, so attribution is editorial data the contributor picks or types, not derived from who's signed in.
+`id` · `slug` · `name` · `title` (e.g. "Contributing Writer, Atlanta") · `bio` · `avatar_url` · `location` · `social_links` (JSON)
 
 **`post_revisions`**
-`id` · `post_id` · `body` · `title` · `edited_by` · `created_at` — retained for recovery and attribution across a distributed team.
+`id` · `post_id` · `body` · `title` · `edited_by` (free text, optional — whatever the contributor enters, not an enforced identity) · `created_at` — retained for recovery, not for access control.
 
 **`magazine_issues`**
 `id` · `issue_number` · `title` · `cover_image_url` · `release_date` · `summary` · `is_current`
@@ -797,37 +797,37 @@ A product's nature is determined entirely by which optional fields are populated
 `id` · `stripe_session_id` · `product_id` · `customer_email` · `amount` · `status` · `download_token` (nullable) · `ticket_code` (nullable) · `created_at`
 
 **`media`** — shared library for a multi-contributor team.
-`id` · `url` · `filename` · `alt_text` · `uploaded_by` · `created_at`
+`id` · `url` · `filename` · `alt_text` · `uploaded_by` (free text, optional) · `created_at`
 
-**Roles:** `admin` · `editor` · `contributor` — on the Supabase Auth user record.
+**No roles table, no role column anywhere.** Access is binary: authenticated (via the one shared login) or not. Anyone authenticated can create, edit, publish, and delete any content in any section.
 
-**VERIFY §44** — Row Level Security enabled on every table. Anonymous clients read published content only. No write path without an authenticated session of sufficient role. Attempt an unauthenticated write and a contributor-role publish; confirm both rejected. Assert every §9 gate query filters on `placement`. Assert a post with `category = spotlight` and no `placement` appears in neither §24 nor §27.
+**VERIFY §44** — Row Level Security enabled on every table. Anonymous clients read published content only. No write path without an authenticated session — attempt an unauthenticated write and confirm it's rejected. Assert every §9 gate query filters on `placement`. Assert a post with `category = spotlight` and no `placement` appears in neither §24 nor §27.
+
+**Phase 2 outcome.** Schema and RLS (`supabase/migrations/`) built and verified directly against a local Supabase instance — not just asserted. Confirmed by exercising real writes in transactions with the role/JWT claims Postgres actually evaluates: unauthenticated insert rejected; any authenticated session can create, publish, and delete any post regardless of who created it (flat access, no ownership check, matching §44's amended model); anon reads published content and is fully blocked from `orders`, including insert (writes there are service-role-only, for the Phase 12 Stripe webhook). §8's URL routes (`/story/[slug]`, `/authors/[slug]`, `/category/[category]`, `/issues/[number]`, `/opportunities`, `/festivals`, `/shop`, `/shop/[slug]`) all built, seeded with sample data, and confirmed resolving correctly — including the 301-carveout mechanism (`post_slug_redirects`, served as a 308) and correct 404s for nonexistent slugs/categories/issue numbers.
+
+One real bug found and fixed along the way, severity: would have broken the live site. `lib/supabase/middleware.ts` (session refresh, runs on every request via `proxy.ts`) threw on missing Supabase env vars — which is the current state of production, since the project isn't provisioned yet. Because it's global middleware, that took down every route site-wide, not just the Supabase-backed ones, confirmed by testing the exact scenario (`/`, `/about`, `/issues` all 500'd). Fixed to pass the request through unchanged when unconfigured. The new data-backed routes themselves still fail without credentials, which is acceptable for now — nothing links to them yet.
 
 ## §45 Admin Back Office
 
-Sized for 5–9 distributed contributors.
+Sized for 5–9 distributed contributors sharing one login. Flat access — no roles, no approval workflow, no tiers. Whoever is logged in can edit any section.
+
+**Entirely inside the live site. This is the whole point of the section.** Contributors never open supabase.com, vercel.com, or github.com — not during onboarding, not ever. Their full interface is `setlifeentertainment.com/admin`, reachable from a normal login form on the public domain. Publishing a post is a database write through the site's own authenticated API route; it does not create a git commit, does not touch the repository, and does not trigger a Vercel deployment. Content goes live by being read from Supabase at request time (dynamic rendering / revalidation), not by shipping new code. Someone publishing an article at 11pm from Orlando never touches, and never needs to touch, anything git-related.
+
+**`/admin` dashboard is organized by homepage section, not by database table.** A contributor should never need to know what `category` or `placement` means. The dashboard is a grid of tiles mirroring §15's fixed section order — Today on Set Life, Indie Spotlight, The Call Sheet, Fresh Faces, Below the Line, Now in Production, The Cut, Screening Room, Behind the Lens, Opportunities, Festival Circuit, Set Life 100, The Set Life Shop, Current Magazine Issue — plus a Store tile. Each tile shows that section's current §9 gate status (does it have enough published content to render on the homepage right now) and an "Add to this section" button that opens the editor with `category`/`placement` already set correctly. The enum values are an implementation detail the editor fills in from the tile clicked, never a field the contributor sees or chooses.
 
 | Route | Function |
 |---|---|
-| `/admin/login` | Supabase Auth, email/password |
-| `/admin` | Dashboard — recent posts by status, **§9 gate status per homepage section**, quick-edit |
-| `/admin/posts` | List, filter by status/author/category |
+| `/admin/login` | Supabase Auth, email/password, on the live site |
+| `/admin` | Section-tile dashboard described above |
+| `/admin/posts` | Flat list of everything, filterable — for finding a specific piece, not the primary workflow |
 | `/admin/posts/[id]` | Article editor |
 | `/admin/issues` | Magazine issue CRUD |
-| `/admin/products` | Store product CRUD |
+| `/admin/products` | Store product CRUD — the "Store" tile |
 | `/admin/media` | Shared media library |
-| `/admin/authors` | Contributor profiles |
+| `/admin/authors` | Byline roster (names/bios for attribution, not user accounts — see §44) |
 | `/admin/submissions` | Inbound submission queue |
 
-**Roles**
-
-| Role | Capability |
-|---|---|
-| **Admin** | Everything. Settings, store, users, publishing. |
-| **Editor** | Publish/unpublish any post, edit others' work, manage homepage featuring, review submissions. |
-| **Contributor** | Create and edit own drafts, submit for review, upload media. **Cannot publish.** |
-
-**Workflow:** `Draft → In Review → Scheduled → Published`. Contributors submit; editors approve. Revision history is retained on every save.
+**Workflow:** `Draft → Published`, with an optional `Scheduled` state (set a future `scheduled_for` and it publishes itself at that time). No review step, no second person required to approve. Whoever writes it can publish it. Revision history is still retained on every save — useful for recovering a mistake, not for gatekeeping who's allowed to save.
 
 **Article editor** — the core requirement. Block-based rich editor (Tiptap or equivalent) supporting:
 - Large section headers in the editorial type system
@@ -838,7 +838,7 @@ Sized for 5–9 distributed contributors.
 
 A plain textarea does not satisfy this requirement.
 
-**VERIFY §45** — End-to-end as each role. Contributor: create post with two section headers and one uploaded image → submit for review → **assert publish is unavailable**. Editor: review → publish → confirm live on homepage and at `/story/[slug]` → edit → confirm propagation → unpublish → confirm removal. Assert `/admin` while logged out redirects to login with no content leakage. Assert revision history captures each save with correct attribution.
+**VERIFY §45** — Log in with the one shared credential. From the section-tile dashboard, open a section (e.g. Fresh Faces), create a post with two section headers and one uploaded image, publish directly with no second-account approval step required, confirm it's live on the homepage in that section and at `/story/[slug]` with zero git commits and zero Vercel deployments triggered by the publish action. Edit it, confirm propagation. Unpublish, confirm removal. Assert `/admin` while logged out redirects to login with no content leakage. Assert revision history captures each save.
 
 ## §46 Article Reading Experience
 
@@ -1041,11 +1041,11 @@ A PR with a failing CI check or an unaddressed failing assertion is not ready fo
 11. **Every mechanically testable VERIFY assertion becomes a CI test and stays green.** §49.1. The §43 composition test is owner judgment and is exempt.
 12. **Every VERIFY block passes before its phase closes.**
 
-**Escalate rather than assume:** Vercel Pro upgrade for team collaboration · ticketing beyond a simple order code · which transactional email provider (required before Phase 12, not optional) · multi-item cart necessity · Instagram API access.
+**Escalate rather than assume:** ticketing beyond a simple order code · which transactional email provider (required before Phase 12, not optional) · multi-item cart necessity · Instagram API access.
 
-**Resolved — do not re-raise:** mobile video delivery (§6.1) · zero-404 during phased delivery (§8) · spotlight/fresh-face disambiguation and all other placement questions (§44) · Set Life 100 data model (§44 `honorees`) · team size and CMS role count (§2, §45).
+**Resolved — do not re-raise:** mobile video delivery (§6.1) · zero-404 during phased delivery (§8) · spotlight/fresh-face disambiguation and all other placement questions (§44) · Set Life 100 data model (§44 `honorees`) · CMS access model — one shared login, flat access, no roles, no approval workflow (§2, §44, §45) · Vercel Pro upgrade — declined, staying on Hobby permanently, budget constraint (§5) · Vercel deploy-identity block — resolved structurally by the shared GitHub login (§5), not applicable to editorial contributors since publishing never touches git (§45).
 
-**Out of scope — governed by the Growth Roadmap, do not implement:** user accounts · community and networking · industry directory · festival microsites · people/subject database · digital magazine reader · audience scoring · advertising inventory · roles beyond the three in §45.
+**Out of scope — governed by the Growth Roadmap, do not implement:** user accounts · community and networking · industry directory · festival microsites · people/subject database · digital magazine reader · audience scoring · advertising inventory · any role, tier, or approval step in the CMS beyond the flat model in §45.
 
 ---
 
