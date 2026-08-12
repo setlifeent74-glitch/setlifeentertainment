@@ -420,6 +420,21 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          id: boolean
+          set_life_100_enabled: boolean
+        }
+        Insert: {
+          id?: boolean
+          set_life_100_enabled?: boolean
+        }
+        Update: {
+          id?: boolean
+          set_life_100_enabled?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
