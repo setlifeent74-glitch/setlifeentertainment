@@ -113,17 +113,29 @@ Nothing in this register is rejected. Each item is **sequenced** — held until 
 
 ---
 
-### 2.4 Advertising Infrastructure
+### 2.4 Advertising Infrastructure — MOVED TO ACTIVE BUILD
 
-**Concept.** Deliberate, editorially-placed ad inventory that does not degrade the premium rhythm.
+**No longer deferred.** Owner decision, overriding the original recommendation below: build now, at Phase 12, direct-sold only (two placements — homepage banner, in-article inline). See BUILD-SPEC.md §48.2. The reasoning that followed still governs the design even though the timing call changed.
 
-**Why deferred.** Ad inventory requires audience scale to sell. Premature ad slots render empty or fill with low-quality network placements that materially damage a premium publication.
+**Original concept.** Deliberate, editorially-placed ad inventory that does not degrade the premium rhythm.
 
-**Trigger condition.** Traffic sufficient to sell direct sponsorship, or a named launch sponsor.
+**Original deferral reasoning, for context.** Ad inventory requires audience scale to sell. Premature ad slots render empty or fill with low-quality network placements that materially damage a premium publication. The technical risk (empty inventory) is handled the same way §9's content gates handle everything else — an unsold placement doesn't render, it doesn't show a placeholder. That leaves only the *sales* risk (can it actually be sold before there's traffic), which is the owner's call to make, not a technical constraint.
 
-**Build estimate.** Low-Moderate.
+**Strategic note — still governs the build.** Direct-sold sponsorship of a named franchise — "The Call Sheet, presented by —" — preserves editorial quality far better than programmatic network inventory. Pursue sponsorship, not ad networks. This held even after the timing decision changed.
 
-**Strategic note.** Direct-sold sponsorship of a named franchise — "The Call Sheet, presented by —" — preserves editorial quality far better than programmatic network inventory. Pursue sponsorship, not ad networks.
+---
+
+### 2.5 Print Edition
+
+**Concept.** A physical print run of magazine issues, alongside the online-only publication. Explicitly intended eventually, per the owner — not a hypothetical.
+
+**Why deferred.** No print production, distribution, or fulfillment relationship exists yet. Print has real unit economics (print run size, per-unit cost, distribution/shipping) that don't apply to a digital publication — this isn't a copy change, it's a new production and fulfillment pipeline.
+
+**Trigger condition.** A print production partner and distribution plan identified, and confidence the digital audience justifies a print run's fixed costs.
+
+**Build estimate.** Low on the software side — `magazine_issues` (§44) was kept print-agnostic on purpose, so adding `print_run_count`, `isbn`, `distributor`, `ship_date` fields later doesn't require a schema rework. The real cost is entirely in the physical production and distribution relationship, which is outside this build's scope.
+
+**Note on paid cover placements (§48.3).** These currently sell placement on the *digital* cover only. When print exists, decide explicitly whether a cover purchase includes the print edition or stays digital-only — don't let that ambiguity ship silently when Print Edition gets built.
 
 ---
 
@@ -200,12 +212,13 @@ Ordered by value-to-cost given current trajectory:
 
 | Priority | Item | Rationale |
 |---|---|---|
+| — | **Advertising / Sponsorship** (2.4) | **No longer a roadmap item — moved to the active build, Phase 12.** Left here only so the original reasoning isn't lost. |
 | 1 | **Set Life 100** (1.2) | Highest brand value. Creates an annual news moment. Low engineering cost. |
 | 2 | **Structured Opportunities** (1.4) | Converts readership into weekly habit. Most defensible utility. |
-| 3 | **Universal Search** (1.3) | Becomes necessary as the archive compounds. |
+| 3 | **Universal Search — full version** (1.3) | A minimal v1 (single query, no filters) already ships in the main build (BUILD-SPEC.md §16). This item is specifically the scaled-up successor — filtering, ranking, predictive suggestions — once the archive is large enough to need it. |
 | 4 | **Festival Hubs** (1.1) | Geographic team spread makes this achievable earlier than typical. |
 | 5 | **People Database** (2.1) | Compounds SEO and interlinking. Requires coverage density first. |
-| 6 | **Advertising / Sponsorship** (2.4) | Revenue. Pursue direct sponsorship, not networks. |
+| 6 | **Print Edition** (2.5) | Owner has confirmed intent to eventually go to print. Gated on a production/distribution partner, not on engineering — schema is already print-agnostic. |
 | — | Everything in Tier 3 | Reassess annually. Do not build on enthusiasm. |
 
 ---

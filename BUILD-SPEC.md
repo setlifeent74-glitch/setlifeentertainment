@@ -939,6 +939,37 @@ Required on each:
 
 **VERIFY §48.1** — Script 25 rapid submissions to each endpoint. Assert rate limiting engages and returns 429. Assert honeypot submissions are silently rejected. Assert no submitted content reaches a public route without editor action.
 
+## §48.2 Advertising & Sponsorship Placements
+
+**Owner decision — moved up from the Growth Roadmap, building now, not deferred.** The Growth Roadmap's original advice — wait for real traffic or a named sponsor, since empty inventory looks worse than none — still applies as a *sales* problem, not a technical one. The infrastructure ships now; unsold slots simply don't render (same content-gate philosophy as §9 — an empty placement closes up, it never shows a "your ad here" placeholder).
+
+**Direct-sold only. No ad network, no programmatic bidding, no AdSense-style script.** This preserves the premium editorial feel the whole brand is built on — matches the Growth Roadmap's own strategic note. Every placement is manually sold and manually uploaded by whoever's logged into `/admin`, same flat-access model as everything else.
+
+**`ad_placements` table** — `id` · `location` (enum: `homepage_banner`, `article_inline`) · `advertiser_name` · `creative_image_url` · `link_url` · `starts_at` · `ends_at` · `active` · `stripe_payment_link_url` (nullable — where this placement's payment went, for bookkeeping)
+
+**Two placements, not more.** More inventory than the sales team can move looks worse than a smaller amount that's usually full:
+- **Homepage banner** — one slim strip, positioned between §17.1 (hero intro) and §22 (Today on Set Life). Full-width, restrained height (120–160px), image + advertiser name + link. Renders only when an `active` row exists for the current date; otherwise the homepage simply flows from hero intro straight to §22 as it does today.
+- **Article inline** — one slot inside §46's long-form reading experience, positioned after roughly the second section break. Same sourcing logic.
+
+**Admin.** A simple CRUD form under `/admin/ads` — upload creative, set advertiser name, link, and date range. No separate role required, matching §45.
+
+**VERIFY §48.2** — Assert zero ad placements render when no `active` row exists for the current date — no empty container, no layout shift. Assert a placement outside its `starts_at`/`ends_at` window does not render even if `active = true`. Assert the homepage banner and article inline slot both pass the same accessibility and performance bar as every other section (§40, §41) — an ad is not exempt from the standards the rest of the site holds.
+
+## §48.3 Paid Editorial Placements
+
+**Owner decision — disclosure declined.** Paid features render as ordinary editorial content, with no "Sponsored" or "Paid" label. **This is a recorded risk, not an oversight.** Publishers disclosing paid coverage is standard practice in the U.S. (FTC Endorsement Guides apply to publishers, not just individual endorsers) and undisclosed paid placement carries real regulatory exposure independent of site traffic, plus it's in direct tension with the credibility §1's editorial thesis is built on. The owner made this call explicitly, twice, after the tradeoff was raised. Not re-litigating it further — flagged once here for the record, exactly like the Greenlight investment-solicitation caution in the Growth Roadmap. If this changes, it's a copy-only change (add a label), not a schema change.
+
+**Two products, same mechanism, both reuse the existing flexible `products` table (§44) — no new commerce infrastructure:**
+
+1. **Paid write-up.** A `products` row with no `digital_file_url`, no `event_date`, no `inventory` — price and description only. Fulfillment is manual: the editorial team writes and publishes a `posts` row after payment, and sets `posts.meta.sponsored_order_id` to the originating `orders.id` for internal bookkeeping. That field is never rendered publicly (see disclosure decision above).
+2. **Paid cover placement.** Same mechanism, tied to `magazine_issues` instead of `posts`. On payment, the editorial team sets that subject as the cover for an upcoming issue (`magazine_issues.cover_image_url` and related fields) and records the same `sponsored_order_id` linkage, internal-only.
+
+**Inbound flow — email now, form later.** A prospect emails asking about coverage. Whoever's handling it replies with a Stripe Payment Link for the agreed amount, generated from the Stripe Dashboard directly — no code required, works today, before any of this is built. Once built, `/admin` gains a "Generate payment link" action that creates the same kind of link via the Stripe API for a custom amount, so the team isn't leaving the site to do this. Either way, the money lands in the same Stripe account as every other sale — no separate processor, no separate payout schedule.
+
+**Online-only. No print production.** Both products are digital-only for now — a cover placement is an image treatment on the digital issue page, not a physical print run. **Schema stays print-agnostic on purpose:** `magazine_issues` doesn't hardcode digital-only assumptions anywhere that would block adding print-specific fields (print run count, ISBN, distributor, ship date) later, when there's an actual print edition to model. See Growth Roadmap.
+
+**VERIFY §48.3** — Complete a test-mode Stripe payment via a manually generated Payment Link, confirm the resulting `orders` row, confirm `posts.meta.sponsored_order_id` (or the issue equivalent) links back to it, confirm nothing in the public-facing render distinguishes this post/cover from unpaid editorial content.
+
 ---
 
 # PART VII — DELIVERY
@@ -961,7 +992,7 @@ One branch, one pull request, one verification gate, one owner confirmation per 
 | 9 | `feat/admin-cms` | §45 roles, workflow, editor, media library, author profiles. | §45 |
 | 10 | `feat/article-experience` | §46 reading experience, `/story/[slug]`, `/authors/[slug]`. | §46 |
 | 11 | `feat/seo` | §47 structured data, metadata, sitemap. | §47 |
-| 12 | `feat/store` | §48 storefront, checkout, webhook, product admin. | §48 |
+| 12 | `feat/store` | §48 storefront, checkout, webhook, product admin. §48.2 ad placements. §48.3 paid editorial placements (write-up + cover). All three share one Stripe integration. | §48 · §48.2 · §48.3 |
 | 13 | `feat/interior-pages` | About, Submit (with admin queue), Contact, Issues archive, category indexes, Opportunities and Festival listing pages. | §40 · §41 |
 
 Phase 4 carries the highest risk and visibility. Phase 9 unblocks the editorial team — consider prioritizing it earlier if contributors are waiting to produce content.
@@ -1074,7 +1105,7 @@ A PR with a failing CI check or an unaddressed failing assertion is not ready fo
 
 **Escalate rather than assume:** ticketing beyond a simple order code · which transactional email provider (required before Phase 12, not optional) · multi-item cart necessity · Instagram API access · legal page content for §38's Legal column — draft honest placeholder text, but the owner must review before Phase 12, same as transactional email.
 
-**Resolved — do not re-raise:** mobile video delivery (§6.1) · zero-404 during phased delivery (§8) · spotlight/fresh-face disambiguation and all other placement questions (§44) · Set Life 100 data model (§44 `honorees`) · CMS access model — one shared login, flat access, no roles, no approval workflow (§2, §44, §45) · Vercel Pro upgrade — declined, staying on Hobby permanently, budget constraint (§5) · Vercel deploy-identity block — resolved structurally by the shared GitHub login (§5), not applicable to editorial contributors since publishing never touches git (§45).
+**Resolved — do not re-raise:** mobile video delivery (§6.1) · zero-404 during phased delivery (§8) · spotlight/fresh-face disambiguation and all other placement questions (§44) · Set Life 100 data model (§44 `honorees`) · CMS access model — one shared login, flat access, no roles, no approval workflow (§2, §44, §45) · Vercel Pro upgrade — declined, staying on Hobby permanently, budget constraint (§5) · Vercel deploy-identity block — resolved structurally by the shared GitHub login (§5), not applicable to editorial contributors since publishing never touches git (§45) · ad space timing — owner moved it up from the Growth Roadmap, building at Phase 12, direct-sold only (§48.2) · paid-placement disclosure — owner declined labeling, recorded as an accepted risk, not re-litigated (§48.3) · magazine format — online-only for now, print intended eventually, schema kept print-agnostic on purpose (§48.3, Growth Roadmap).
 
 **Out of scope — governed by the Growth Roadmap, do not implement:** user accounts · community and networking · industry directory · festival microsites · people/subject database · digital magazine reader · audience scoring · advertising inventory · any role, tier, or approval step in the CMS beyond the flat model in §45.
 
