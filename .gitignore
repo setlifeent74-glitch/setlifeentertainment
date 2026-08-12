@@ -12,6 +12,12 @@ public/assets/hero-video-web.mp4
 .next/
 next-env.d.ts
 
+# Env vars — real Supabase/Stripe keys live in .env.local, never committed.
+# .env.local.example documents the required vars with placeholder values.
+.env
+.env.local
+.env.*.local
+
 # Editor
 .vscode/
 
