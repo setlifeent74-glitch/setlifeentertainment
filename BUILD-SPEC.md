@@ -566,6 +566,15 @@ Ground `--off-white` · 120px vertical · **Gate: 4 spotlights**
 
 **VERIFY §27** — Rail scrolls by keyboard arrows without trapping page scroll. At 390px a partial card is visible at the right edge.
 
+**Phase 6 outcome — §22-§27.** All six sections built as real Server Components reading from Supabase (`lib/queries.ts`), each self-gating against `lib/gates.ts`'s thresholds — no shared "gate" abstraction imposed on them beyond that shared minimum constant, since each section's own fetch-and-check is simpler than routing through a generic renderer. The five pre-redesign placeholder homepage sections (stat strip, "Latest Cover Stories," "Why Set Life," pull quote, CTA band — none of them part of this spec's §22-§38 taxonomy) are removed from `app/page.tsx`; the homepage now composes exactly Hero → §17.1 → the gated §22-§27 sequence, matching §9's intent directly.
+
+**Real bugs found and fixed, not just designed around:**
+- **Nested `<a>` hydration error.** §22's byline (linking to `/authors/[slug]`) was originally nested inside the primary card's own link (to `/story/[slug]`) — invalid HTML, and a real client/server hydration mismatch in the browser, not just a linter complaint. Fixed by making the card a non-link container with two sibling links.
+- **Subject name vs. byline author, resolved once.** §24/§26/§27 all feature a *subject* (the crew member, the rising talent) who is a different person from the *author* (the byline writer, per `authors`). Early passes used `post.authors.name` for the featured name — displaying the writer instead of the profiled person. Standardized on the same convention BUILD-SPEC.md §44/§45's amendment already established for spotlight posts: `posts.title` is the subject's name, `dek` carries headline-style description, `meta.department`/`meta.role_line` carry the job title/credits line. Applied consistently across §24, §26, and §27 — not just spotlight.
+- **`scroll-snap-type` silently defeats programmatic smooth scrolling.** §27's keyboard-arrow handler called `element.scrollBy({ behavior: 'smooth' })` on the rail — confirmed directly in a real browser that this is a no-op when `scroll-snap-type` is set on the same element (`behavior: 'instant'` works correctly; `'smooth'` never moves the scroll position at all, no error, no console warning). Native touch/mouse-drag scrolling is unaffected — only the CSSOM smooth-scroll API conflicts with snap. Switched the keyboard handler to `instant`.
+
+**Deferred, documented inline in tests:** VERIFY §9's full homepage-composition check (all gates below threshold → only Hero/Newsletter/Footer render) still can't run in full — §37 Newsletter is Phase 8 scope. What Phase 6 *can* prove now, it does: `tests/e2e/homepage-editorial.spec.ts` asserts the real met/unmet mix `supabase/seed.sql` produces (§22/§23/§26/§27 met, §24/§25 unmet) renders with zero gaps and zero console errors — the same mechanism, just not yet the full section list.
+
 ## §28 Now in Production
 
 Ground `--off-white` · 130px vertical · **Gate: 3 entries**

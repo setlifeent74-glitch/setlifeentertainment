@@ -27,6 +27,12 @@ export const SECTION_GATES = {
 
 export type SectionGateId = keyof typeof SECTION_GATES;
 
+/** Age in days of an ISO timestamp, as of now. Kept out of any component
+ * body — `Date.now()` there trips the react-hooks/purity lint rule. */
+export function ageInDays(iso: string): number {
+  return (Date.now() - new Date(iso).getTime()) / 86_400_000;
+}
+
 export type GateStatus = {
   id: SectionGateId;
   label: string;
@@ -74,7 +80,7 @@ export async function getSectionGateStatuses(): Promise<GateStatus[]> {
       .limit(1)
       .maybeSingle();
     if (newest?.published_at) {
-      const ageDays = (Date.now() - new Date(newest.published_at).getTime()) / 86_400_000;
+      const ageDays = ageInDays(newest.published_at);
       if (ageDays > SECTION_GATES.call_sheet.staleAfterDays) {
         callSheetNote = `Newest item is ${Math.floor(ageDays)} days old — exceeds the ${SECTION_GATES.call_sheet.staleAfterDays}-day staleness limit.`;
       }

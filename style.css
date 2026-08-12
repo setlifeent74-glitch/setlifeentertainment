@@ -1007,3 +1007,347 @@ footer.site-footer{
 @media (min-width: 768px){
   .nav-mobile-panel{ display: none; }
 }
+
+/* ==================================================================
+   PHASE 6 — HOMEPAGE EDITORIAL (§22-§27)
+   ================================================================== */
+
+/* Shared once-only scroll reveal — sections opt in per-element via
+   [data-reveal] descendants; base state hidden, .is-in-view (added by
+   ScrollReveal.tsx) plays the transition. */
+.today-section, .current-issue-section, .spotlight-section,
+.call-sheet-section, .btl-section, .fresh-faces-section{
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 700ms var(--motion-ease), transform 700ms var(--motion-ease);
+}
+.today-section.is-in-view, .current-issue-section.is-in-view, .spotlight-section.is-in-view,
+.call-sheet-section.is-in-view, .btl-section.is-in-view, .fresh-faces-section.is-in-view{
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce){
+  .today-section, .current-issue-section, .spotlight-section,
+  .call-sheet-section, .btl-section, .fresh-faces-section{
+    transition: opacity 200ms linear !important;
+    transform: none !important;
+  }
+}
+
+/* ---------- §22 Today on Set Life ---------- */
+.today-section{
+  background: var(--off-white);
+  color: var(--black);
+  padding: var(--space-section-desktop) 0;
+}
+.today-header{
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-24);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-48);
+}
+.today-header .headline{ font-size: clamp(32px, 4vw, 60px); color: var(--black); }
+.today-date{
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.12em;
+  font-size: 13px;
+  color: var(--gray);
+  text-transform: uppercase;
+}
+.today-view-all{
+  margin-left: auto;
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.1em;
+  font-size: 13px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--black);
+  padding-bottom: 2px;
+}
+.today-grid{
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: var(--space-48);
+}
+.today-primary{ color: inherit; display: block; }
+.today-primary > a{ color: inherit; display: block; }
+.today-primary-image{
+  position: relative;
+  aspect-ratio: 3/2;
+  background: var(--black-2);
+  overflow: hidden;
+}
+.today-primary-image img{ object-fit: cover; }
+.today-primary-headline{
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.02;
+  margin: var(--space-16) 0 var(--space-8);
+}
+.today-byline{ color: var(--gray); font-size: 14px; }
+.today-byline a{ color: var(--black); border-bottom: 1px solid var(--gray); }
+.today-secondary{ display: flex; flex-direction: column; gap: var(--space-24); }
+.today-secondary-item{
+  display: block;
+  color: inherit;
+  padding-bottom: var(--space-24);
+  border-bottom: 1px solid var(--line);
+}
+.today-secondary-item:last-child{ border-bottom: none; }
+.today-secondary-category{
+  display: block;
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.today-secondary-item h4{
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: 20px;
+  margin: 0 0 6px;
+}
+.today-secondary-meta{ font-size: 13px; color: var(--gray); }
+
+/* ---------- §23 Current Magazine Issue ---------- */
+.current-issue-section{
+  position: relative;
+  background: var(--black);
+  padding: var(--space-section-desktop) 0;
+  overflow: hidden;
+  min-height: 850px;
+  display: flex;
+  align-items: center;
+}
+.current-issue-numeral{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-anton), sans-serif;
+  font-size: clamp(300px, 34vw, 500px);
+  color: var(--off-white);
+  opacity: 0.05;
+  line-height: 1;
+  pointer-events: none;
+  transform: translateY(var(--parallax-y, 0px));
+  user-select: none;
+}
+.current-issue-grid{
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 480px 1fr;
+  gap: var(--space-64);
+  align-items: center;
+}
+.current-issue-cover{
+  position: relative;
+  aspect-ratio: 3/4;
+  width: 100%;
+  max-width: 480px;
+  background: var(--black-2);
+}
+.current-issue-cover img{ object-fit: cover; }
+.current-issue-details .eyebrow{ font-size: 14px; }
+.current-issue-meta{ color: var(--gray); font-size: 14px; margin: 10px 0; }
+.current-issue-title{ font-size: clamp(36px, 4vw, 64px); color: var(--off-white); margin: var(--space-16) 0; }
+.current-issue-summary{ color: var(--gray); max-width: 480px; }
+.current-issue-cta{ display: flex; gap: var(--space-16); margin-top: var(--space-32); flex-wrap: wrap; }
+
+/* ---------- §24 Indie Spotlight ---------- */
+.spotlight-section{
+  background: var(--off-white);
+  color: var(--black);
+  padding: var(--space-section-desktop) var(--space-24);
+  display: grid;
+  grid-template-columns: 58fr 42fr;
+  gap: var(--space-48);
+  align-items: center;
+  min-height: 850px;
+}
+.spotlight-portrait{
+  position: relative;
+  aspect-ratio: 4/5;
+  background: var(--black-2);
+  overflow: hidden;
+}
+.spotlight-portrait img{ object-fit: cover; }
+.spotlight-bg-word{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-anton), sans-serif;
+  font-size: clamp(48px, 8vw, 110px);
+  color: var(--off-white);
+  opacity: 0.12;
+  z-index: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.spotlight-bg-word--top{ top: -0.1em; }
+.spotlight-bg-word--bottom{ bottom: -0.1em; }
+.spotlight-copy{ max-width: 560px; }
+.spotlight-name{ font-size: clamp(48px, 6vw, 84px); margin: var(--space-12) 0 var(--space-8); }
+.spotlight-profession{ font-size: 20px; color: var(--black); margin-bottom: var(--space-16); }
+.spotlight-quote{
+  font-family: var(--font-anton), sans-serif;
+  font-size: clamp(24px, 2.4vw, 34px);
+  line-height: 1.15;
+  margin: 0 0 var(--space-24);
+  text-transform: none;
+}
+.spotlight-cta{ display: flex; gap: var(--space-16); }
+
+/* ---------- §25 The Call Sheet ---------- */
+.call-sheet-section{ background: var(--black); padding: var(--space-96) 0; }
+.call-sheet-header{ margin-bottom: var(--space-32); }
+.call-sheet-header .headline{ font-size: clamp(28px, 3.4vw, 44px); }
+.call-sheet-header p{ color: var(--gray); letter-spacing: 0.08em; font-size: 13px; margin-top: 6px; }
+.call-sheet-list{ list-style: none; margin: 0; padding: 0; }
+.call-sheet-row{ border-bottom: 1px solid var(--line); }
+.call-sheet-row a{
+  display: grid;
+  grid-template-columns: 140px 1fr auto auto;
+  align-items: center;
+  gap: var(--space-16);
+  min-height: 96px;
+  color: var(--off-white);
+  transition: transform 220ms var(--motion-ease);
+}
+.call-sheet-row a:hover .call-sheet-headline{ transform: translateX(10px); }
+.call-sheet-category{
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+.call-sheet-category--gold{ color: var(--gold); }
+.call-sheet-category--red{ color: var(--red); }
+.call-sheet-headline{
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(18px, 1.6vw, 22px);
+  display: inline-block;
+  transition: transform 220ms var(--motion-ease);
+}
+.call-sheet-time{ color: var(--gray); font-size: 13px; white-space: nowrap; }
+.call-sheet-arrow{ color: var(--gray); }
+
+/* ---------- §26 Below the Line ---------- */
+.btl-section{ background: var(--black-2); padding: var(--space-section-desktop) 0; }
+.btl-header{ margin-bottom: var(--space-48); text-align: center; }
+.btl-header .headline{ font-size: clamp(40px, 5.6vw, 82px); }
+.btl-header p{ color: var(--gray); margin-top: 10px; letter-spacing: 0.06em; }
+.btl-mosaic{
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 140px;
+  grid-auto-flow: dense;
+  gap: var(--space-12);
+}
+.btl-tile{
+  position: relative;
+  display: block;
+  background: var(--black-3);
+  overflow: hidden;
+}
+.btl-tile img{ object-fit: cover; transition: transform 400ms var(--motion-ease); }
+.btl-tile:hover img{ transform: scale(1.04); }
+.btl-tile-overlay{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-16);
+  background: linear-gradient(180deg, transparent 40%, rgba(10,10,10,0.85) 100%);
+}
+.btl-department{
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: var(--gold);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 220ms var(--motion-ease), transform 220ms var(--motion-ease);
+  margin-bottom: 4px;
+}
+.btl-tile:hover .btl-department, .btl-tile:focus-visible .btl-department{ opacity: 1; transform: translateY(0); }
+.btl-name{
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(16px, 1.6vw, 22px);
+  color: var(--off-white);
+}
+
+/* ---------- §27 Fresh Faces ---------- */
+.fresh-faces-section{ background: var(--off-white); color: var(--black); padding: var(--space-120) 0; }
+.fresh-faces-header{ margin-bottom: var(--space-32); text-align: left; }
+.fresh-faces-header .headline{ font-size: clamp(36px, 4.6vw, 76px); color: var(--black); }
+.fresh-faces-header p{ color: var(--gray); margin-top: 8px; }
+.fresh-faces-rail{
+  display: flex;
+  gap: var(--space-24);
+  overflow-x: auto;
+  padding: 0 var(--space-24) var(--space-16);
+  scroll-snap-type: x proximity;
+}
+.fresh-faces-rail:focus-visible{ outline: 2px solid var(--gold); outline-offset: 4px; }
+.fresh-face-card{
+  flex: 0 0 300px;
+  scroll-snap-align: start;
+  color: inherit;
+  display: block;
+}
+.fresh-face-image{
+  position: relative;
+  width: 300px;
+  height: 440px;
+  background: var(--black-2);
+  overflow: hidden;
+  transition: transform 280ms var(--motion-ease);
+}
+.fresh-face-image img{ object-fit: cover; transition: transform 280ms var(--motion-ease); }
+.fresh-face-card:hover .fresh-face-image img{ transform: scale(1.025); }
+.fresh-face-name{
+  display: block;
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: 20px;
+  margin-top: var(--space-12);
+}
+.fresh-face-card:hover .fresh-face-name{ text-decoration: underline; text-underline-offset: 4px; }
+.fresh-face-credits{ display: block; color: var(--gray); font-size: 13px; margin-top: 2px; }
+
+/* ---------- §22-§27 mobile ---------- */
+@media (max-width: 767px){
+  .today-grid{ grid-template-columns: 1fr; gap: var(--space-32); }
+  .today-primary-headline{ font-size: 32px; }
+  .today-secondary{ gap: var(--space-16); }
+
+  .current-issue-section{ min-height: 0; padding: var(--space-section-mobile) 0; }
+  .current-issue-grid{ grid-template-columns: 1fr; text-align: center; gap: var(--space-32); }
+  .current-issue-cover{ max-width: 80vw; margin: 0 auto; }
+  .current-issue-cta{ justify-content: center; }
+  .current-issue-numeral{ font-size: 42vw; }
+
+  .spotlight-section{ grid-template-columns: 1fr; min-height: 0; padding: var(--space-section-mobile) var(--space-16); }
+  .spotlight-name{ font-size: clamp(44px, 12vw, 56px); }
+
+  .call-sheet-section{ padding: var(--space-64) 0; }
+  .call-sheet-row a{ grid-template-columns: 90px 1fr auto; min-height: 76px; }
+  .call-sheet-headline{ font-size: 18px; }
+  .call-sheet-time{ display: none; }
+
+  .btl-mosaic{ grid-template-columns: 1fr; grid-auto-rows: 320px; }
+  .btl-tile{ grid-column: span 1 !important; grid-row: span 1 !important; }
+
+  .fresh-face-card{ flex-basis: 78vw; }
+  .fresh-face-image{ width: 100%; height: 62vw; max-height: 420px; }
+}

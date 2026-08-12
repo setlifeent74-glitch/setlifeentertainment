@@ -118,6 +118,89 @@ export async function getLiveOpportunities(): Promise<PostWithAuthor[]> {
   return (data ?? []) as PostWithAuthor[];
 }
 
+/** §22 Today on Set Life — placement=today, newest first. */
+export async function getTodayPosts(): Promise<PostWithAuthor[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "today")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(6);
+  return (data ?? []) as PostWithAuthor[];
+}
+
+/** §23 Current Magazine Issue. */
+export async function getCurrentIssue(): Promise<MagazineIssue | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("magazine_issues")
+    .select("*")
+    .eq("is_current", true)
+    .limit(1)
+    .maybeSingle();
+  return data;
+}
+
+/** §24 Indie Spotlight — placement=spotlight_feature, the single deep profile. */
+export async function getSpotlightFeature(): Promise<PostWithAuthor | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "spotlight_feature")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data as PostWithAuthor | null;
+}
+
+/**
+ * §25 The Call Sheet — placement=call_sheet, newest first. Caller checks
+ * the staleness gate (§9: renders only if the newest item is within 14
+ * days) against the first row's published_at, same source of truth
+ * lib/gates.ts uses for the admin status page.
+ */
+export async function getCallSheetPosts(): Promise<PostWithAuthor[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "call_sheet")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(8);
+  return (data ?? []) as PostWithAuthor[];
+}
+
+/** §26 Below the Line — placement=below_the_line, newest first. */
+export async function getBelowTheLinePosts(): Promise<PostWithAuthor[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "below_the_line")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(6);
+  return (data ?? []) as PostWithAuthor[];
+}
+
+/** §27 Fresh Faces — placement=fresh_face, newest first. */
+export async function getFreshFacesPosts(): Promise<PostWithAuthor[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "fresh_face")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(8);
+  return (data ?? []) as PostWithAuthor[];
+}
+
 /**
  * §16 link map — minimal search scope: a single ilike query against
  * published posts and products, no filters, no ranking, no predictive
