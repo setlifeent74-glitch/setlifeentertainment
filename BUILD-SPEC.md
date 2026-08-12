@@ -191,7 +191,12 @@ Every entity receives a permanent, human-readable, indexable URL. This decision 
 /festivals                    Festival index
 /shop                         Store index
 /shop/[slug]                  Product detail
+/search                       Search — v1 scope, see §16
 /about · /submit · /contact   Static
+/privacy · /terms ·
+/editorial-policy ·
+/review-policy ·
+/accessibility                Static — required before Phase 12, see §38
 ```
 
 Slugs are generated from titles, editable in the CMS, and immutable once published. Changing a published slug issues a 301 from the old path.
@@ -353,7 +358,27 @@ Positioned **inside** the hero, layered over the video. No separate bar above th
 - Height 72px · padding 20px · logo left · search + menu icons right
 - Full-screen menu: `100vw × 100dvh`, `--black`, 30–38px editorial links, generous rhythm, utility links below
 
-**VERIFY §16** — At 1440 and 390: screenshot at scroll 0 — transparent nav over video, no opaque bar. At scroll 200px — opaque nav, reduced height. Tab all links — visible gold focus ring on each. Open mega menu by keyboard — opens, traps focus, closes on `Escape`. Assert every nav label in the scrolled state measures ≥ 4.5:1 against the nav ground. Assert active state is distinguishable with color disabled (grayscale render) — the underline must carry it.
+**Link map — every nav and footer label resolved to an exact destination.** The taxonomy list in this section and the footer columns in §38 name labels without stating where they go. That ambiguity is resolved here, once, as the single source of truth for both.
+
+| Label | Destination | Note |
+|---|---|---|
+| Magazine | `/issues` | Existing route, §8. |
+| Film & TV | `/category/article` | General long-form editorial coverage — the broadest existing category, used as the default vertical for this label. Flagged as an editorial call, not a technical one: if "Film & TV" is meant to mean something more specific, correct the mapping before Phase 3. |
+| Spotlights | `/category/spotlight` | Covers both §24 and §27 content; the placement split (§44) only matters for homepage rendering, not the archive. |
+| Reviews | `/category/review` | Maps to §29 The Cut. |
+| Watch | `/category/video` | Maps to §30 The Screening Room. Previously unstated — this is the fix. |
+| Industry | Mega menu trigger, not a direct link | Opens the mega menu (below) containing Industry News, Opportunities, Festivals, Production — mirrors the footer's Industry column exactly, so the two surfaces stay in sync by construction. |
+| Industry News | `/category/news` | |
+| Opportunities | `/opportunities` | Existing route, §8. |
+| Festivals | `/festivals` | Existing route, §8. |
+| Production | `/category/production` | Maps to §28 Now in Production. |
+| Shop | `/shop` | Existing route, §8. Appears both in the main taxonomy and as a persistent right-side utility link — intentional, not a duplicate bug; commerce gets two paths to entry. |
+| Search | `/search` | **New, minimal scope for this build.** A single query against published `posts` and `products` (Supabase full-text or `ilike`), no filters, no predictive suggestions, no federation. This is deliberately smaller than Growth Roadmap item 1.3 (Universal Search) — that item is the scaled-up successor once the archive is large enough to need filtering and ranking, not a separate feature. Ship this now; the nav Search icon does not sit dead until 100+ posts exist. |
+| Submit | `/submit` | Existing static page. |
+
+**Legal footer column and Press — resolved in §38, not here.**
+
+**VERIFY §16** — At 1440 and 390: screenshot at scroll 0 — transparent nav over video, no opaque bar. At scroll 200px — opaque nav, reduced height. Tab all links — visible gold focus ring on each. Open mega menu by keyboard — opens, traps focus, closes on `Escape`. Assert every nav label in the scrolled state measures ≥ 4.5:1 against the nav ground. Assert active state is distinguishable with color disabled (grayscale render) — the underline must carry it. Assert every label in the link map table above resolves to its stated destination — no label may go to `#`, a 404, or an unstated route.
 
 ## §17 Hero — Full Viewport
 
@@ -676,14 +701,20 @@ Extend `footer.site-footer` · ground `--black-2`
 **Columns:**
 - **Explore** — Magazine · Film & TV · Spotlights · Reviews · Watch
 - **Industry** — Industry News · Opportunities · Festivals · Production
-- **Set Life** — About · Contact · Shop · Submit · Press
+- **Set Life** — About · Contact · Shop · Submit
 - **Legal** — Privacy · Terms · Editorial Policy · Review Policy · Accessibility
+
+Every label above resolves per the link map in §16. All five links share that single source of truth with the main nav.
+
+**Press — cut, not built.** The prior revision listed a Press link with no page behind it anywhere in this spec, no phase assignment, and no defined content. Rather than silently inventing scope, it's removed. If a press/media-kit page is actually wanted, it's a cheap add later — raise it and it gets a phase and a route like any other page.
+
+**Legal column — real pages required, content not written here.** `/privacy`, `/terms`, `/editorial-policy`, `/review-policy`, `/accessibility` are now real routes (§8), not decorative footer text. **Required before Phase 12** (Stripe checkout) ships — a commerce site taking payment needs a live privacy policy and terms at minimum; treat this with the same weight as the transactional-email dependency in §48. The actual legal text is explicitly **not** Claude Code's or this spec's to author — draft placeholder-honest content (what data is collected, how refunds work, how corrections are handled) and flag clearly to the owner that it needs real review before Phase 12 launch, not AI-generated legal language shipped unreviewed.
 
 **Bottom:** copyright · social icons. **Only active channels.** Instagram is live; do not render placeholder icons linking nowhere.
 
 Retain "Powered by Hughes Technologies" in `--gold`.
 
-**VERIFY §38** — Every footer link resolves to a built route or a designed interim page (§8 carve-out). Zero raw 404s. Zero `href="#"` placeholders at any phase. At Phase 13, zero interim pages remain.
+**VERIFY §38** — Every footer link resolves to a built route or a designed interim page (§8 carve-out). Zero raw 404s. Zero `href="#"` placeholders at any phase. At Phase 13, zero interim pages remain. Assert all five Legal routes return real content, not a 404 or interim page, before the Phase 12 gate opens.
 
 ---
 
@@ -1041,7 +1072,7 @@ A PR with a failing CI check or an unaddressed failing assertion is not ready fo
 11. **Every mechanically testable VERIFY assertion becomes a CI test and stays green.** §49.1. The §43 composition test is owner judgment and is exempt.
 12. **Every VERIFY block passes before its phase closes.**
 
-**Escalate rather than assume:** ticketing beyond a simple order code · which transactional email provider (required before Phase 12, not optional) · multi-item cart necessity · Instagram API access.
+**Escalate rather than assume:** ticketing beyond a simple order code · which transactional email provider (required before Phase 12, not optional) · multi-item cart necessity · Instagram API access · legal page content for §38's Legal column — draft honest placeholder text, but the owner must review before Phase 12, same as transactional email.
 
 **Resolved — do not re-raise:** mobile video delivery (§6.1) · zero-404 during phased delivery (§8) · spotlight/fresh-face disambiguation and all other placement questions (§44) · Set Life 100 data model (§44 `honorees`) · CMS access model — one shared login, flat access, no roles, no approval workflow (§2, §44, §45) · Vercel Pro upgrade — declined, staying on Hobby permanently, budget constraint (§5) · Vercel deploy-identity block — resolved structurally by the shared GitHub login (§5), not applicable to editorial contributors since publishing never touches git (§45).
 
