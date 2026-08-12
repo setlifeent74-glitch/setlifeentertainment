@@ -9,6 +9,7 @@
    Fonts @import diagnosed in Phase 0 (BUILD-SPEC.md §49.2). */
 
 :root{
+  /* §4 Brand Constants — palette. VERIFY §4: zero hardcoded hex outside this table. */
   --black: #0a0a0a;
   --black-2: #131313;
   --black-3: #1c1c1c;
@@ -20,6 +21,51 @@
   --gray: #8a8a86;
   --line: #2a2a2a;
   --max-w: 1240px;
+
+  /* §12 Type Scale — Phase 3 (BUILD-SPEC.md §49): tokens only, not yet
+     applied to this file's existing (pre-redesign) type sizes. Phase 4+
+     sections consume these directly; retrofitting legacy markup onto them
+     now would either force a visual change on content about to be
+     replaced, or misrepresent what these roles mean. Each is a fluid
+     clamp() between the upper bound of the mobile and desktop ranges
+     (extending §13's "use the upper bound of every range" principle),
+     scaled between the §10 primary viewports (390 mobile / 1440 desktop).
+     "Utility" has no distinct mobile value in §12, so it's a flat size. */
+  --type-hero-display: clamp(64px, 41.71px + 5.714vw, 124px);
+  --type-editorial-h1: clamp(58px, 43.89px + 3.619vw, 96px);
+  --type-section-h2: clamp(48px, 37.6px + 2.667vw, 76px);
+  --type-feature-headline: clamp(38px, 31.31px + 1.714vw, 56px);
+  --type-card-headline: clamp(28px, 25.77px + 0.571vw, 34px);
+  --type-deck: clamp(18px, 16.51px + 0.381vw, 22px);
+  --type-body: clamp(18px, 17.63px + 0.095vw, 19px);
+  --type-metadata: clamp(13px, 12.63px + 0.095vw, 14px);
+  --type-utility: 13px;
+
+  /* §13 Spacing — the full scale, plus the two upper-bound section-padding
+     defaults ("Default major desktop section padding to 140px vertical,
+     mobile to 88px, unless a section states otherwise"). */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-96: 96px;
+  --space-120: 120px;
+  --space-160: 160px;
+  --space-section-desktop: 140px;
+  --space-section-mobile: 88px;
+
+  /* §14 Motion — duration classes and the required easing curve. No
+     elastic/bounce/overshoot (§14, §39). */
+  --motion-microinteraction: 220ms;
+  --motion-ui-transition: 350ms;
+  --motion-section-reveal: 900ms;
+  --motion-hero-sequence: 1800ms;
+  --motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 *, *::before, *::after{ box-sizing: border-box; }
@@ -51,7 +97,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 .wrap{
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 var(--space-24);
 }
 
 .headline, .display{
@@ -77,7 +123,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 .btn{
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-8);
   padding: 14px 28px;
   font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.12em;
@@ -133,7 +179,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   justify-content: center;
   gap: 30px;
   flex-wrap: wrap;
-  padding: 26px 24px;
+  padding: 26px var(--space-24);
   position: relative;
   z-index: 5;
 }
@@ -144,7 +190,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   text-transform: uppercase;
   color: var(--off-white);
   position: relative;
-  padding-bottom: 4px;
+  padding-bottom: var(--space-4);
   display: inline-block;
   transition: color 0.25s ease, transform 0.15s ease;
 }
@@ -168,7 +214,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   transform: scale(0.9);
   color: var(--red);
 }
-.top-nav a.nav-pulse{ animation: nav-pulse 0.35s ease; }
+.top-nav a.nav-pulse{ animation: nav-pulse var(--motion-ui-transition) ease; }
 @keyframes nav-pulse{
   0%{ transform: scale(1); }
   40%{ transform: scale(0.88); }
@@ -217,7 +263,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 }
 /* Intro copy now sits in normal flow directly under the video, not overlaid on it */
 .hero-intro{
-  padding: 76px 24px 64px;
+  padding: 76px var(--space-24) var(--space-64);
   text-align: center;
   border-bottom: 1px solid var(--line);
 }
@@ -245,7 +291,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-8);
 }
 .hero-scroll .bar{
   width: 1px; height: 34px;
@@ -271,7 +317,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0 0 4px;
+  padding: 0 0 0 var(--space-4);
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 .hero-play-affordance:hover{ border-color: var(--red); background: rgba(10,10,10,0.75); }
@@ -288,7 +334,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
      tests/e2e/hero-controls.spec.ts. */
   z-index: 6;
   display: flex;
-  gap: 8px;
+  gap: var(--space-8);
 }
 .hero-ctrl-btn{
   width: 34px; height: 34px;
@@ -318,6 +364,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 }
 
 /* ---------- Section headers ---------- */
+/* This rule predates the §13 spacing system and keeps its current 72px —
+   changing it to the token would be a real visual change, not a refactor.
+   New sections (Phase 4+) should use var(--space-section-desktop) /
+   var(--space-section-mobile) directly, matching §13's default major
+   desktop/mobile section padding, rather than hardcoding a new value. */
 .section{ padding: 72px 0; border-bottom: 1px solid var(--line); }
 .section-head{
   display: flex;
@@ -325,7 +376,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   justify-content: space-between;
   margin-bottom: 36px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--space-16);
 }
 .section-head h2{
   font-size: clamp(30px, 4vw, 46px);
@@ -417,7 +468,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 .cover-card.has-img .card-body{
   position: relative;
   z-index: 2;
-  padding: 16px;
+  padding: var(--space-16);
   width: 100%;
 }
 .cover-card.has-img .issue-no{
@@ -425,7 +476,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   top: 14px; left: 14px;
   z-index: 2;
   background: rgba(10,10,10,0.55);
-  padding: 4px 9px;
+  padding: var(--space-4) 9px;
   backdrop-filter: blur(2px);
 }
 
@@ -437,7 +488,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   border-bottom: 1px solid var(--line);
 }
 .stat{
-  padding: 30px 24px;
+  padding: 30px var(--space-24);
   border-right: 1px solid var(--line);
   text-align: center;
 }
@@ -488,7 +539,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   object-position: top center;
 }
 .two-col h3{ font-size: clamp(28px,3.4vw,40px); margin-bottom: 18px; }
-.two-col p{ color: var(--gray); margin-bottom: 16px; }
+.two-col p{ color: var(--gray); margin-bottom: var(--space-16); }
 
 /* ---------- Categories pills ---------- */
 .pill-row{ display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
@@ -537,14 +588,14 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   font-size: 13px;
   text-transform: uppercase;
   color: var(--gray);
-  margin-bottom: 8px;
+  margin-bottom: var(--space-8);
 }
 .field input, .field select, .field textarea{
   width: 100%;
   background: var(--black-2);
   border: 1px solid var(--line);
   color: var(--off-white);
-  padding: 14px 16px;
+  padding: 14px var(--space-16);
   font-family: var(--font-archivo), sans-serif;
   font-size: 15px;
 }
@@ -572,7 +623,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 footer.site-footer{
   background: var(--black-2);
   border-top: 1px solid var(--line);
-  padding: 56px 0 24px;
+  padding: 56px 0 var(--space-24);
 }
 .footer-grid{
   display: grid;
@@ -586,7 +637,7 @@ footer.site-footer{
   font-size: 13px;
   text-transform: uppercase;
   color: var(--gold);
-  margin: 0 0 16px;
+  margin: 0 0 var(--space-16);
 }
 .footer-grid ul{ list-style: none; padding: 0; margin: 0; }
 .footer-grid li{ margin-bottom: 10px; }
@@ -595,7 +646,7 @@ footer.site-footer{
 .footer-brand .logo{ display: flex; align-items: center; gap: 10px; }
 .footer-brand .logo img{ height: 26px; width: auto; display: block; }
 .footer-brand p{ color: var(--gray); font-size: 14px; max-width: 280px; margin-top: 14px; }
-.social-row{ display: flex; gap: 12px; margin-top: 18px; }
+.social-row{ display: flex; gap: var(--space-12); margin-top: 18px; }
 .social-row a{
   width: 36px; height: 36px;
   border: 1px solid var(--line);
@@ -629,8 +680,8 @@ footer.site-footer{
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 32px;
+  gap: var(--space-16);
+  margin-bottom: var(--space-32);
 }
 .search-box{
   display: flex;
@@ -654,7 +705,7 @@ footer.site-footer{
 .value-grid{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: var(--space-24);
 }
 .value-card{
   border: 1px solid var(--line);
@@ -678,7 +729,7 @@ footer.site-footer{
 .value-card p{ color: var(--gray); font-size: 14px; margin: 0; }
 
 /* ---------- Timeline (about) ---------- */
-.timeline{ border-left: 2px solid var(--line); padding-left: 32px; }
+.timeline{ border-left: 2px solid var(--line); padding-left: var(--space-32); }
 .tl-item{ margin-bottom: 36px; position: relative; }
 .tl-item::before{
   content: '';
@@ -689,13 +740,13 @@ footer.site-footer{
   border-radius: 50%;
 }
 .tl-item .eyebrow{ display: block; margin-bottom: 6px; }
-.tl-item h4{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 22px; margin: 0 0 8px; }
+.tl-item h4{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 22px; margin: 0 0 var(--space-8); }
 .tl-item p{ color: var(--gray); margin: 0; max-width: 520px; }
 
 /* ---------- CTA band ---------- */
 .cta-band{
   background: linear-gradient(120deg, var(--red-dark), var(--red));
-  padding: 64px 0;
+  padding: var(--space-64) 0;
   text-align: center;
 }
 .cta-band h2{
@@ -718,7 +769,7 @@ footer.site-footer{
   .stat-strip{ grid-template-columns: repeat(2, 1fr); }
   .footer-grid{ grid-template-columns: 1fr 1fr; }
   .value-grid{ grid-template-columns: 1fr; }
-  .top-nav{ gap: 18px; padding: 18px 16px; }
+  .top-nav{ gap: 18px; padding: 18px var(--space-16); }
   .top-nav a{ font-size: 12px; }
   .hero-controls{ bottom: 16px; right: 16px; }
 }
