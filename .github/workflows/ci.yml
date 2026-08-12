@@ -19,6 +19,24 @@ jobs:
 
       - run: npm ci
 
+      # Ephemeral local Supabase, not a shared remote project — CI stays
+      # fully reproducible per run and never needs real project credentials.
+      # `supabase start` applies supabase/migrations/*.sql and seed.sql
+      # automatically. The anon key/URL below are the fixed, publicly
+      # documented Supabase CLI local-dev defaults (same on every machine
+      # running `supabase start`), not a real secret.
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase and export env vars
+        run: |
+          supabase start
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$(supabase status -o env | grep '^API_URL=' | cut -d'"' -f2)"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$(supabase status -o env | grep '^ANON_KEY=' | cut -d'"' -f2)"
+          } >> "$GITHUB_ENV"
+
       - run: npm run build
 
       # `chromium` (the default install) is an open-source build without
@@ -49,6 +67,18 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase and export env vars
+        run: |
+          supabase start
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$(supabase status -o env | grep '^API_URL=' | cut -d'"' -f2)"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$(supabase status -o env | grep '^ANON_KEY=' | cut -d'"' -f2)"
+          } >> "$GITHUB_ENV"
 
       - run: npm run build
 
