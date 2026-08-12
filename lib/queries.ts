@@ -118,6 +118,37 @@ export async function getLiveOpportunities(): Promise<PostWithAuthor[]> {
   return (data ?? []) as PostWithAuthor[];
 }
 
+/**
+ * §16 link map — minimal search scope: a single ilike query against
+ * published posts and products, no filters, no ranking, no predictive
+ * suggestions. The scaled-up successor is Growth Roadmap 1.3.
+ */
+export async function searchContent(query: string): Promise<{ posts: PostWithAuthor[]; products: Product[] }> {
+  const trimmed = query.trim();
+  if (!trimmed) return { posts: [], products: [] };
+
+  const supabase = await createClient();
+  const like = `%${trimmed}%`;
+
+  const [{ data: posts }, { data: products }] = await Promise.all([
+    supabase
+      .from("posts")
+      .select("*, authors(*)")
+      .eq("status", "published")
+      .or(`title.ilike.${like},dek.ilike.${like}`)
+      .order("published_at", { ascending: false })
+      .limit(24),
+    supabase
+      .from("products")
+      .select("*")
+      .eq("published", true)
+      .ilike("name", like)
+      .limit(24),
+  ]);
+
+  return { posts: (posts ?? []) as PostWithAuthor[], products: products ?? [] };
+}
+
 /** §33: past festivals excluded or explicitly marked — excluded here. */
 export async function getUpcomingFestivals(): Promise<PostWithAuthor[]> {
   const supabase = await createClient();

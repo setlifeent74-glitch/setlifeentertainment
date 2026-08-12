@@ -1,15 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import NavLink from "./NavLink";
-
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/issues", label: "Issues" },
-  { href: "/about", label: "About" },
-  { href: "/submit", label: "Submit a Story" },
-  { href: "/contact", label: "Contact" },
-];
+import GlobalNav from "./GlobalNav";
 
 type NetworkInformation = { saveData?: boolean };
 
@@ -110,13 +102,7 @@ export default function HeroVideo({ saveDataHeader }: { saveDataHeader: boolean 
         ▶
       </button>
 
-      <nav className="top-nav top-nav--overlay">
-        {NAV_LINKS.map((link) => (
-          <NavLink key={link.href} href={link.href} active={link.href === "/"}>
-            {link.label}
-          </NavLink>
-        ))}
-      </nav>
+      <GlobalNav activePath="/" overlay />
 
       <div className="hero-controls">
         <button className="hero-ctrl-btn" id="heroRestartBtn" aria-label="Restart video" onClick={handleRestart}>

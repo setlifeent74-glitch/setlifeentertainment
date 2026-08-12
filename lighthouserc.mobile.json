@@ -6,7 +6,8 @@
         "http://127.0.0.1:4173/issues",
         "http://127.0.0.1:4173/about",
         "http://127.0.0.1:4173/submit",
-        "http://127.0.0.1:4173/contact"
+        "http://127.0.0.1:4173/contact",
+        "http://127.0.0.1:4173/search"
       ],
       "startServerCommand": "npm run start",
       "startServerReadyPattern": "Ready in",

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Anton, Bebas_Neue, Archivo } from "next/font/google";
-import Marquee from "@/components/Marquee";
+import ConditionalMarquee from "@/components/ConditionalMarquee";
 import SiteFooter from "@/components/SiteFooter";
 import "../style.css";
 
@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${anton.variable} ${bebasNeue.variable} ${archivo.variable}`}>
       <body>
-        <Marquee />
+        <ConditionalMarquee />
         {children}
         <SiteFooter />
       </body>

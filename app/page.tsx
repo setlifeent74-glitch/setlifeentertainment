@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import Image from "next/image";
 import HeroVideo from "@/components/HeroVideo";
+import HeroIntro from "@/components/HeroIntro";
 import { COVERS } from "@/lib/covers";
 
 const LATEST_SLUGS = ["elijah-lamar", "ebony-tates", "kaamel-diezel-hasaun", "asia-clark"];
@@ -15,28 +16,14 @@ export default async function HomePage() {
     <>
       <HeroVideo saveDataHeader={saveDataHeader} />
 
-      <section className="hero-intro">
-        <div className="wrap">
-          <p className="eyebrow">The Voice. The Culture. The Future.</p>
-          <h1 className="display">
-            SET LIFE
-            <br />
-            <span className="accent-red">ENTERTAINMENT</span>
-          </h1>
-          <p className="hero-sub">
-            Of indie actors &amp; filmmakers. We shine a spotlight on the indie film industry — celebrating rising
-            talent, untold stories, and the creatives building the future of cinema from the ground up.
-          </p>
-          <div className="hero-actions">
-            <Link href="/issues" className="btn btn-primary">
-              Read the Latest Issue
-            </Link>
-            <Link href="/submit" className="btn">
-              Submit Your Story
-            </Link>
-          </div>
-        </div>
-      </section>
+      <HeroIntro
+        eyebrow="The Voice. The Culture. The Future."
+        headlineLines={["SET LIFE", "ENTERTAINMENT"]}
+        accentLineIndex={1}
+        deck="Of indie actors & filmmakers. We shine a spotlight on the indie film industry — celebrating rising talent, untold stories, and the creatives building the future of cinema from the ground up."
+        primaryCta={{ href: "/issues", label: "Read the Latest Issue" }}
+        secondaryCta={{ href: "/submit", label: "Submit Your Story" }}
+      />
 
       <section
         className="stat-strip wrap"
