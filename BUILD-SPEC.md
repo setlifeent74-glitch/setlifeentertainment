@@ -795,7 +795,7 @@ This is a design review, deliberately subjective, and it is classified separatel
 Most editorial surfaces are one content type with a category discriminator. A single article editor drives all of them.
 
 **`posts`**
-`id` · `slug` (unique, immutable once published) · `title` · `dek` · `category` (enum below) · `placement` (enum below) · `body` (rich block content) · `hero_image_url` · `author_id` (FK → `authors`) · `status` (`draft` | `scheduled` | `published`) · `published_at` · `scheduled_for` · `featured` · `related_issue_id` (FK, nullable) · `seo_title` · `seo_description` · `og_image_url` · `reading_time` (derived on save) · `meta` (JSON — review score, opportunity deadline and compensation, festival dates, production status)
+`id` · `slug` (unique, immutable once published) · `title` · `dek` · `category` (enum below) · `placement` (enum below) · `body` (rich block content) · `hero_image_url` · `author_id` (FK → `authors`) · `status` (`draft` | `scheduled` | `published`) · `published_at` · `scheduled_for` · `featured` · `related_issue_id` (FK, nullable) · `seo_title` · `seo_description` · `og_image_url` · `reading_time` (derived on save) · `meta` (JSON — review score, opportunity deadline and compensation, festival dates, production status, **`role_line`** — a short subject title/role line for spotlight profiles, e.g. "Actress. Producer. Entrepreneur.")
 
 **`posts.category`** — what the piece *is*:
 `article` · `news` · `spotlight` · `review` · `opportunity` · `festival` · `below_the_line` · `production` · `video` · `behind_the_lens`
@@ -874,11 +874,14 @@ Sized for 5–9 distributed contributors sharing one login. Flat access — no r
 - Body copy
 - **Inline image upload via drag-and-drop, direct to Supabase Storage**, with required alt text
 - Pull quotes, inline galleries, video embeds
+- **Credits/Filmography list** — a titled, repeatable list of `title` + `year` (+ optional tag, e.g. genre) rows. Editable label, defaults to "Featured Projects." This is what renders the stacked title/year list on a cover-story spotlight (§24/§27) — a structured block, not free-form body copy, because it's read and reordered independently of the prose.
+- **Platform/streaming badges** — a multi-select row of known platform logos (Tubi, Prime Video, Amazon, Apple TV, YouTube, Roku, Fire TV, Samsung TV Plus, LG Channels — list is extensible without a code change, stored as a simple string array). Editable label, defaults to "Now Streaming On." Renders as a horizontal logo row, typically at the foot of a spotlight or news piece.
+- **Callout/feature box** — heading (+ optional icon) + bullet list, for sidebar-style fact boxes on News/Industry pieces (e.g. "Platform Features," "Content That Represents"). Reusable across any article, not spotlight-specific.
 - Output rendering on the public site in magazine article format — oversized headers opening sections, full-width image blocks, editorial rhythm
 
-A plain textarea does not satisfy this requirement.
+A plain textarea does not satisfy this requirement. **Everything needed to reproduce a cover-story spotlight or a structured news piece — name (`title`), role line (`meta.role_line`), tagline (`dek`), bio (`body`), credits list, pull quote, streaming badges, hero image — is achievable by a contributor through this editor with zero developer involvement per issue.**
 
-**VERIFY §45** — Log in with the one shared credential. From the section-tile dashboard, open a section (e.g. Fresh Faces), create a post with two section headers and one uploaded image, publish directly with no second-account approval step required, confirm it's live on the homepage in that section and at `/story/[slug]` with zero git commits and zero Vercel deployments triggered by the publish action. Edit it, confirm propagation. Unpublish, confirm removal. Assert `/admin` while logged out redirects to login with no content leakage. Assert revision history captures each save.
+**VERIFY §45** — Log in with the one shared credential. From the section-tile dashboard, open a section (e.g. Fresh Faces), create a post with two section headers and one uploaded image, publish directly with no second-account approval step required, confirm it's live on the homepage in that section and at `/story/[slug]` with zero git commits and zero Vercel deployments triggered by the publish action. Edit it, confirm propagation. Unpublish, confirm removal. Assert `/admin` while logged out redirects to login with no content leakage. Assert revision history captures each save. **Separately:** create a spotlight post using `role_line`, a credits list (3+ entries), a pull quote, and platform badges (2+ selected) — confirm all four render correctly on the public page in one pass, and confirm the credits list and badge row both render cleanly (no empty label, no broken layout) when left empty on a non-spotlight post.
 
 ## §46 Article Reading Experience
 
@@ -893,10 +896,12 @@ Long-form must be exceptional. This is where the magazine-format requirement is 
 - Share actions
 - **Related content** — related stories (same `category`, then same `author_id`, then most recent), and a next-article recommendation at the foot. **Not "related people"** — subjects are not modeled as entities in this build; only authors are. Subject profiles are Growth Roadmap 2.1 and are deliberately out of scope. Do not build a people entity to satisfy this line.
 - Inline video and gallery support
+- **Spotlight header block** — when `meta.role_line` is present, render it as a short all-caps line directly beneath the headline, above the dek. Absent on every category except spotlight; never render an empty role line.
+- **Credits list, platform badges, callout boxes** (§45) render in reading order wherever the contributor placed them in the block sequence — not pinned to a fixed position. An empty credits list or badge row (nothing selected) renders nothing, not an empty heading or placeholder — same zero-render discipline as §9's content gates.
 
 **Mobile:** body 16–18px minimum · image blocks full-width · progress indicator retained · share accessible without hover.
 
-**VERIFY §46** — Publish a 2,000-word article with three section headers, two images, one pull quote, one embed. Assert: correct rendering at 1440 and 390 · reading time accurate within 20% · progress indicator tracks scroll accurately · related content populates or hides cleanly when empty · headings form a valid `h1 → h2 → h3` hierarchy.
+**VERIFY §46** — Publish a 2,000-word article with three section headers, two images, one pull quote, one embed. Assert: correct rendering at 1440 and 390 · reading time accurate within 20% · progress indicator tracks scroll accurately · related content populates or hides cleanly when empty · headings form a valid `h1 → h2 → h3` hierarchy. **Separately:** publish a spotlight post with `role_line`, a credits list, and platform badges — assert correct rendering at 1440 and 390, and assert a non-spotlight article with none of these fields set renders with no visual trace of the feature (no empty role line, no empty list heading, no empty badge row).
 
 ## §47 SEO & Structured Data
 
