@@ -4,4 +4,5 @@ export const ROUTES = [
   { path: '/about', label: 'about' },
   { path: '/submit', label: 'submit' },
   { path: '/contact', label: 'contact' },
+  { path: '/search', label: 'search' },
 ];

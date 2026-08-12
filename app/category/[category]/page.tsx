@@ -44,7 +44,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
 
   return (
     <>
-      <TopNav active="/category" />
+      <TopNav active={`/category/${category}`} />
 
       <section className="page-header">
         <div className="wrap">
