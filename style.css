@@ -2127,3 +2127,208 @@ footer.site-footer{
 /* ---------- Plain form status text (Submit, Contact) ---------- */
 .form-success{ color: var(--gold); font-size: 16px; }
 .form-error{ color: var(--red); font-size: 14px; margin: 8px 0 0; }
+
+/* ================================
+   §46 Article Reading Experience
+================================= */
+@keyframes article-reveal{
+  from{ opacity: 0; transform: translateY(20px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+.article-header{
+  padding: 56px 0 40px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+.article-header .eyebrow{ animation: article-reveal var(--motion-section-reveal) var(--motion-ease) both; }
+.spotlight-role-line{
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--off-white);
+  font-size: 15px;
+  margin: 10px 0 0;
+  animation: article-reveal var(--motion-section-reveal) var(--motion-ease) 80ms both;
+}
+.article-headline{
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: var(--type-editorial-h1);
+  line-height: 0.95;
+  margin: 16px auto 0;
+  max-width: 900px;
+  animation: article-reveal var(--motion-section-reveal) var(--motion-ease) 160ms both;
+}
+.article-dek{
+  font-size: var(--type-deck);
+  color: var(--gray);
+  max-width: 640px;
+  margin: 20px auto 0;
+  animation: article-reveal var(--motion-section-reveal) var(--motion-ease) 260ms both;
+}
+.article-byline{
+  margin-top: 20px;
+  font-size: var(--type-metadata);
+  color: var(--gray);
+  animation: article-reveal var(--motion-section-reveal) var(--motion-ease) 340ms both;
+}
+
+.article-hero-image{
+  width: 100%;
+  max-height: 720px;
+  object-fit: cover;
+  display: block;
+}
+
+.article-layout{ display: flex; justify-content: center; }
+.article-body{
+  width: 100%;
+  max-width: 760px;
+  padding: var(--space-64) 0;
+  font-size: var(--type-body);
+  line-height: 1.75;
+}
+.article-body p{ margin: 0 0 var(--space-24); }
+.article-body ul, .article-body ol{ margin: 0 0 var(--space-24); padding-left: 1.4em; }
+.article-body li{ margin-bottom: var(--space-8); }
+
+.article-section-header{
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  line-height: 1;
+  margin: var(--space-64) 0 var(--space-24);
+}
+h2.article-section-header{ font-size: var(--type-feature-headline); }
+h3.article-section-header{ font-size: var(--type-card-headline); }
+
+.article-pull-quote{
+  border: none;
+  border-left: 3px solid var(--gold);
+  margin: var(--space-48) 0;
+  padding: 4px 0 4px var(--space-24);
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(28px, 3vw, 38px);
+  line-height: 1.15;
+  color: var(--off-white);
+}
+
+.article-image-block{
+  margin: var(--space-48) 0;
+}
+.article-image-block img{ width: 100%; height: auto; display: block; }
+.article-image-block figcaption{
+  font-size: var(--type-metadata);
+  color: var(--gray);
+  margin-top: var(--space-8);
+  text-align: center;
+}
+
+.article-video-embed{ margin: var(--space-48) 0; }
+.article-video-embed video{ width: 100%; display: block; background: var(--black-2); }
+
+/* ---------- Credits list, platform badges, callout box (§45/§46) ---------- */
+.credits-list{ margin: var(--space-48) 0; border-top: 1px solid var(--line); padding-top: var(--space-24); }
+.credits-list ul{ list-style: none; margin: var(--space-16) 0 0; padding: 0; }
+.credits-list li{
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: var(--space-12) 0;
+  border-bottom: 1px solid var(--line);
+}
+.credits-title{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 18px; }
+.credits-meta{ color: var(--gray); font-size: var(--type-metadata); white-space: nowrap; }
+
+.platform-badges{ margin: var(--space-48) 0; border-top: 1px solid var(--line); padding-top: var(--space-24); }
+.platform-badges ul{ list-style: none; margin: var(--space-16) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-12); }
+.platform-badges li{
+  border: 1px solid var(--line);
+  padding: var(--space-8) var(--space-16);
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: var(--gray);
+}
+
+.callout-box{
+  margin: var(--space-48) 0;
+  background: var(--black-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--red);
+  padding: var(--space-24);
+}
+.callout-heading{
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 16px;
+  color: var(--off-white);
+  margin: 0 0 var(--space-12);
+}
+.callout-box ul{ margin: 0; padding-left: 1.2em; }
+.callout-box li{ margin-bottom: var(--space-8); color: var(--gray); }
+
+/* ---------- Reading progress ---------- */
+.reading-progress{
+  position: sticky;
+  top: 0;
+  height: 3px;
+  background: var(--line);
+  z-index: 20;
+}
+.reading-progress-bar{
+  height: 100%;
+  width: 100%;
+  background: var(--gold);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* ---------- Share actions ---------- */
+.share-actions{
+  margin-top: var(--space-48);
+  padding-top: var(--space-24);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+}
+
+/* ---------- Related content ---------- */
+.related-content{ border-top: 1px solid var(--line); }
+.related-content .cover-grid{ margin-top: var(--space-24); }
+.next-article{
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin-top: var(--space-48);
+  padding: var(--space-32);
+  background: var(--black-2);
+  border: 1px solid var(--line);
+  text-align: center;
+}
+.next-article-title{
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: var(--type-card-headline);
+  color: var(--off-white);
+}
+.next-article:hover .next-article-title{ color: var(--gold); }
+
+@media (max-width: 767px){
+  .article-header{ padding: 40px 0 28px; }
+  .article-body{ padding: var(--space-section-mobile) 0; font-size: 16px; }
+  .article-hero-image{ max-height: 420px; }
+  .credits-list li{ flex-direction: column; gap: 4px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .article-header .eyebrow, .spotlight-role-line, .article-headline, .article-dek, .article-byline{
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

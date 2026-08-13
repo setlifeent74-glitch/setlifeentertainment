@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { readingTimeFrom } from "@/lib/tiptap-text";
 import type { Database, Json } from "@/lib/supabase/types";
 
 type PostInsert = Database["public"]["Tables"]["posts"]["Insert"];
@@ -31,12 +32,6 @@ export type SavePostInput = {
   seoTitle: string;
   seoDescription: string;
 };
-
-function readingTimeFrom(body: Json): number {
-  const text = JSON.stringify(body ?? "");
-  const words = text.split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(words / 200));
-}
 
 /** §45 — revision history captures every save, whether it's a new draft or an edit. */
 async function recordRevision(postId: string, title: string, body: Json, editedBy: string) {

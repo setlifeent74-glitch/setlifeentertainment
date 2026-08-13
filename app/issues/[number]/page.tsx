@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import TopNav from "@/components/TopNav";
+import JsonLd from "@/components/JsonLd";
 import { getIssueByNumber } from "@/lib/queries";
+import { creativeWorkJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
+import { getSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata({
   params,
@@ -12,7 +15,20 @@ export async function generateMetadata({
   if (!Number.isInteger(issueNumber)) return {};
   const issue = await getIssueByNumber(issueNumber);
   if (!issue) return {};
-  return { title: `Issue ${issue.issue_number}: ${issue.title} — Set Life Entertainment` };
+  const title = `Issue ${issue.issue_number}: ${issue.title} — Set Life Entertainment`;
+  const url = `${getSiteUrl()}/issues/${issue.issue_number}`;
+  return {
+    title,
+    description: issue.summary ?? undefined,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description: issue.summary ?? undefined,
+      url,
+      type: "article",
+      images: issue.cover_image_url ? [{ url: issue.cover_image_url }] : undefined,
+    },
+  };
 }
 
 export default async function IssuePage({ params }: { params: Promise<{ number: string }> }) {
@@ -23,9 +39,20 @@ export default async function IssuePage({ params }: { params: Promise<{ number: 
   const issue = await getIssueByNumber(issueNumber);
   if (!issue) notFound();
 
+  const siteUrl = getSiteUrl();
+  const url = `${siteUrl}/issues/${issue.issue_number}`;
+
   return (
     <>
       <TopNav active="/issues" />
+      <JsonLd data={creativeWorkJsonLd(issue, url)} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", url: siteUrl },
+          { name: "Magazine", url: `${siteUrl}/issues` },
+          { name: issue.title, url },
+        ])}
+      />
 
       <section className="page-header">
         <div className="wrap">

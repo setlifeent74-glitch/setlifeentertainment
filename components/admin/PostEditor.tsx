@@ -5,6 +5,7 @@ import { useState } from "react";
 import TiptapEditor from "./TiptapEditor";
 import MetaFieldsPanel, { type MetaValue } from "./MetaFieldsPanel";
 import HeroImageUpload from "./HeroImageUpload";
+import CalloutField, { type Callout } from "./CalloutField";
 import { savePost, publishPost, unpublishPost, deletePost } from "@/app/actions/posts";
 import type { Post, Author, PostCategory } from "@/lib/queries";
 import type { Database, Json } from "@/lib/supabase/types";
@@ -232,6 +233,11 @@ export default function PostEditor({
         </div>
 
         <MetaFieldsPanel category={category} meta={meta} onChange={setMeta} />
+
+        <CalloutField
+          value={meta.callout as Callout | undefined}
+          onChange={(callout) => setMeta({ ...meta, callout })}
+        />
 
         <fieldset className="admin-meta-panel">
           <legend>SEO</legend>

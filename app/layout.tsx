@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Anton, Bebas_Neue, Archivo } from "next/font/google";
 import ConditionalMarquee from "@/components/ConditionalMarquee";
 import ConditionalFooter from "@/components/ConditionalFooter";
+import JsonLd from "@/components/JsonLd";
+import { organizationJsonLd } from "@/lib/structured-data";
+import { getSiteUrl } from "@/lib/site-url";
 import "../style.css";
 
 const anton = Anton({
@@ -27,6 +30,7 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   title: "Set Life Entertainment — The Voice. The Culture. The Future.",
   description:
     "Set Life Entertainment shines a spotlight on the indie film industry, celebrating rising talent and untold stories across cinema.",
@@ -37,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${anton.variable} ${bebasNeue.variable} ${archivo.variable}`}>
       <body>
+        <JsonLd data={organizationJsonLd()} />
         <ConditionalMarquee />
         {children}
         <ConditionalFooter />

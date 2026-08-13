@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import TopNav from "@/components/TopNav";
+import JsonLd from "@/components/JsonLd";
 import { getProductBySlug } from "@/lib/queries";
+import { productJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
+import { getSiteUrl } from "@/lib/site-url";
 
 export async function generateMetadata({
   params,
@@ -11,7 +14,20 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) return {};
-  return { title: `${product.name} — Set Life Shop` };
+  const title = `${product.name} — Set Life Shop`;
+  const url = `${getSiteUrl()}/shop/${product.slug}`;
+  return {
+    title,
+    description: product.description ?? undefined,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description: product.description ?? undefined,
+      url,
+      type: "website",
+      images: product.image_url ? [{ url: product.image_url }] : undefined,
+    },
+  };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -21,10 +37,20 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   const isDigital = Boolean(product.digital_file_url);
   const isTicketed = Boolean(product.event_date);
+  const siteUrl = getSiteUrl();
+  const url = `${siteUrl}/shop/${product.slug}`;
 
   return (
     <>
       <TopNav active="/shop" />
+      <JsonLd data={productJsonLd(product, url)} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", url: siteUrl },
+          { name: "Shop", url: `${siteUrl}/shop` },
+          { name: product.name, url },
+        ])}
+      />
 
       <section className="section">
         <div className="wrap two-col">

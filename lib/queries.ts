@@ -38,6 +38,80 @@ export async function getRedirectTargetSlug(oldSlug: string): Promise<string | n
   return target?.slug ?? null;
 }
 
+/**
+ * §46 related content — "related stories (same category, then same
+ * author_id, then most recent)". Backfills each tier only as far as
+ * needed to reach `limit`, so a category with few other posts still gets a
+ * full rail rather than a short one.
+ */
+export async function getRelatedPosts(post: PostWithAuthor, limit = 4): Promise<PostWithAuthor[]> {
+  const supabase = await createClient();
+  const results: PostWithAuthor[] = [];
+  const excludeIds = () => [post.id, ...results.map((r) => r.id)];
+
+  const { data: sameCategory } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("status", "published")
+    .eq("category", post.category)
+    .not("id", "in", `(${excludeIds().join(",")})`)
+    .order("published_at", { ascending: false })
+    .limit(limit);
+  results.push(...((sameCategory ?? []) as PostWithAuthor[]));
+
+  if (results.length < limit) {
+    const { data: sameAuthor } = await supabase
+      .from("posts")
+      .select("*, authors(*)")
+      .eq("status", "published")
+      .eq("author_id", post.author_id)
+      .not("id", "in", `(${excludeIds().join(",")})`)
+      .order("published_at", { ascending: false })
+      .limit(limit - results.length);
+    results.push(...((sameAuthor ?? []) as PostWithAuthor[]));
+  }
+
+  if (results.length < limit) {
+    const { data: recent } = await supabase
+      .from("posts")
+      .select("*, authors(*)")
+      .eq("status", "published")
+      .not("id", "in", `(${excludeIds().join(",")})`)
+      .order("published_at", { ascending: false })
+      .limit(limit - results.length);
+    results.push(...((recent ?? []) as PostWithAuthor[]));
+  }
+
+  return results;
+}
+
+/** §46 — "a next-article recommendation at the foot." Next-published-after this one; wraps to the most recent post otherwise. */
+export async function getNextArticle(post: PostWithAuthor): Promise<PostWithAuthor | null> {
+  const supabase = await createClient();
+  if (post.published_at) {
+    const { data: next } = await supabase
+      .from("posts")
+      .select("*, authors(*)")
+      .eq("status", "published")
+      .neq("id", post.id)
+      .gt("published_at", post.published_at)
+      .order("published_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (next) return next as PostWithAuthor;
+  }
+
+  const { data: fallback } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("status", "published")
+    .neq("id", post.id)
+    .order("published_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (fallback as PostWithAuthor | null) ?? null;
+}
+
 export async function getPostsByCategory(category: PostCategory): Promise<PostWithAuthor[]> {
   const supabase = await createClient();
   const { data } = await supabase
@@ -47,6 +121,17 @@ export async function getPostsByCategory(category: PostCategory): Promise<PostWi
     .eq("status", "published")
     .order("published_at", { ascending: false });
   return (data ?? []) as PostWithAuthor[];
+}
+
+/** §47 sitemap — every published post, lean columns only (slug + timestamps, not the full row). */
+export async function getAllPublishedPostSlugs(): Promise<{ slug: string; updated_at: string }[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("slug, updated_at")
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
+  return data ?? [];
 }
 
 export async function getAuthorBySlug(slug: string) {
@@ -62,6 +147,13 @@ export async function getAuthorBySlug(slug: string) {
     .order("published_at", { ascending: false });
 
   return { author, posts: (posts ?? []) as PostWithAuthor[] };
+}
+
+/** §47 sitemap — every author's slug (author profiles have no draft/published state). */
+export async function getAllAuthorSlugs(): Promise<{ slug: string }[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("authors").select("slug").order("name", { ascending: true });
+  return data ?? [];
 }
 
 export async function getAllIssues(): Promise<MagazineIssue[]> {

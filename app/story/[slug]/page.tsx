@@ -3,13 +3,20 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
-import { getPostBySlug, getRedirectTargetSlug } from "@/lib/queries";
+import ReadingProgress from "@/components/story/ReadingProgress";
+import ShareActions from "@/components/story/ShareActions";
+import CreditsList from "@/components/story/CreditsList";
+import PlatformBadges from "@/components/story/PlatformBadges";
+import CalloutBox from "@/components/story/CalloutBox";
+import RelatedContent from "@/components/story/RelatedContent";
+import { getPostBySlug, getRedirectTargetSlug, getRelatedPosts, getNextArticle } from "@/lib/queries";
+import { getSiteUrl } from "@/lib/site-url";
+import ArticleJsonLd from "@/components/story/ArticleJsonLd";
 
 /**
  * §8: all post types (article, spotlight, review, news, ...) share one
  * canonical route, discriminated by `category`, not a route per type.
- * Full editorial rendering (§46) is Phase 10 scope — this establishes the
- * route, data-fetching, 301-on-slug-change, and 404 behavior correctly.
+ * §46 — the full magazine reading experience.
  */
 export async function generateMetadata({
   params,
@@ -19,12 +26,44 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return {};
+
+  const title = post.seo_title || `${post.title} — Set Life Entertainment`;
+  const description = post.seo_description || post.dek || undefined;
+  const image = post.og_image_url || post.hero_image_url || undefined;
+  const url = `${getSiteUrl()}/story/${post.slug}`;
+
   return {
-    title: post.seo_title || `${post.title} — Set Life Entertainment`,
-    description: post.seo_description || post.dek || undefined,
-    openGraph: post.og_image_url ? { images: [post.og_image_url] } : undefined,
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "article",
+      images: image ? [{ url: image }] : undefined,
+      publishedTime: post.published_at ?? undefined,
+      authors: [post.authors.name],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
+
+type Credit = { title: string; year: string; tag?: string };
+type Callout = { heading: string; icon?: string; items: string[] };
+type ArticleMeta = {
+  role_line?: string;
+  credits?: Credit[];
+  platformBadges?: string[];
+  callout?: Callout;
+  videoUrl?: string;
+  captionsUrl?: string;
+};
 
 export default async function StoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -36,17 +75,28 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
     notFound();
   }
 
+  const meta = (post.meta ?? {}) as ArticleMeta;
+  const [related, next] = await Promise.all([getRelatedPosts(post), getNextArticle(post)]);
+  const url = `${getSiteUrl()}/story/${post.slug}`;
+
   return (
     <>
       <TopNav active="/story" />
+      <ArticleJsonLd post={post} url={url} />
+      <ReadingProgress targetId="article-body" />
 
       <article>
-        <section className="page-header">
+        <section className="article-header">
           <div className="wrap">
             <p className="eyebrow">{post.category.replace(/_/g, " ")}</p>
-            <h1 className="display">{post.title}</h1>
-            {post.dek && <p>{post.dek}</p>}
-            <p style={{ marginTop: "16px" }}>
+
+            {/* §46 spotlight header block — role_line only on spotlight posts, never an empty line. */}
+            {meta.role_line && <p className="spotlight-role-line">{meta.role_line}</p>}
+
+            <h1 className="article-headline">{post.title}</h1>
+            {post.dek && <p className="article-dek">{post.dek}</p>}
+
+            <p className="article-byline">
               By{" "}
               <Link href={`/authors/${post.authors.slug}`} className="accent-gold">
                 {post.authors.name}
@@ -68,36 +118,48 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
         </section>
 
         {post.hero_image_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={post.hero_image_url}
-            alt={post.title}
-            style={{ width: "100%", height: "auto", display: "block" }}
-          />
+          // eslint-disable-next-line @next/next/no-img-element -- hero image, arbitrary uploaded URL
+          <img src={post.hero_image_url} alt={post.title} className="article-hero-image" />
         )}
 
-        <section className="section">
-          <div className="wrap" style={{ maxWidth: "760px" }}>
+        <div className="article-layout wrap">
+          <div id="article-body" className="article-body">
             <PostBody body={post.body} />
+
+            {post.category === "video" && meta.videoUrl && (
+              <div className="article-video-embed">
+                <video controls poster={post.hero_image_url ?? undefined} preload="none">
+                  <source src={meta.videoUrl} type="video/mp4" />
+                  {meta.captionsUrl && <track kind="captions" src={meta.captionsUrl} label="English" default />}
+                </video>
+              </div>
+            )}
+
+            <CreditsList credits={meta.credits ?? []} />
+            <PlatformBadges platforms={meta.platformBadges ?? []} />
+            <CalloutBox callout={meta.callout} />
+
+            <ShareActions title={post.title} url={url} />
           </div>
-        </section>
+        </div>
       </article>
+
+      <RelatedContent related={related} next={next} />
     </>
   );
 }
 
 /**
- * Minimal block renderer — the real editorial rendering system (oversized
- * section headers, full-width image blocks, pull quotes, spotlight
- * role_line/credits/badges) is §46/Phase 10. This just needs to not crash
- * on whatever shape the content is in, and render it in reading order.
+ * Walks Tiptap's ProseMirror JSON in reading order. Also handles the
+ * legacy simplified array (`seed.sql`'s pre-Phase-9 convention).
  *
- * Handles two shapes: the legacy simplified array (`seed.sql`'s
- * `[{type:"paragraph",text:"..."}]` convention, predating Phase 9) and
- * Tiptap's native ProseMirror JSON (`{type:"doc",content:[...]}`, what the
- * §45 admin editor now saves — Phase 9 outcome note). Both are walked here
- * rather than picking one, since existing seed content and new
- * editor-authored content coexist until seed.sql is migrated in Phase 10.
+ * Known, disclosed scope simplification (Phase 9 outcome note, still true
+ * here): credits/badges/callout are separate `meta` fields, not custom
+ * Tiptap node types, so they render in a fixed position after the body
+ * rather than truly interleaved wherever the contributor placed them in
+ * the block sequence, as §46 literally describes. Rebuilding them as
+ * first-class ProseMirror node types (custom NodeViews) is a materially
+ * larger lift than this pass scoped.
  */
 function PostBody({ body }: { body: unknown }) {
   if (!body || typeof body !== "object") return null;
@@ -145,10 +207,10 @@ function TiptapNode({ node }: { node: TiptapNodeShape }) {
     case "heading": {
       const level = node.attrs?.level ?? 2;
       const Tag = (level === 3 ? "h3" : "h2") as "h2" | "h3";
-      return <Tag>{tiptapInlineText(node.content)}</Tag>;
+      return <Tag className="article-section-header">{tiptapInlineText(node.content)}</Tag>;
     }
     case "blockquote":
-      return <blockquote>{node.content?.map((child, i) => <TiptapNode key={i} node={child} />)}</blockquote>;
+      return <blockquote className="article-pull-quote">{node.content?.map((child, i) => <TiptapNode key={i} node={child} />)}</blockquote>;
     case "bulletList":
       return <ul>{node.content?.map((child, i) => <TiptapNode key={i} node={child} />)}</ul>;
     case "orderedList":
@@ -157,8 +219,11 @@ function TiptapNode({ node }: { node: TiptapNodeShape }) {
       return <li>{node.content?.map((child, i) => <TiptapNode key={i} node={child} />)}</li>;
     case "image":
       return node.attrs?.src ? (
-        // eslint-disable-next-line @next/next/no-img-element -- article body image, arbitrary uploaded URL
-        <img src={node.attrs.src} alt={node.attrs.alt ?? ""} style={{ width: "100%", height: "auto", margin: "24px 0" }} />
+        <figure className="article-image-block">
+          {/* eslint-disable-next-line @next/next/no-img-element -- article body image, arbitrary uploaded URL */}
+          <img src={node.attrs.src} alt={node.attrs.alt ?? ""} />
+          {node.attrs.alt && <figcaption>{node.attrs.alt}</figcaption>}
+        </figure>
       ) : null;
     default:
       return null;

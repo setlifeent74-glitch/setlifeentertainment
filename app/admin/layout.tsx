@@ -1,6 +1,10 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/app/actions/admin-auth";
 import Link from "next/link";
+
+/** §47 — noindex the entire admin tree from one place (Next.js metadata inheritance applies this to every child route); robots.txt's `disallow: /admin` is the crawl-blocking half, this is the indexing half. */
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 const NAV = [
   { href: "/admin", label: "Dashboard" },
