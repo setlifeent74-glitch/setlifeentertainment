@@ -31,7 +31,15 @@ export default function ScrollReveal({
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
-            setInView(true);
+            // For anything already on-screen at mount (common — most
+            // sections aren't fully below the fold on a tall monitor),
+            // IntersectionObserver's first callback can fire before the
+            // browser has painted the hidden starting state even once.
+            // Flipping the class in that same tick means there's no "from"
+            // frame for the CSS transition to animate from, so it just
+            // pops straight to visible with zero motion. Two nested rAFs
+            // guarantee a real paint of the hidden state happens first.
+            requestAnimationFrame(() => requestAnimationFrame(() => setInView(true)));
             observer.disconnect();
           }
         },

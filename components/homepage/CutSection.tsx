@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getReviewPosts, isContentGatesEnabled, getSectionColors } from "@/lib/queries";
+import { getReviewPosts, isContentGatesEnabled, getSectionColors, cardImage } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
 type ReviewMeta = { score?: number; verdict?: string };
@@ -29,7 +29,7 @@ export default async function CutSection() {
 
         <div className="cut-lead">
           <div className="cut-lead-image">
-            {lead.hero_image_url && <Image src={lead.hero_image_url} alt="" fill sizes="(max-width: 767px) 100vw, 800px" />}
+            {cardImage(lead) && <Image src={cardImage(lead)!} alt="" fill sizes="(max-width: 767px) 100vw, 800px" />}
           </div>
           <div className="cut-lead-body">
             {typeof leadMeta.score === "number" && <span className="cut-score">{leadMeta.score}</span>}
@@ -50,9 +50,9 @@ export default async function CutSection() {
               const meta = (post.meta ?? {}) as ReviewMeta;
               return (
                 <Link href={`/story/${post.slug}`} key={post.id} className="cut-secondary-card">
-                  {post.hero_image_url && (
+                  {cardImage(post) && (
                     <div className="cut-secondary-image">
-                      <Image src={post.hero_image_url} alt="" fill sizes="(max-width: 767px) 100vw, 25vw" />
+                      <Image src={cardImage(post)!} alt="" fill sizes="(max-width: 767px) 100vw, 25vw" />
                     </div>
                   )}
                   {typeof meta.score === "number" && <span className="cut-secondary-score">{meta.score}</span>}

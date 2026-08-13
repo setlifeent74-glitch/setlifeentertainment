@@ -5,6 +5,11 @@ import type { Database } from "@/lib/supabase/types";
 export type Post = Database["public"]["Tables"]["posts"]["Row"];
 export type Author = Database["public"]["Tables"]["authors"]["Row"];
 export type PostWithAuthor = Post & { authors: Author };
+
+// Re-exported so existing server-side `from "@/lib/queries"` imports keep
+// working — see lib/post-image.ts for why the implementation lives there
+// instead (it must stay importable from client components too).
+export { cardImage } from "@/lib/post-image";
 export type MagazineIssue = Database["public"]["Tables"]["magazine_issues"]["Row"];
 export type Product = Database["public"]["Tables"]["products"]["Row"];
 export type PostCategory = Database["public"]["Enums"]["post_category"];

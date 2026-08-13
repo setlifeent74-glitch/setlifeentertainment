@@ -69,6 +69,7 @@ export default function PostEditor({
   const [placement, setPlacement] = useState<string>(post?.placement ?? defaultPlacement ?? "");
   const [authorId, setAuthorId] = useState(post?.author_id ?? authors[0]?.id ?? "");
   const [heroImageUrl, setHeroImageUrl] = useState(post?.hero_image_url ?? "");
+  const [cardImageUrl, setCardImageUrl] = useState(post?.card_image_url ?? "");
   const [body, setBody] = useState<Json>(post?.body ?? { type: "doc", content: [{ type: "paragraph" }] });
   const [meta, setMeta] = useState<MetaValue>((post?.meta as MetaValue) ?? {});
   const [seoTitle, setSeoTitle] = useState(post?.seo_title ?? "");
@@ -105,6 +106,7 @@ export default function PostEditor({
       placement: placement as Database["public"]["Enums"]["post_placement"] | "",
       authorId,
       heroImageUrl,
+      cardImageUrl,
       bodyJson: JSON.stringify(body),
       meta: meta as Json,
       seoTitle,
@@ -259,6 +261,18 @@ export default function PostEditor({
         <div className="admin-field">
           <label>Hero Image</label>
           <HeroImageUpload value={heroImageUrl} onChange={setHeroImageUrl} />
+          <p className="admin-editor-hint" style={{ padding: 0 }}>
+            Big banner image at the top of the article page.
+          </p>
+        </div>
+
+        <div className="admin-field">
+          <label>Homepage Card Image (optional)</label>
+          <HeroImageUpload value={cardImageUrl} onChange={setCardImageUrl} />
+          <p className="admin-editor-hint" style={{ padding: 0 }}>
+            Image shown in homepage sections and story cards instead of the Hero Image above. Leave blank to reuse
+            the Hero Image everywhere.
+          </p>
         </div>
 
         <div className="admin-field">

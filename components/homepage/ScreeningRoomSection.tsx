@@ -1,5 +1,5 @@
 import ScrollReveal from "@/components/ScrollReveal";
-import { getScreeningRoomVideo, getSectionColors } from "@/lib/queries";
+import { getScreeningRoomVideo, getSectionColors, cardImage } from "@/lib/queries";
 
 type VideoMeta = { videoUrl?: string; captionsUrl?: string; runtime?: string; series?: string };
 
@@ -27,7 +27,7 @@ export default async function ScreeningRoomSection() {
           {/* §30 VERIFY: no autoplay on any video but the hero — controls
               require an explicit click, native keyboard support (space,
               arrows) comes free with the browser's own <video> controls. */}
-          <video controls poster={post.hero_image_url ?? undefined} preload="none">
+          <video controls poster={cardImage(post) ?? undefined} preload="none">
             <source src={meta.videoUrl} type="video/mp4" />
             {meta.captionsUrl && <track kind="captions" src={meta.captionsUrl} label="English" default />}
           </video>

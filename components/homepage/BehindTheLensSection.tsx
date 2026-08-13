@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getBehindTheLensPost, getSectionColors } from "@/lib/queries";
+import { getBehindTheLensPost, getSectionColors, cardImage } from "@/lib/queries";
 
 type LensMeta = { camera?: string; frameNumber?: string; fps?: string };
 
@@ -27,7 +27,7 @@ export default async function BehindTheLensSection() {
     >
       <div className="wrap lens-grid">
         <div className="lens-still">
-          {post.hero_image_url && <Image src={post.hero_image_url} alt="" fill sizes="(max-width: 767px) 100vw, 58vw" />}
+          {cardImage(post) && <Image src={cardImage(post)!} alt="" fill sizes="(max-width: 767px) 100vw, 58vw" />}
         </div>
 
         <div className="lens-content">

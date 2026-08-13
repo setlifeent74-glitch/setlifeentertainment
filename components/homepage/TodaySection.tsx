@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getTodayPosts, isContentGatesEnabled, getSectionColors } from "@/lib/queries";
+import { getTodayPosts, isContentGatesEnabled, getSectionColors, cardImage } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
 /** §22 Today on the Set — Gate: 3 posts, placement=today (unless the §9 admin override is on). */
@@ -28,8 +28,8 @@ export default async function TodaySection() {
           <div className="today-primary">
             <Link href={`/story/${primary.slug}`}>
               <div className="today-primary-image">
-                {primary.hero_image_url ? (
-                  <Image src={primary.hero_image_url} alt="" fill sizes="(max-width: 767px) 100vw, 58vw" />
+                {cardImage(primary) ? (
+                  <Image src={cardImage(primary)!} alt="" fill sizes="(max-width: 767px) 100vw, 58vw" />
                 ) : (
                   // No hero image on the lead post yet — a branded placeholder
                   // so the slot never reads as broken/empty.

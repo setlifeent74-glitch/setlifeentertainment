@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getInstagramFallbackPosts, getSectionColors } from "@/lib/queries";
+import { getInstagramFallbackPosts, getSectionColors, cardImage } from "@/lib/queries";
 
 type GridItem = { href: string; imageUrl: string; caption: string; isInstagram: boolean };
 
@@ -40,7 +40,7 @@ async function getGridItems(): Promise<{ items: GridItem[]; isLive: boolean }> {
   return {
     items: posts.map((post) => ({
       href: `/story/${post.slug}`,
-      imageUrl: post.hero_image_url!,
+      imageUrl: cardImage(post)!,
       caption: post.dek ?? post.title,
       isInstagram: false,
     })),

@@ -314,6 +314,7 @@ export type Database = {
           created_at: string
           dek: string | null
           featured: boolean
+          card_image_url: string | null
           hero_image_url: string | null
           id: string
           meta: Json
@@ -337,6 +338,7 @@ export type Database = {
           created_at?: string
           dek?: string | null
           featured?: boolean
+          card_image_url?: string | null
           hero_image_url?: string | null
           id?: string
           meta?: Json
@@ -360,6 +362,7 @@ export type Database = {
           created_at?: string
           dek?: string | null
           featured?: boolean
+          card_image_url?: string | null
           hero_image_url?: string | null
           id?: string
           meta?: Json

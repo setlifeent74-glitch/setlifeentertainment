@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import type { PostWithAuthor } from "@/lib/queries";
+import { cardImage } from "@/lib/post-image";
 
 const STAGES = ["Development", "Pre-Production", "Shooting", "Post", "Festival", "Distribution"] as const;
 
@@ -65,7 +66,7 @@ export default function ProductionFilter({ posts }: { posts: PostWithAuthor[] })
             return (
               <Link href={`/story/${post.slug}`} key={post.id} className="production-card">
                 <div className="production-card-image">
-                  {post.hero_image_url && <Image src={post.hero_image_url} alt="" fill sizes="(max-width: 767px) 100vw, 33vw" />}
+                  {cardImage(post) && <Image src={cardImage(post)!} alt="" fill sizes="(max-width: 767px) 100vw, 33vw" />}
                   <span className="production-status">{statusLabel}</span>
                 </div>
                 <h3>{post.title}</h3>

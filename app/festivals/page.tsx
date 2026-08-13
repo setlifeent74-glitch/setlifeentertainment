@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import TopNav from "@/components/TopNav";
-import { getUpcomingFestivals } from "@/lib/queries";
+import { getUpcomingFestivals, cardImage } from "@/lib/queries";
 import type { PostWithAuthor } from "@/lib/queries";
 
 export const metadata: Metadata = {
@@ -32,10 +32,10 @@ function FestivalFeatured({ festival }: { festival: PostWithAuthor }) {
 
   return (
     <div className="festival-featured">
-      {festival.hero_image_url && (
+      {cardImage(festival) && (
         <div className="festival-featured-image">
           <Image
-            src={festival.hero_image_url}
+            src={cardImage(festival)!}
             alt={festival.title}
             fill
             sizes="(max-width: 767px) 100vw, 60vw"

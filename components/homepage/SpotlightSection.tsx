@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getSpotlightFeature, getSectionColors } from "@/lib/queries";
+import { getSpotlightFeature, getSectionColors, cardImage } from "@/lib/queries";
 
 /** §24 Indie Spotlight — Gate: 1 spotlight, placement=spotlight_feature. */
 export default async function SpotlightSection() {
@@ -20,8 +20,8 @@ export default async function SpotlightSection() {
         <span className="spotlight-bg-word spotlight-bg-word--top" aria-hidden="true">
           INDIE
         </span>
-        {post.hero_image_url && (
-          <Image src={post.hero_image_url} alt="" fill sizes="(max-width: 767px) 100vw, 58vw" priority={false} />
+        {cardImage(post) && (
+          <Image src={cardImage(post)!} alt="" fill sizes="(max-width: 767px) 100vw, 58vw" priority={false} />
         )}
         <span className="spotlight-bg-word spotlight-bg-word--bottom" aria-hidden="true">
           SPOTLIGHT

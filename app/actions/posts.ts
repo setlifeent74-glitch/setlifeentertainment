@@ -17,6 +17,7 @@ export type SavePostInput = {
   placement: Database["public"]["Enums"]["post_placement"] | "";
   authorId: string;
   heroImageUrl: string;
+  cardImageUrl: string;
   /**
    * JSON-encoded string, not a raw nested object. Confirmed directly: the
    * Tiptap doc's `content[].attrs` sub-objects (e.g. an image node's
@@ -56,6 +57,7 @@ export async function savePost(input: SavePostInput): Promise<{ id: string; erro
     placement: input.placement || null,
     author_id: input.authorId,
     hero_image_url: input.heroImageUrl || null,
+    card_image_url: input.cardImageUrl || null,
     body,
     meta: input.meta,
     seo_title: input.seoTitle || null,

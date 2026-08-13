@@ -37,7 +37,11 @@ export default function HeroIntro({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setInView(true);
+          // See ScrollReveal.tsx for why this is double-rAF'd: this block
+          // is almost always already on-screen at mount (it's right below
+          // the hero video), so without forcing a real paint of the hidden
+          // state first, the line-mask reveal pops instantly with no motion.
+          requestAnimationFrame(() => requestAnimationFrame(() => setInView(true)));
           observer.disconnect();
         }
       },

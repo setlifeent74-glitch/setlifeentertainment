@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getBelowTheLinePosts, isContentGatesEnabled, getSectionColors } from "@/lib/queries";
+import { getBelowTheLinePosts, isContentGatesEnabled, getSectionColors, cardImage } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 import type { PostWithAuthor } from "@/lib/queries";
 
@@ -25,7 +25,7 @@ function MosaicTile({ post, span }: { post: PostWithAuthor; span: (typeof MOSAIC
       className={`btl-tile btl-tile--${span.tile}`}
       style={{ gridColumn: `span ${span.cols}`, gridRow: `span ${span.rows}` }}
     >
-      {post.hero_image_url && <Image src={post.hero_image_url} alt="" fill sizes="(max-width: 767px) 100vw, 40vw" />}
+      {cardImage(post) && <Image src={cardImage(post)!} alt="" fill sizes="(max-width: 767px) 100vw, 40vw" />}
       <div className="btl-tile-overlay">
         {meta.department && <span className="btl-department">{meta.department}</span>}
         <span className="btl-name">{post.title}</span>
