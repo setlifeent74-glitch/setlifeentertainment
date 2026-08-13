@@ -104,7 +104,11 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   return data;
 }
 
-/** §32: expiry logic runs server-side, not client-only — filtered in the query, not after the fact in a component. */
+/**
+ * `/opportunities` archive (§8) — every live opportunity by category, not
+ * just the ones an editor has curated onto the homepage. §32's homepage
+ * section is a separate, placement-scoped query below.
+ */
 export async function getLiveOpportunities(): Promise<PostWithAuthor[]> {
   const supabase = await createClient();
   const nowIso = new Date().toISOString();
@@ -115,6 +119,20 @@ export async function getLiveOpportunities(): Promise<PostWithAuthor[]> {
     .eq("status", "published")
     .or(`meta->>deadline.is.null,meta->>deadline.gte.${nowIso}`)
     .order("published_at", { ascending: false });
+  return (data ?? []) as PostWithAuthor[];
+}
+
+/** §32 Opportunities (homepage section) — placement=opportunity, deadline not expired, soonest first. */
+export async function getOpportunitySectionPosts(): Promise<PostWithAuthor[]> {
+  const supabase = await createClient();
+  const nowIso = new Date().toISOString();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "opportunity")
+    .eq("status", "published")
+    .or(`meta->>deadline.is.null,meta->>deadline.gte.${nowIso}`)
+    .order("meta->>deadline", { ascending: true });
   return (data ?? []) as PostWithAuthor[];
 }
 
@@ -201,6 +219,88 @@ export async function getFreshFacesPosts(): Promise<PostWithAuthor[]> {
   return (data ?? []) as PostWithAuthor[];
 }
 
+/** §28 Now in Production — placement=production. Filtering is client-side (§28 VERIFY: no full reload), so fetch the full set. */
+export async function getProductionPosts(): Promise<PostWithAuthor[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "production")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(24);
+  return (data ?? []) as PostWithAuthor[];
+}
+
+/** §29 The Cut — placement=cut. Newest first; caller splits lead/secondary. */
+export async function getReviewPosts(): Promise<PostWithAuthor[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "cut")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(5);
+  return (data ?? []) as PostWithAuthor[];
+}
+
+/** §30 The Screening Room — placement=screening_room, most recent. */
+export async function getScreeningRoomVideo(): Promise<PostWithAuthor | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "screening_room")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data as PostWithAuthor | null;
+}
+
+/** §31 Behind the Lens — placement=behind_the_lens, most recent qualifying post. */
+export async function getBehindTheLensPost(): Promise<PostWithAuthor | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "behind_the_lens")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data as PostWithAuthor | null;
+}
+
+/** §34 Set Life 100 — published honorees for the most recent list_year, ranked. */
+export async function getCurrentHonorees(): Promise<Database["public"]["Tables"]["honorees"]["Row"][]> {
+  const supabase = await createClient();
+  const { data: latestYear } = await supabase
+    .from("honorees")
+    .select("list_year")
+    .eq("published", true)
+    .order("list_year", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!latestYear) return [];
+
+  const { data } = await supabase
+    .from("honorees")
+    .select("*")
+    .eq("published", true)
+    .eq("list_year", latestYear.list_year)
+    .order("rank", { ascending: true, nullsFirst: false });
+  return data ?? [];
+}
+
+/** §34 gate — explicit admin enable, independent of honoree content. */
+export async function isSetLife100Enabled(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("site_settings").select("set_life_100_enabled").eq("id", true).single();
+  return data?.set_life_100_enabled ?? false;
+}
+
 /**
  * §16 link map — minimal search scope: a single ilike query against
  * published posts and products, no filters, no ranking, no predictive
@@ -232,7 +332,11 @@ export async function searchContent(query: string): Promise<{ posts: PostWithAut
   return { posts: (posts ?? []) as PostWithAuthor[], products: products ?? [] };
 }
 
-/** §33: past festivals excluded or explicitly marked — excluded here. */
+/**
+ * `/festivals` archive (§8) — every upcoming festival by category. §33's
+ * homepage section is a separate, placement-scoped query below.
+ * Past festivals excluded or explicitly marked — excluded here.
+ */
 export async function getUpcomingFestivals(): Promise<PostWithAuthor[]> {
   const supabase = await createClient();
   const today = new Date().toISOString().slice(0, 10);
@@ -240,6 +344,20 @@ export async function getUpcomingFestivals(): Promise<PostWithAuthor[]> {
     .from("posts")
     .select("*, authors(*)")
     .eq("category", "festival")
+    .eq("status", "published")
+    .or(`meta->>endDate.is.null,meta->>endDate.gte.${today}`)
+    .order("meta->>startDate", { ascending: true });
+  return (data ?? []) as PostWithAuthor[];
+}
+
+/** §33 Festival Circuit (homepage section) — placement=festival, chronological. */
+export async function getFestivalSectionPosts(): Promise<PostWithAuthor[]> {
+  const supabase = await createClient();
+  const today = new Date().toISOString().slice(0, 10);
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("placement", "festival")
     .eq("status", "published")
     .or(`meta->>endDate.is.null,meta->>endDate.gte.${today}`)
     .order("meta->>startDate", { ascending: true });

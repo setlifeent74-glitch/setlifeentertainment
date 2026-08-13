@@ -1351,3 +1351,236 @@ footer.site-footer{
   .fresh-face-card{ flex-basis: 78vw; }
   .fresh-face-image{ width: 100%; height: 62vw; max-height: 420px; }
 }
+
+/* ==================================================================
+   PHASE 7 — HOMEPAGE INDUSTRY (§28-§34)
+   ================================================================== */
+
+.production-section, .cut-section, .screening-room-section,
+.lens-section, .opportunities-section, .festival-section, .set100-section{
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 700ms var(--motion-ease), transform 700ms var(--motion-ease);
+}
+.production-section.is-in-view, .cut-section.is-in-view, .screening-room-section.is-in-view,
+.lens-section.is-in-view, .opportunities-section.is-in-view, .festival-section.is-in-view,
+.set100-section.is-in-view{
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce){
+  .production-section, .cut-section, .screening-room-section,
+  .lens-section, .opportunities-section, .festival-section, .set100-section{
+    transition: opacity 200ms linear !important;
+    transform: none !important;
+  }
+}
+
+/* ---------- §28 Now in Production ---------- */
+.production-section{ background: var(--off-white); color: var(--black); padding: var(--space-120) 0; }
+.production-header{ margin-bottom: var(--space-24); }
+.production-header .headline{ font-size: clamp(32px, 4vw, 52px); color: var(--black); }
+.production-empty{ color: var(--gray); padding: var(--space-48) 0; text-align: center; }
+.production-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-24); }
+.production-card{ display: block; color: inherit; background: var(--white); border: 1px solid var(--line); }
+.production-card-image{ position: relative; aspect-ratio: 4/3; background: var(--black-2); }
+.production-card-image img{ object-fit: cover; }
+.production-status{
+  position: absolute;
+  top: var(--space-12); left: var(--space-12);
+  background: var(--black);
+  color: var(--off-white);
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 11px;
+  padding: 5px 10px;
+}
+.production-card h3{
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: 20px;
+  margin: var(--space-16) var(--space-16) 4px;
+}
+.production-director, .production-meta, .production-genre{
+  margin: 0 var(--space-16) 4px;
+  font-size: 13px;
+  color: var(--gray);
+}
+.production-logline{ margin: var(--space-8) var(--space-16) var(--space-16); font-size: 14px; }
+
+/* ---------- §29 The Cut ---------- */
+.cut-section{ background: var(--off-white); color: var(--black); padding: var(--space-120) 0; }
+.cut-header{ margin-bottom: var(--space-32); }
+.cut-header .headline{ font-size: clamp(32px, 4vw, 52px); color: var(--black); }
+.cut-lead{ display: grid; grid-template-columns: 800fr 500fr; gap: var(--space-48); align-items: center; }
+.cut-lead-image{ position: relative; aspect-ratio: 16/9; background: var(--black-2); }
+.cut-lead-image img{ object-fit: cover; }
+.cut-score{
+  display: block;
+  font-family: var(--font-anton), sans-serif;
+  font-size: clamp(80px, 8vw, 110px);
+  color: var(--red);
+  line-height: 1;
+}
+.cut-verdict{ font-size: 18px; margin: var(--space-8) 0 var(--space-16); }
+.cut-lead-body h3{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 24px; margin: 0; }
+.cut-byline{ display: block; color: var(--gray); font-size: 13px; margin: 6px 0 var(--space-16); }
+.cut-secondary{ display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-16); margin-top: var(--space-48); }
+.cut-secondary-card{ display: block; color: inherit; position: relative; }
+.cut-secondary-image{ position: relative; aspect-ratio: 4/3; background: var(--black-2); margin-bottom: var(--space-8); }
+.cut-secondary-image img{ object-fit: cover; }
+.cut-secondary-score{
+  position: absolute; top: var(--space-8); right: var(--space-8);
+  background: rgba(10,10,10,0.75); color: var(--gold);
+  font-family: var(--font-anton), sans-serif;
+  font-size: 20px; padding: 2px 8px;
+}
+.cut-secondary-card h4{ font-size: 15px; margin: 0; }
+
+/* ---------- §30 The Screening Room ---------- */
+.screening-room-section{ background: var(--black); padding: var(--space-120) 0; min-height: 900px; display: flex; flex-direction: column; justify-content: center; }
+.screening-room-header{ text-align: center; margin-bottom: var(--space-32); }
+.screening-room-header .headline{ font-size: clamp(32px, 4vw, 52px); }
+.screening-room-header p{ color: var(--gray); margin-top: 6px; }
+.screening-room-player{ max-width: 1200px; margin: 0 auto; }
+.screening-room-player video{ width: 100%; aspect-ratio: 16/9; background: #000; display: block; }
+.screening-room-details{ max-width: 1200px; margin: var(--space-24) auto 0; }
+.screening-room-details h3{
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(28px, 3vw, 44px);
+  margin: 0 0 var(--space-8);
+}
+.screening-room-description{ color: var(--gray); max-width: 700px; }
+.screening-room-meta{ color: var(--gray); font-size: 13px; letter-spacing: 0.06em; }
+
+/* ---------- §31 Behind the Lens ---------- */
+.lens-section{ background: var(--off-white); color: var(--black); padding: var(--space-120) 0; }
+.lens-grid{ display: grid; grid-template-columns: 58fr 42fr; gap: var(--space-48); align-items: center; }
+.lens-still{ position: relative; aspect-ratio: 4/3; background: var(--black-2); }
+.lens-still img{ object-fit: cover; }
+.lens-title{ font-size: clamp(28px, 3vw, 44px); color: var(--black); margin: var(--space-8) 0 var(--space-24); }
+.lens-byline{ margin-bottom: var(--space-16); }
+.lens-name{ display: block; font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 22px; }
+.lens-author{ display: block; color: var(--gray); font-size: 13px; }
+.lens-text{ margin-bottom: var(--space-16); }
+.lens-technical{ font-family: var(--font-bebas), sans-serif; letter-spacing: 0.08em; color: var(--gray); font-size: 13px; margin-bottom: var(--space-24); }
+
+/* ---------- §32 Opportunities ---------- */
+.opportunities-section{ background: var(--black-2); padding: var(--space-120) 0; }
+.opportunities-header{ margin-bottom: var(--space-24); }
+.opportunities-header .headline{ font-size: clamp(32px, 4vw, 52px); }
+.opportunities-header p{ color: var(--gray); margin-top: 6px; }
+.opportunities-empty{ color: var(--gray); padding: var(--space-48) 0; text-align: center; }
+.opportunities-list{ list-style: none; margin: 0; padding: 0; }
+.opportunities-row{ border-bottom: 1px solid var(--line); }
+.opportunities-row a{
+  display: grid;
+  grid-template-columns: 110px 1fr auto auto auto auto;
+  align-items: center;
+  gap: var(--space-16);
+  min-height: 76px;
+  color: var(--off-white);
+}
+.opportunities-type{ font-family: var(--font-bebas), sans-serif; letter-spacing: 0.08em; text-transform: uppercase; font-size: 12px; color: var(--gray); }
+.opportunities-title{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 17px; }
+.opportunities-org{ color: var(--gray); font-size: 13px; }
+.opportunities-paid{ font-size: 12px; color: var(--gray); border: 1px solid var(--line); padding: 3px 8px; }
+.opportunities-deadline{ font-family: var(--font-bebas), sans-serif; letter-spacing: 0.06em; color: var(--gold); font-size: 13px; }
+.opportunities-arrow{ color: var(--gray); }
+
+/* ---------- §33 Festival Circuit ---------- */
+.festival-section{ background: var(--off-white); color: var(--black); padding: var(--space-120) 0; }
+.festival-header{ margin-bottom: var(--space-32); }
+.festival-header .headline{ font-size: clamp(32px, 4vw, 52px); color: var(--black); }
+.festival-header p{ color: var(--gray); margin-top: 6px; }
+.festival-featured{
+  position: relative;
+  display: block;
+  aspect-ratio: 21/9;
+  background: var(--black-2);
+  color: var(--off-white);
+  margin-bottom: var(--space-48);
+}
+.festival-featured img{ object-fit: cover; }
+.festival-featured-overlay{
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: var(--space-32);
+  background: linear-gradient(0deg, rgba(10,10,10,0.85), transparent 60%);
+}
+.festival-featured-overlay h3{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: clamp(24px, 3vw, 40px); margin: 0 0 6px; }
+.festival-timeline{ list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
+.festival-timeline li{ padding: var(--space-16) 0 var(--space-16) var(--space-24); border-bottom: 1px solid var(--line); }
+.festival-timeline a{ display: flex; gap: var(--space-16); align-items: baseline; color: inherit; flex-wrap: wrap; }
+.festival-timeline time{ font-family: var(--font-bebas), sans-serif; letter-spacing: 0.06em; color: var(--gold); font-size: 13px; min-width: 110px; }
+.festival-timeline-name{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 18px; }
+.festival-timeline-city{ color: var(--gray); font-size: 13px; }
+
+/* ---------- §34 Set Life 100 ---------- */
+.set100-section{ position: relative; background: var(--black); padding: var(--space-120) 0; min-height: 850px; overflow: hidden; }
+.set100-numeral{
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-anton), sans-serif;
+  font-size: clamp(350px, 30vw, 500px);
+  color: var(--gold);
+  opacity: 0.08;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+.set100-header{ position: relative; z-index: 1; text-align: center; margin-bottom: var(--space-48); }
+.set100-header .headline{ font-size: clamp(32px, 4vw, 52px); }
+.set100-header p{ color: var(--gray); margin-top: 6px; }
+.set100-grid{
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-24);
+}
+.set100-portrait{
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 500ms var(--motion-ease), transform 500ms var(--motion-ease);
+}
+.set100-section.is-in-view .set100-portrait{ opacity: 1; transform: translateY(0); }
+.set100-portrait:nth-child(odd){ margin-top: var(--space-32); }
+.set100-portrait-image{ position: relative; aspect-ratio: 3/4; background: var(--black-2); margin-bottom: var(--space-8); }
+.set100-portrait-image img{ object-fit: cover; }
+.set100-name{ display: block; font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 15px; color: var(--off-white); }
+.set100-title{ display: block; color: var(--gray); font-size: 12px; }
+
+/* ---------- §28-§34 mobile ---------- */
+@media (max-width: 767px){
+  .production-section, .cut-section, .screening-room-section,
+  .lens-section, .opportunities-section, .festival-section, .set100-section{
+    padding: var(--space-section-mobile) 0;
+  }
+  .production-grid{ grid-template-columns: 1fr; }
+  .pill-row{ flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--space-8); }
+
+  .cut-lead{ grid-template-columns: 1fr; }
+  .cut-secondary{ grid-template-columns: 1fr 1fr; }
+
+  .screening-room-section{ min-height: 0; }
+
+  .lens-grid{ grid-template-columns: 1fr; }
+  .lens-still{ aspect-ratio: 4/3; }
+
+  .opportunities-row a{ grid-template-columns: 1fr auto; grid-template-areas: "type deadline" "title title" "org paid"; row-gap: 4px; padding: var(--space-12) 0; }
+  .opportunities-type{ grid-area: type; }
+  .opportunities-deadline{ grid-area: deadline; }
+  .opportunities-title{ grid-area: title; }
+  .opportunities-org{ grid-area: org; }
+  .opportunities-paid{ grid-area: paid; justify-self: start; }
+  .opportunities-arrow{ display: none; }
+
+  .festival-featured{ aspect-ratio: 4/3; }
+
+  .set100-numeral{ font-size: 55vw; }
+  .set100-grid{ grid-template-columns: repeat(2, 1fr); }
+  .set100-portrait:nth-child(odd){ margin-top: 0; }
+}

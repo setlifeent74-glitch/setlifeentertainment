@@ -679,6 +679,10 @@ Foreground: honoree portraits at varied vertical offsets.
 
 **VERIFY §34** — Numeral does not reduce overlapping text contrast below WCAG AA. Portrait stagger is directionally consistent. **Assert the section is hidden by default and requires explicit admin activation.**
 
+**Phase 7 outcome — §28-§34.** Seven more gated homepage sections, same self-gating pattern as Phase 6. §28/§32 (filter pills / tabs) are client components layered over server-fetched data — filtering is pure client-side array filtering against the already-fetched set, satisfying "without full reload" by construction rather than by extra plumbing. §32/§33's homepage sections read from *new*, `placement`-scoped queries (`getOpportunitySectionPosts`, `getFestivalSectionPosts`), kept deliberately separate from the pre-existing `getLiveOpportunities`/`getUpcomingFestivals` that back the `/opportunities` and `/festivals` archive pages — those archives correctly show every live listing by `category`; the homepage sections should only show what an editor has explicitly placed there. Conflating the two was the first draft's mistake, caught before it shipped.
+
+**Real bug found and fixed:** `role="tablist"` on §28's and §32's filter-pill containers, with plain `<button>` children — axe-core correctly flagged this as a critical violation (`aria-required-children`): a `tablist` must contain `tab`-role children. On reflection the tabs pattern was the wrong ARIA role to begin with — these buttons filter a single shared list in place, they don't switch between separate panels, which is what `tablist`/`tab` actually models. Changed to `role="group"` with `aria-pressed` toggle buttons (already in place), the correct pattern for this interaction.
+
 ## §35 The Set Life Shop
 
 Ground `--black` · 140px vertical · **Gate: 1 published product**

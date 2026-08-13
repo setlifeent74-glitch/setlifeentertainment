@@ -7,6 +7,13 @@ import SpotlightSection from "@/components/homepage/SpotlightSection";
 import CallSheetSection from "@/components/homepage/CallSheetSection";
 import BelowTheLineSection from "@/components/homepage/BelowTheLineSection";
 import FreshFacesSection from "@/components/homepage/FreshFacesSection";
+import ProductionSection from "@/components/homepage/ProductionSection";
+import CutSection from "@/components/homepage/CutSection";
+import ScreeningRoomSection from "@/components/homepage/ScreeningRoomSection";
+import BehindTheLensSection from "@/components/homepage/BehindTheLensSection";
+import OpportunitiesSection from "@/components/homepage/OpportunitiesSection";
+import FestivalSection from "@/components/homepage/FestivalSection";
+import SetLife100Section from "@/components/homepage/SetLife100Section";
 
 export default async function HomePage() {
   const headerList = await headers();
@@ -26,14 +33,21 @@ export default async function HomePage() {
       />
 
       {/* §9 content readiness gates — each section below renders only above
-          its own minimum-content threshold (lib/gates.ts). §28-38
-          (Phase 7-8) continue this sequence. */}
+          its own minimum-content threshold (lib/gates.ts). §35-38
+          (Phase 8) continue this sequence. */}
       <TodaySection />
       <CurrentIssueSection />
       <SpotlightSection />
       <CallSheetSection />
       <BelowTheLineSection />
       <FreshFacesSection />
+      <ProductionSection />
+      <CutSection />
+      <ScreeningRoomSection />
+      <BehindTheLensSection />
+      <OpportunitiesSection />
+      <FestivalSection />
+      <SetLife100Section />
     </>
   );
 }
