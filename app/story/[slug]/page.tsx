@@ -65,6 +65,7 @@ type ArticleMeta = {
   videoUrl?: string;
   captionsUrl?: string;
   canvasColor?: string;
+  headlineColor?: string;
 };
 
 export default async function StoryPage({
@@ -121,7 +122,9 @@ export default async function StoryPage({
             {/* §46 spotlight header block — role_line only on spotlight posts, never an empty line. */}
             {meta.role_line && <p className="spotlight-role-line">{meta.role_line}</p>}
 
-            <h1 className="article-headline">{post.title}</h1>
+            <h1 className="article-headline" style={meta.headlineColor ? { color: meta.headlineColor } : undefined}>
+              {post.title}
+            </h1>
             {post.dek && <p className="article-dek">{post.dek}</p>}
 
             <p className="article-byline">

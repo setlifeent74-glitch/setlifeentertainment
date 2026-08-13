@@ -81,6 +81,7 @@ export default function PostEditor({
   // takes effect (in local state, then on the next Save/Publish) once
   // Apply is clicked.
   const [pendingCanvasColor, setPendingCanvasColor] = useState((meta.canvasColor as string) || "#0a0a0a");
+  const [pendingHeadlineColor, setPendingHeadlineColor] = useState((meta.headlineColor as string) || "#f4f1ea");
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
@@ -290,6 +291,39 @@ export default function PostEditor({
           </div>
           <p className="admin-editor-hint" style={{ padding: 0 }}>
             Background color behind the whole article. Pick a color, then click Apply — takes effect on the next Save/Publish.
+          </p>
+        </div>
+
+        <div className="admin-field">
+          <label>Headline Color</label>
+          <div className="admin-canvas-color-row">
+            <input
+              type="color"
+              value={pendingHeadlineColor}
+              onChange={(e) => setPendingHeadlineColor(e.target.value)}
+            />
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setMeta({ ...meta, headlineColor: pendingHeadlineColor })}
+            >
+              Apply
+            </button>
+            {typeof meta.headlineColor === "string" && meta.headlineColor && (
+              <button
+                type="button"
+                onClick={() => {
+                  const { headlineColor: _drop, ...rest } = meta;
+                  setMeta(rest);
+                  setPendingHeadlineColor("#f4f1ea");
+                }}
+              >
+                Reset
+              </button>
+            )}
+          </div>
+          <p className="admin-editor-hint" style={{ padding: 0 }}>
+            Color of the article title (h1) on the published page. Pick a color, then click Apply — takes effect on the next Save/Publish.
           </p>
         </div>
 
