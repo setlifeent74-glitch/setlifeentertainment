@@ -1212,7 +1212,7 @@ footer.site-footer{
   background: var(--black-2);
   overflow: hidden;
 }
-.today-primary-image img{ object-fit: cover; }
+.today-primary-image img{ object-fit: contain; }
 .today-primary-image-placeholder{
   position: absolute;
   inset: 0;
@@ -1328,7 +1328,7 @@ footer.site-footer{
   background: var(--black-2);
   overflow: hidden;
 }
-.spotlight-portrait img{ object-fit: cover; }
+.spotlight-portrait img{ object-fit: contain; }
 .spotlight-bg-word{
   position: absolute;
   left: 50%;
@@ -1421,7 +1421,7 @@ footer.site-footer{
   background: var(--black-3);
   overflow: hidden;
 }
-.btl-tile img{ object-fit: cover; transition: transform 400ms var(--motion-ease); }
+.btl-tile img{ object-fit: contain; transition: transform 400ms var(--motion-ease); }
 .btl-tile:hover img{ transform: scale(1.04); }
 .btl-tile-overlay{
   position: absolute;
@@ -1478,7 +1478,7 @@ footer.site-footer{
   overflow: hidden;
   transition: transform 280ms var(--motion-ease);
 }
-.fresh-face-image img{ object-fit: cover; transition: transform 280ms var(--motion-ease); }
+.fresh-face-image img{ object-fit: contain; transition: transform 280ms var(--motion-ease); }
 .fresh-face-card:hover .fresh-face-image img{ transform: scale(1.025); }
 .fresh-face-name{
   display: block;
@@ -1549,7 +1549,7 @@ footer.site-footer{
 .production-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-24); }
 .production-card{ display: block; color: inherit; background: var(--white); border: 1px solid var(--line); }
 .production-card-image{ position: relative; aspect-ratio: 4/3; background: var(--black-2); }
-.production-card-image img{ object-fit: cover; }
+.production-card-image img{ object-fit: contain; }
 .production-status{
   position: absolute;
   top: var(--space-12); left: var(--space-12);
@@ -1580,7 +1580,7 @@ footer.site-footer{
 .cut-header .headline{ font-size: clamp(32px, 4vw, 52px); color: var(--black); }
 .cut-lead{ display: grid; grid-template-columns: 800fr 500fr; gap: var(--space-48); align-items: center; }
 .cut-lead-image{ position: relative; aspect-ratio: 16/9; background: var(--black-2); }
-.cut-lead-image img{ object-fit: cover; }
+.cut-lead-image img{ object-fit: contain; }
 .cut-score{
   display: block;
   font-family: var(--font-anton), sans-serif;
@@ -1594,7 +1594,7 @@ footer.site-footer{
 .cut-secondary{ display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-16); margin-top: var(--space-48); }
 .cut-secondary-card{ display: block; color: inherit; position: relative; }
 .cut-secondary-image{ position: relative; aspect-ratio: 4/3; background: var(--black-2); margin-bottom: var(--space-8); }
-.cut-secondary-image img{ object-fit: cover; }
+.cut-secondary-image img{ object-fit: contain; }
 .cut-secondary-score{
   position: absolute; top: var(--space-8); right: var(--space-8);
   background: rgba(10,10,10,0.75); color: var(--gold);
@@ -1624,7 +1624,7 @@ footer.site-footer{
 .lens-section{ background: var(--off-white); color: var(--black); padding: var(--space-120) 0; }
 .lens-grid{ display: grid; grid-template-columns: 58fr 42fr; gap: var(--space-48); align-items: center; }
 .lens-still{ position: relative; aspect-ratio: 4/3; background: var(--black-2); }
-.lens-still img{ object-fit: cover; }
+.lens-still img{ object-fit: contain; }
 .lens-title{ font-size: clamp(28px, 3vw, 44px); color: var(--black); margin: var(--space-8) 0 var(--space-24); }
 .lens-byline{ margin-bottom: var(--space-16); }
 .lens-name{ display: block; font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 22px; }
@@ -1668,7 +1668,7 @@ footer.site-footer{
   color: var(--off-white);
   margin-bottom: var(--space-48);
 }
-.festival-featured img{ object-fit: cover; }
+.festival-featured img{ object-fit: contain; }
 .festival-featured-overlay{
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: flex-end;
@@ -1792,7 +1792,7 @@ footer.site-footer{
 .instagram-header a{ font-family: var(--font-bebas), sans-serif; letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; border-bottom: 1px solid var(--black); padding-bottom: 2px; }
 .instagram-grid{ display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-4); }
 .instagram-item{ position: relative; display: block; aspect-ratio: 1; background: var(--black-2); overflow: hidden; }
-.instagram-item img{ object-fit: cover; }
+.instagram-item img{ object-fit: contain; }
 .instagram-item-overlay{
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: flex-end;
@@ -2644,7 +2644,7 @@ h3.article-section-header{ font-size: var(--type-card-headline); }
   overflow: hidden;
   background: var(--black-2);
 }
-.festival-featured-img{ object-fit: cover; }
+.festival-featured-img{ object-fit: contain; }
 .festival-featured-body{ display: flex; flex-direction: column; gap: var(--space-16); }
 .festival-featured-name{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: clamp(28px, 4vw, 52px); line-height: 1; }
 .festival-featured-dates{ font-size: 18px; color: var(--gray); }
