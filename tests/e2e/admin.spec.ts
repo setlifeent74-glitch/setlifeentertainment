@@ -156,3 +156,48 @@ test.describe('§45 admin CMS — full editorial workflow', () => {
     expect(storyResponse?.status()).toBe(404);
   });
 });
+
+test.describe('§45.1 admin editor sidebar — fieldset overflow regression', () => {
+  test('News category Details panel does not overflow the sidebar at 1440x900, and shares edges with Hero Image / SEO', async ({
+    page,
+  }) => {
+    // §45.1 real bug, fixed twice: a <fieldset> (.admin-meta-panel) carries
+    // a browser-default min-width sized to its own content, which
+    // width:100% alone does not override inside a flex column — News has
+    // the longest known category-hint label, so it's the one that actually
+    // exercises the bug (a short-labeled category could pass without the
+    // fix present). First fix attempt (width:100%/box-sizing:border-box
+    // alone) did not resolve it; min-width:0 + overflow-wrap on the label
+    // did. Separately found in the same audit: fieldsets also carry a
+    // browser-default margin, which misaligned this panel from its
+    // non-fieldset sibling (.admin-hero-upload) by a couple of pixels even
+    // after the overflow itself was fixed — reset to margin:0 too.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/admin/posts/new?category=news');
+
+    const sidebar = page.locator('.admin-editor-sidebar');
+    const heroUpload = page.locator('.admin-hero-upload');
+    const detailsPanel = page.locator('.admin-meta-panel').first();
+    const seoPanel = page.locator('.admin-meta-panel').last();
+    await expect(detailsPanel.locator('legend')).toHaveText('Details');
+    await expect(seoPanel.locator('legend')).toHaveText('SEO');
+
+    const sidebarBox = await sidebar.boundingBox();
+    const heroBox = await heroUpload.boundingBox();
+    const detailsBox = await detailsPanel.boundingBox();
+    const seoBox = await seoPanel.boundingBox();
+    if (!sidebarBox || !heroBox || !detailsBox || !seoBox) throw new Error('one or more sidebar boxes not found');
+
+    const EPS = 1;
+    expect(Math.abs(heroBox.x - detailsBox.x)).toBeLessThanOrEqual(EPS);
+    expect(Math.abs(detailsBox.x - seoBox.x)).toBeLessThanOrEqual(EPS);
+    expect(Math.abs(heroBox.x + heroBox.width - (detailsBox.x + detailsBox.width))).toBeLessThanOrEqual(EPS);
+    expect(Math.abs(detailsBox.x + detailsBox.width - (seoBox.x + seoBox.width))).toBeLessThanOrEqual(EPS);
+    expect(detailsBox.x + detailsBox.width).toBeLessThanOrEqual(sidebarBox.x + sidebarBox.width + EPS);
+    expect(detailsBox.x).toBeGreaterThanOrEqual(sidebarBox.x - EPS);
+
+    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    const clientWidth = await page.evaluate(() => document.documentElement.clientWidth);
+    expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
+  });
+});
