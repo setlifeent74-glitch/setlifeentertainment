@@ -128,71 +128,80 @@ export default function GlobalNav({ activePath, overlay = false }: { activePath:
     .join(" ");
 
   return (
-    <header ref={headerRef} className={navClasses} data-testid="global-nav">
-      <div className="top-nav-inner wrap">
-        <Link href="/" className="nav-logo" aria-label="Set Life Entertainment — home">
-          <Image src="/assets/logo-nav.png" alt="" width={64} height={46} priority={overlay} />
-        </Link>
+    <>
+      <header ref={headerRef} className={navClasses} data-testid="global-nav">
+        <div className="top-nav-inner wrap">
+          <Link href="/" className="nav-logo" aria-label="Set Life Entertainment — home">
+            <Image src="/assets/logo-nav.png" alt="" width={64} height={46} priority={overlay} />
+          </Link>
 
-        <nav className="nav-primary" aria-label="Primary">
-          {PRIMARY_NAV.map((item) =>
-            isNavLeaf(item) ? (
-              <NavLink key={item.href} href={item.href} active={item.href === activePath}>
-                {item.label}
-              </NavLink>
-            ) : (
-              <div className="nav-mega-wrap" key={item.label}>
-                <button
-                  ref={megaTriggerRef}
-                  type="button"
-                  className={`nav-mega-trigger${isIndustryActive ? " active" : ""}`}
-                  aria-expanded={megaOpen}
-                  aria-haspopup="true"
-                  onClick={() => setMegaOpen((v) => !v)}
-                >
+          <nav className="nav-primary" aria-label="Primary">
+            {PRIMARY_NAV.map((item) =>
+              isNavLeaf(item) ? (
+                <NavLink key={item.href} href={item.href} active={item.href === activePath}>
                   {item.label}
-                </button>
-                {megaOpen && (
-                  <div className="nav-mega-panel" ref={megaPanelRef}>
-                    <div className="nav-mega-panel-inner wrap">
-                      <ul>
-                        {item.mega.map((leaf) => (
-                          <li key={leaf.href}>
-                            <NavLink href={leaf.href} active={leaf.href === activePath}>
-                              {leaf.label}
-                            </NavLink>
-                          </li>
-                        ))}
-                      </ul>
+                </NavLink>
+              ) : (
+                <div className="nav-mega-wrap" key={item.label}>
+                  <button
+                    ref={megaTriggerRef}
+                    type="button"
+                    className={`nav-mega-trigger${isIndustryActive ? " active" : ""}`}
+                    aria-expanded={megaOpen}
+                    aria-haspopup="true"
+                    onClick={() => setMegaOpen((v) => !v)}
+                  >
+                    {item.label}
+                  </button>
+                  {megaOpen && (
+                    <div className="nav-mega-panel" ref={megaPanelRef}>
+                      <div className="nav-mega-panel-inner wrap">
+                        <ul>
+                          {item.mega.map((leaf) => (
+                            <li key={leaf.href}>
+                              <NavLink href={leaf.href} active={leaf.href === activePath}>
+                                {leaf.label}
+                              </NavLink>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )
-          )}
-        </nav>
+                  )}
+                </div>
+              )
+            )}
+          </nav>
 
-        <div className="nav-utility">
-          {UTILITY_NAV.map((link) => (
-            <NavLink key={link.href} href={link.href} active={link.href === activePath} className="nav-utility-link">
-              {link.label}
-            </NavLink>
-          ))}
+          <div className="nav-utility">
+            {UTILITY_NAV.map((link) => (
+              <NavLink key={link.href} href={link.href} active={link.href === activePath} className="nav-utility-link">
+                {link.label}
+              </NavLink>
+            ))}
+          </div>
+
+          <button
+            ref={mobileToggleRef}
+            type="button"
+            className="nav-mobile-toggle"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-panel"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            <span className={`nav-mobile-icon${mobileOpen ? " is-open" : ""}`} />
+          </button>
         </div>
+      </header>
 
-        <button
-          ref={mobileToggleRef}
-          type="button"
-          className="nav-mobile-toggle"
-          aria-expanded={mobileOpen}
-          aria-controls="mobile-nav-panel"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          <span className={`nav-mobile-icon${mobileOpen ? " is-open" : ""}`} />
-        </button>
-      </div>
-
+      {/* §16.1 — Mobile menu panel is a sibling of <header>, not a child.
+          A fixed-position element inside a positioned ancestor that establishes
+          a stacking context (position + z-index) is contained within that
+          ancestor rather than escaping to the viewport — the backdrop never
+          covers the full screen height. Rendering outside <header> makes
+          `position:fixed; inset:0` work as specified. Desktop hides this
+          panel via @media (min-width: 768px) { display: none }. */}
       <div id="mobile-nav-panel" className="nav-mobile-panel" ref={mobilePanelRef} hidden={!mobileOpen}>
         <nav aria-label="Mobile">
           <ul className="nav-mobile-editorial">
@@ -218,6 +227,6 @@ export default function GlobalNav({ activePath, overlay = false }: { activePath:
           </ul>
         </nav>
       </div>
-    </header>
+    </>
   );
 }

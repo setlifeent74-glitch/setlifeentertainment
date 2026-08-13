@@ -218,6 +218,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   padding: 0 0 var(--space-4);
   position: relative;
   transition: color 0.25s ease;
+  /* §16.2 — <button> default line-height is "normal" (~1.2) while sibling
+     <a> elements inherit the body line-height (1.6), pushing the trigger
+     visibly lower than its neighbours. Inherit forces the same baseline. */
+  line-height: inherit;
+  vertical-align: baseline;
 }
 .nav-mega-trigger::after{
   content: '';
@@ -292,8 +297,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
 .nav-mobile-icon.is-open::after{ top: 0; transform: rotate(-45deg); }
 
 .nav-mobile-panel{
+  /* §16.1 — fixed to viewport, not sized to content height.
+     `inset:0` is the primary; explicit width/height are fallbacks for any
+     browser quirk where inset alone doesn't fill. z-index 50 clears the
+     header's z-index:5 stacking context since this element is now a sibling
+     of <header>, not a child — `position:fixed` works against the viewport. */
   position: fixed;
   inset: 0;
+  width: 100vw;
+  height: 100dvh;
   z-index: 50;
   background: var(--black);
   overflow-y: auto;
@@ -1026,6 +1038,73 @@ footer.site-footer{
 }
 @media (min-width: 768px){
   .nav-mobile-panel{ display: none; }
+}
+
+/* ---------- §42.1 Mobile hero — portrait override ----------
+   Desktop and landscape: full-bleed 100svh (§17, unchanged).
+   Mobile portrait: solid nav in flow, video at native 16:9 below it.
+   Nothing is cropped. Controls stay within the now-shorter video frame.
+   Landscape on a phone reverts to full-bleed via the orientation query. */
+@media (max-width: 767px) and (orientation: portrait){
+  /* Nav: static in document flow, always opaque — no video beneath it */
+  .top-nav--overlay{
+    position: static;
+    background: var(--black) !important;
+    border-bottom: 1px solid var(--line);
+    animation: none;
+  }
+  /* Hero: let height derive from the video's aspect ratio instead of filling
+     the viewport. `aspect-ratio` on the section itself reserves the exact
+     right height before the video loads, preventing CLS. */
+  .hero-video{
+    height: auto;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    overflow: visible;
+  }
+  /* Video fills the section width at native 16:9 — no cropping */
+  .hero-video video,
+  .hero-video .hero-poster-img{
+    position: static;
+    width: 100%;
+    height: auto;
+    object-fit: unset;
+  }
+  /* Controls pin to bottom-right of the video frame, not the viewport */
+  .hero-controls{
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+  }
+  /* Scroll indicator is meaningless on mobile portrait — hide it */
+  .hero-scroll{ display: none; }
+}
+/* Landscape phone: revert to the desktop full-bleed treatment */
+@media (max-width: 767px) and (orientation: landscape){
+  .top-nav--overlay{
+    position: absolute;
+    background: rgba(10,10,10,calc(var(--nav-scroll) * 0.98));
+    border-bottom: none;
+    animation: hero-nav-in 150ms var(--motion-ease) 100ms both;
+  }
+  .hero-video{
+    height: 100svh;
+    aspect-ratio: unset;
+  }
+  .hero-video video,
+  .hero-video .hero-poster-img{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .hero-video::after{
+    inset: 0;
+    height: auto;
+    width: auto;
+  }
 }
 
 /* ==================================================================
@@ -1883,7 +1962,10 @@ footer.site-footer{
 }
 .admin-field label input[type="checkbox"]{ margin-right: 8px; width: auto; }
 
-.admin-meta-panel{ border: 1px solid var(--line); padding: var(--space-16); display: flex; flex-direction: column; gap: var(--space-16); }
+/* §45.1 — fieldset elements have a browser-default intrinsic width based on
+   min-content, which ignores the parent's padding and bleeds past it.
+   `width:100%` and `box-sizing:border-box` constrain it to the panel column. */
+.admin-meta-panel{ border: 1px solid var(--line); padding: var(--space-16); display: flex; flex-direction: column; gap: var(--space-16); width: 100%; box-sizing: border-box; }
 .admin-meta-panel legend{
   font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.08em;
