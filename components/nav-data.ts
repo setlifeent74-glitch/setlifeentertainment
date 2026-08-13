@@ -35,3 +35,27 @@ export const UTILITY_NAV: NavLeaf[] = [
 export function isNavLeaf(item: NavItem): item is NavLeaf {
   return "href" in item;
 }
+
+/**
+ * §38 Editorial Footer — "Every label above resolves per the link map in
+ * §16. All five links share that single source of truth with the main
+ * nav." Explore/Industry are derived directly from PRIMARY_NAV rather than
+ * re-declared, so the two surfaces can't drift apart.
+ */
+export const FOOTER_EXPLORE: NavLeaf[] = PRIMARY_NAV.filter(isNavLeaf).slice(0, 5);
+export const FOOTER_INDUSTRY: NavLeaf[] = (PRIMARY_NAV.find((item) => !isNavLeaf(item) && item.label === "Industry") as Extract<NavItem, { mega: NavLeaf[] }>).mega;
+
+export const FOOTER_SET_LIFE: NavLeaf[] = [
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+  { href: "/shop", label: "Shop" },
+  { href: "/submit", label: "Submit" },
+];
+
+export const FOOTER_LEGAL: NavLeaf[] = [
+  { href: "/privacy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
+  { href: "/editorial-policy", label: "Editorial Policy" },
+  { href: "/review-policy", label: "Review Policy" },
+  { href: "/accessibility", label: "Accessibility" },
+];

@@ -1,6 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
+import { FOOTER_EXPLORE, FOOTER_INDUSTRY, FOOTER_SET_LIFE, FOOTER_LEGAL } from "./nav-data";
 
+/**
+ * §38 Editorial Footer. Explore/Industry columns are derived from
+ * PRIMARY_NAV (nav-data.ts) — the single source of truth shared with §16's
+ * main nav, not re-declared here. Only Instagram is a live channel; no
+ * placeholder icons for inactive ones (§38: "Only active channels").
+ */
 export default function SiteFooter() {
   return (
     <footer className="site-footer">
@@ -16,41 +23,57 @@ export default function SiteFooter() {
             </Link>
             <p>Spotlighting the indie film industry — rising talent, untold stories, across cinema.</p>
             <div className="social-row">
-              <a href="https://www.instagram.com/setlifeentertainment/" target="_blank" rel="noopener">
+              <a href="https://www.instagram.com/setlifeentertainment/" target="_blank" rel="noopener" aria-label="Set Life Entertainment on Instagram">
                 IG
               </a>
-              <a href="#">FB</a>
-              <a href="#">TT</a>
             </div>
           </div>
+
           <div>
             <h4>Explore</h4>
             <ul>
-              <li><Link href="/">Home</Link></li>
-              <li><Link href="/issues">Issues</Link></li>
-              <li><Link href="/about">About</Link></li>
+              {FOOTER_EXPLORE.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
+
           <div>
-            <h4>Get Involved</h4>
+            <h4>Industry</h4>
             <ul>
-              <li><Link href="/submit">Submit a Story</Link></li>
-              <li><Link href="/contact">Contact</Link></li>
-              <li><Link href="/contact">Advertise</Link></li>
+              {FOOTER_INDUSTRY.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
+
           <div>
-            <h4>Follow</h4>
+            <h4>Set Life</h4>
             <ul>
-              <li>
-                <a href="https://www.instagram.com/setlifeentertainment/" target="_blank" rel="noopener">
-                  Instagram
-                </a>
-              </li>
-              <li><a href="#">Newsletter</a></li>
+              {FOOTER_SET_LIFE.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4>Legal</h4>
+            <ul>
+              {FOOTER_LEGAL.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
+
         <div className="footer-bottom">
           <span>© 2026 Set Life Entertainment. All rights reserved.</span>
           <span>The Voice. The Culture. The Future.</span>
