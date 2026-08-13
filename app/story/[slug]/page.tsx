@@ -66,6 +66,8 @@ type ArticleMeta = {
   captionsUrl?: string;
   canvasColor?: string;
   headlineColor?: string;
+  heroFit?: "cover" | "contain";
+  heroPosition?: "top" | "center" | "bottom";
 };
 
 export default async function StoryPage({
@@ -150,7 +152,15 @@ export default async function StoryPage({
 
         {post.hero_image_url && (
           // eslint-disable-next-line @next/next/no-img-element -- hero image, arbitrary uploaded URL
-          <img src={post.hero_image_url} alt={post.title} className="article-hero-image" />
+          <img
+            src={post.hero_image_url}
+            alt={post.title}
+            className="article-hero-image"
+            style={{
+              objectFit: meta.heroFit === "contain" ? "contain" : "cover",
+              objectPosition: meta.heroFit === "contain" ? "center" : (meta.heroPosition ?? "center"),
+            }}
+          />
         )}
 
         <div className="article-layout wrap">

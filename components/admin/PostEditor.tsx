@@ -262,6 +262,44 @@ export default function PostEditor({
         </div>
 
         <div className="admin-field">
+          <label>Hero Image Display</label>
+          <div className="hero-fit-row">
+            <button
+              type="button"
+              className={(meta.heroFit ?? "cover") === "cover" ? "btn btn-primary" : "btn"}
+              onClick={() => setMeta({ ...meta, heroFit: "cover" })}
+            >
+              Crop to Fill
+            </button>
+            <button
+              type="button"
+              className={meta.heroFit === "contain" ? "btn btn-primary" : "btn"}
+              onClick={() => setMeta({ ...meta, heroFit: "contain" })}
+            >
+              Show Full Image
+            </button>
+          </div>
+          {(meta.heroFit ?? "cover") === "cover" && (
+            <div className="hero-fit-row" style={{ marginTop: 8 }}>
+              {(["top", "center", "bottom"] as const).map((pos) => (
+                <button
+                  key={pos}
+                  type="button"
+                  className={(meta.heroPosition ?? "center") === pos ? "btn btn-primary" : "btn"}
+                  onClick={() => setMeta({ ...meta, heroPosition: pos })}
+                >
+                  {pos[0].toUpperCase() + pos.slice(1)}
+                </button>
+              ))}
+            </div>
+          )}
+          <p className="admin-editor-hint" style={{ padding: 0 }}>
+            &quot;Crop to Fill&quot; fills the banner and may cut off the top or bottom of tall photos — pick which
+            part stays visible above. &quot;Show Full Image&quot; never crops, letterboxing instead if needed.
+          </p>
+        </div>
+
+        <div className="admin-field">
           <label>Article Canvas Color</label>
           <div className="admin-canvas-color-row">
             <input
