@@ -2052,10 +2052,39 @@ footer.site-footer{
   font-size: 12px;
   cursor: pointer;
 }
-.admin-editor-toolbar button.active, .admin-editor-toolbar button:hover, .admin-editor-image-btn:hover{
+.admin-editor-toolbar button.active, .admin-editor-toolbar button:hover, .admin-editor-image-btn:hover, .admin-editor-color-btn:hover{
   border-color: var(--gold);
   color: var(--gold);
 }
+.admin-editor-color-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--off-white);
+  font-size: 13px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.admin-editor-color-btn input[type="color"]{
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: none;
+  cursor: pointer;
+}
+.admin-editor-opacity-control{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  color: var(--off-white);
+  font-size: 13px;
+  padding: 6px 10px;
+}
+.admin-editor-opacity-control input[type="range"]{ width: 70px; }
 .admin-editor-body .ProseMirror{
   padding: var(--space-24);
   min-height: 420px;
@@ -2083,7 +2112,27 @@ footer.site-footer{
   color: var(--gold);
 }
 .admin-editor-body .ProseMirror img{ max-width: 100%; margin: var(--space-16) 0; }
+/* In-editor preview of styled boxes/pills — mirrors .article-styled-box /
+   .article-pill on the public page so contributors see what they'll get. */
+.admin-editor-body .ProseMirror [data-styled-box]{
+  margin: var(--space-16) 0;
+  padding: var(--space-16);
+  background: color-mix(in srgb, var(--box-color, #d9a441) calc(var(--box-opacity, 0.12) * 100%), var(--black-2));
+}
+.admin-editor-body .ProseMirror [data-styled-box="panel"]{ border-left: 4px solid var(--box-color, #d9a441); }
+.admin-editor-body .ProseMirror [data-styled-box="stat"]{ border: 1px solid var(--box-color, #d9a441); text-align: center; }
+.admin-editor-body .ProseMirror [data-pill]{
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--pill-color, #d9a441);
+  color: var(--black);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
 .admin-upload-error{ font-size: 13px; color: var(--red); margin: var(--space-8) 0 0; }
+.admin-editor-hint{ font-size: 12px; color: var(--gray); margin: var(--space-8) 0 0; padding: 0 var(--space-8); }
 
 /* ---------- Media library ---------- */
 .admin-media-grid{
@@ -2204,15 +2253,76 @@ h2.article-section-header{ font-size: var(--type-feature-headline); }
 h3.article-section-header{ font-size: var(--type-card-headline); }
 
 .article-pull-quote{
+  position: relative;
   border: none;
   border-left: 3px solid var(--gold);
   margin: var(--space-48) 0;
-  padding: 4px 0 4px var(--space-24);
+  padding: 4px 0 4px var(--space-48);
   font-family: var(--font-anton), sans-serif;
   text-transform: uppercase;
   font-size: clamp(28px, 3vw, 38px);
   line-height: 1.15;
   color: var(--off-white);
+}
+.article-pull-quote::before{
+  content: "\201C";
+  position: absolute;
+  top: -0.28em;
+  left: var(--space-8);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(64px, 8vw, 100px);
+  line-height: 1;
+  color: var(--gold);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* ---------- Styled boxes & pills (magazine-layout blocks) ---------- */
+.article-styled-box{
+  --box-color: #d9a441;
+  --box-opacity: 0.12;
+  margin: var(--space-32) 0;
+  padding: var(--space-24);
+}
+.article-styled-box > *:first-child{ margin-top: 0; }
+.article-styled-box > *:last-child{ margin-bottom: 0; }
+
+.article-styled-box--panel{
+  border-left: 4px solid var(--box-color);
+  background: color-mix(in srgb, var(--box-color) calc(var(--box-opacity) * 100%), var(--black-2));
+}
+
+.article-styled-box--highlight{
+  padding: var(--space-16) var(--space-24);
+  background: color-mix(in srgb, var(--box-color) calc(var(--box-opacity) * 100%), transparent);
+}
+
+.article-styled-box--stat{
+  text-align: center;
+  border: 1px solid var(--box-color);
+  background: color-mix(in srgb, var(--box-color) calc(var(--box-opacity) * 100%), var(--black-2));
+}
+.article-styled-box--stat p{
+  font-family: var(--font-anton), sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(30px, 5vw, 52px);
+  line-height: 1.1;
+  color: var(--off-white);
+  margin: 0;
+}
+
+.article-pill{
+  display: inline-block;
+  padding: 3px 12px;
+  margin: 0 2px;
+  border-radius: 999px;
+  background: var(--pill-color, var(--gold));
+  color: var(--black);
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .article-image-block{
@@ -2271,6 +2381,21 @@ h3.article-section-header{ font-size: var(--type-card-headline); }
 }
 .callout-box ul{ margin: 0; padding-left: 1.2em; }
 .callout-box li{ margin-bottom: var(--space-8); color: var(--gray); }
+
+/* ---------- Draft preview banner ---------- */
+.preview-draft-banner{
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--gold);
+  color: var(--black);
+  text-align: center;
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 13px;
+  padding: var(--space-8);
+}
 
 /* ---------- Reading progress ---------- */
 .reading-progress{

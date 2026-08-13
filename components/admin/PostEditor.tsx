@@ -145,6 +145,24 @@ export default function PostEditor({
     }
   };
 
+  // Saves the current (possibly still-draft) state, same as Save Draft, then
+  // opens the real public article template in a new tab so the contributor
+  // can see exactly how it'll look before Publish — without changing status.
+  const handlePreview = async () => {
+    setStatus("Saving for preview…");
+    const result = await savePostRaw();
+    if (result.error) {
+      setStatus(`Error: ${result.error}`);
+      return;
+    }
+    if (!postId) {
+      setPostId(result.id);
+      router.replace(`/admin/posts/${result.id}`);
+    }
+    setStatus("Saved");
+    window.open(`/story/${slug}?preview=1`, "_blank", "noopener");
+  };
+
   const handleUnpublish = async () => {
     if (!postId) return;
     setStatus("Unpublishing…");
@@ -267,6 +285,9 @@ export default function PostEditor({
         <div className="admin-editor-actions">
           <button type="button" className="btn" onClick={handleSave}>
             Save Draft
+          </button>
+          <button type="button" className="btn" onClick={handlePreview}>
+            Preview
           </button>
           {isPublished ? (
             <button type="button" className="btn btn-gold" onClick={handleUnpublish}>

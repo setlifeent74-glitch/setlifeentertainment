@@ -1,6 +1,6 @@
 import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import ReadingProgress from "@/components/story/ReadingProgress";
@@ -12,6 +12,7 @@ import RelatedContent from "@/components/story/RelatedContent";
 import { getPostBySlug, getRedirectTargetSlug, getRelatedPosts, getNextArticle } from "@/lib/queries";
 import { getSiteUrl } from "@/lib/site-url";
 import ArticleJsonLd from "@/components/story/ArticleJsonLd";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * §8: all post types (article, spotlight, review, news, ...) share one
@@ -65,9 +66,30 @@ type ArticleMeta = {
   captionsUrl?: string;
 };
 
-export default async function StoryPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function StoryPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string }>;
+}) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const { preview } = await searchParams;
+
+  // Draft preview: only honored for a signed-in admin user, so a bare
+  // `?preview=1` on a link never exposes unpublished content to anyone else.
+  let isPreviewingDraft = false;
+  let post = await getPostBySlug(slug);
+  if (!post && preview === "1") {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      post = await getPostBySlug(slug, { includeUnpublished: true });
+      if (post && post.status !== "published") isPreviewingDraft = true;
+    }
+  }
 
   if (!post) {
     const targetSlug = await getRedirectTargetSlug(slug);
@@ -81,6 +103,11 @@ export default async function StoryPage({ params }: { params: Promise<{ slug: st
 
   return (
     <>
+      {isPreviewingDraft && (
+        <div className="preview-draft-banner">
+          Draft preview — not published. Only visible to signed-in admins.
+        </div>
+      )}
       <TopNav active="/story" />
       <ArticleJsonLd post={post} url={url} />
       <ReadingProgress targetId="article-body" />
@@ -184,19 +211,34 @@ function PostBody({ body }: { body: unknown }) {
 
 type TiptapNodeShape = {
   type?: string;
-  attrs?: { level?: number; src?: string; alt?: string };
+  attrs?: {
+    level?: number;
+    src?: string;
+    alt?: string;
+    variant?: string;
+    color?: string;
+    opacity?: number;
+    label?: string;
+  };
   content?: TiptapNodeShape[];
   text?: string;
-  marks?: { type?: string }[];
+  marks?: { type?: string; attrs?: { color?: string } }[];
 };
 
 function tiptapInlineText(nodes?: TiptapNodeShape[]): ReactNode {
   if (!nodes) return null;
   return nodes.map((node, i) => {
-    const text = node.text ?? "";
-    if (node.marks?.some((m) => m.type === "bold")) return <strong key={i}>{text}</strong>;
-    if (node.marks?.some((m) => m.type === "italic")) return <em key={i}>{text}</em>;
-    return text;
+    // Non-text inline nodes (currently just the pill atom) render through
+    // the block-level switch instead of being treated as text.
+    if (node.type && node.type !== "text") return <TiptapNode key={i} node={node} />;
+
+    const marks = node.marks ?? [];
+    let el: ReactNode = node.text ?? "";
+    if (marks.some((m) => m.type === "italic")) el = <em>{el}</em>;
+    if (marks.some((m) => m.type === "bold")) el = <strong>{el}</strong>;
+    const color = marks.find((m) => m.type === "textStyle")?.attrs?.color;
+    if (color) el = <span style={{ color }}>{el}</span>;
+    return <span key={i}>{el}</span>;
   });
 }
 
@@ -211,6 +253,21 @@ function TiptapNode({ node }: { node: TiptapNodeShape }) {
     }
     case "blockquote":
       return <blockquote className="article-pull-quote">{node.content?.map((child, i) => <TiptapNode key={i} node={child} />)}</blockquote>;
+    case "styledBox": {
+      const variant = node.attrs?.variant ?? "panel";
+      const color = node.attrs?.color ?? "#d9a441";
+      const opacity = node.attrs?.opacity ?? 0.12;
+      const boxStyle = { "--box-color": color, "--box-opacity": String(opacity) } as CSSProperties;
+      return (
+        <div className={`article-styled-box article-styled-box--${variant}`} style={boxStyle}>
+          {node.content?.map((child, i) => <TiptapNode key={i} node={child} />)}
+        </div>
+      );
+    }
+    case "pill": {
+      const pillStyle = { "--pill-color": node.attrs?.color ?? "#d9a441" } as CSSProperties;
+      return <span className="article-pill" style={pillStyle}>{node.attrs?.label ?? ""}</span>;
+    }
     case "bulletList":
       return <ul>{node.content?.map((child, i) => <TiptapNode key={i} node={child} />)}</ul>;
     case "orderedList":
@@ -218,11 +275,15 @@ function TiptapNode({ node }: { node: TiptapNodeShape }) {
     case "listItem":
       return <li>{node.content?.map((child, i) => <TiptapNode key={i} node={child} />)}</li>;
     case "image":
+      // Alt text stays on the <img> for screen readers only — it used to
+      // also render as a visible <figcaption>, which meant every image
+      // (especially multi-page PDF uploads) showed its accessibility text
+      // as an ugly caption underneath. There's no separate visible-caption
+      // field, so nothing is shown here now.
       return node.attrs?.src ? (
         <figure className="article-image-block">
           {/* eslint-disable-next-line @next/next/no-img-element -- article body image, arbitrary uploaded URL */}
           <img src={node.attrs.src} alt={node.attrs.alt ?? ""} />
-          {node.attrs.alt && <figcaption>{node.attrs.alt}</figcaption>}
         </figure>
       ) : null;
     default:

@@ -4,19 +4,27 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
+import { TextStyle } from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
 import { useEffect, useState } from "react";
 import { uploadMedia, uploadPdfAsImages } from "@/lib/admin-media";
+import { StyledBox, Pill, type BoxVariant } from "@/lib/tiptap-blocks";
 import type { Json } from "@/lib/supabase/types";
 
 async function uploadImage(file: File): Promise<string | null> {
   return uploadMedia(file, "body");
 }
 
-/** §41 — "The admin editor (§45) enforces alt text before an image can be inserted." Returns null (do not insert) if the contributor cancels or leaves it blank. */
-function promptForAltText(): string | null {
-  const text = window.prompt("Alt text for this image (required for accessibility):", "");
-  if (!text || !text.trim()) return null;
-  return text.trim();
+/**
+ * §41 previously *required* alt text before an image could be inserted at
+ * all. Temporarily relaxed to non-blocking, per editorial request — still
+ * asks, but Cancel/blank now inserts the image with empty alt text instead
+ * of refusing to insert it, so a contributor can get content up now and
+ * backfill alt text later.
+ */
+function promptForAltText(): string {
+  const text = window.prompt("Alt text for this image (optional, for accessibility):", "");
+  return (text ?? "").trim();
 }
 
 /**
@@ -35,6 +43,7 @@ export default function TiptapEditor({
 }) {
   const [pdfStatus, setPdfStatus] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [pillColor, setPillColor] = useState("#d9a441");
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -42,6 +51,10 @@ export default function TiptapEditor({
       StarterKit.configure({ heading: { levels: [2, 3] } }),
       Image,
       Placeholder.configure({ placeholder: "Write the story…" }),
+      TextStyle,
+      Color,
+      StyledBox,
+      Pill,
     ],
     content: (content as object) ?? "",
     onUpdate: ({ editor }) => {
@@ -52,15 +65,20 @@ export default function TiptapEditor({
         const file = event.dataTransfer?.files?.[0];
         if (!file || !file.type.startsWith("image/")) return false;
         event.preventDefault();
+        // Resolve the exact drop position from the mouse coordinates, not
+        // the editor's current selection — the upload is async, so by the
+        // time it resolves the selection may have moved. This is what makes
+        // "drop the image where I dropped it" reliable.
+        const coords = { left: event.clientX, top: event.clientY };
+        const dropPos = view.posAtCoords(coords)?.pos ?? view.state.selection.from;
         const alt = promptForAltText();
-        if (!alt) return true; // cancelled or blank — do not insert, per §41
         setUploadError(null);
         uploadImage(file)
           .then((url) => {
             if (!url) return;
             const { schema } = view.state;
             const node = schema.nodes.image.create({ src: url, alt });
-            const tr = view.state.tr.insert(view.state.selection.from, node);
+            const tr = view.state.tr.insert(dropPos, node);
             view.dispatch(tr);
           })
           .catch((err) => setUploadError(err instanceof Error ? err.message : "Upload failed."));
@@ -79,6 +97,26 @@ export default function TiptapEditor({
   }, [editor]);
 
   if (!editor) return null;
+
+  // Wrap the current block(s) in a styled box, switch an already-boxed
+  // selection to a different variant, or unwrap it back to plain
+  // paragraphs — one button per variant, same toggle feel as Pull Quote.
+  const toggleBox = (variant: BoxVariant) => {
+    if (editor.isActive("styledBox", { variant })) {
+      editor.chain().focus().lift("styledBox").run();
+    } else if (editor.isActive("styledBox")) {
+      editor.chain().focus().updateAttributes("styledBox", { variant }).run();
+    } else {
+      editor.chain().focus().wrapIn("styledBox", { variant, color: "#d9a441", opacity: 0.12 }).run();
+    }
+  };
+
+  const insertPill = () => {
+    const label = window.prompt("Pill text (e.g. EXCLUSIVE, PREMIERE, INTERVIEW):", "");
+    if (!label || !label.trim()) return;
+    const insertPos = editor.state.selection.to;
+    editor.chain().focus().insertContentAt(insertPos, { type: "pill", attrs: { label: label.trim(), color: pillColor } }).run();
+  };
 
   return (
     <div className="admin-editor-body">
@@ -101,6 +139,61 @@ export default function TiptapEditor({
         <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive("bulletList") ? "active" : ""}>
           List
         </button>
+        <label className="admin-editor-color-btn" title="Text color">
+          <input
+            type="color"
+            value={editor.getAttributes("textStyle").color || "#f5f0e6"}
+            onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
+          />
+          Color
+        </label>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().unsetColor().run()}
+          disabled={!editor.getAttributes("textStyle").color}
+        >
+          Clear Color
+        </button>
+
+        <button type="button" onClick={() => toggleBox("panel")} className={editor.isActive("styledBox", { variant: "panel" }) ? "active" : ""}>
+          Panel
+        </button>
+        <button type="button" onClick={() => toggleBox("highlight")} className={editor.isActive("styledBox", { variant: "highlight" }) ? "active" : ""}>
+          Highlight
+        </button>
+        <button type="button" onClick={() => toggleBox("stat")} className={editor.isActive("styledBox", { variant: "stat" }) ? "active" : ""}>
+          Stat
+        </button>
+        <label className="admin-editor-color-btn" title="Box color (select a Panel/Highlight/Stat box first)">
+          <input
+            type="color"
+            value={editor.getAttributes("styledBox").color || "#d9a441"}
+            onChange={(e) => editor.chain().focus().updateAttributes("styledBox", { color: e.target.value }).run()}
+            disabled={!editor.isActive("styledBox")}
+          />
+          Box Color
+        </label>
+        <label className="admin-editor-opacity-control" title="Box background opacity">
+          Opacity
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={editor.getAttributes("styledBox").opacity ?? 0.12}
+            onChange={(e) => editor.chain().focus().updateAttributes("styledBox", { opacity: parseFloat(e.target.value) }).run()}
+            disabled={!editor.isActive("styledBox")}
+          />
+        </label>
+
+        <label className="admin-editor-color-btn" title="Pill color">
+          <input type="color" value={pillColor} onChange={(e) => setPillColor(e.target.value)} />
+          Pill
+        </label>
+        <button type="button" onClick={insertPill}>
+          + Pill
+        </button>
+
         <label className="admin-editor-image-btn">
           Image
           <input
@@ -111,12 +204,16 @@ export default function TiptapEditor({
               const file = e.target.files?.[0];
               e.target.value = "";
               if (!file) return;
+              // Capture where the cursor was *before* the upload (and the
+              // alt-text prompt, which steals focus) so the image lands
+              // exactly where the contributor placed the cursor, not
+              // wherever focus happens to land after the upload finishes.
+              const insertPos = editor.state.selection.to;
               const alt = promptForAltText();
-              if (!alt) return; // cancelled or blank — do not insert, per §41
               setUploadError(null);
               try {
                 const url = await uploadImage(file);
-                if (url) editor.chain().focus().setImage({ src: url, alt }).run();
+                if (url) editor.chain().focus().insertContentAt(insertPos, { type: "image", attrs: { src: url, alt } }).run();
               } catch (err) {
                 setUploadError(err instanceof Error ? err.message : "Upload failed.");
               }
@@ -137,8 +234,11 @@ export default function TiptapEditor({
               // One prompt covers every page — per-page prompts would be
               // impractical for a multi-page PDF — auto-suffixed with the
               // page number so each image still gets distinct alt text.
+              // Position captured up front, same reasoning as the Image
+              // button: PDF rendering + upload takes seconds per page, so
+              // pages land where the cursor was, not wherever focus drifts.
+              const insertPos = editor.state.selection.to;
               const altBase = promptForAltText();
-              if (!altBase) return;
               setUploadError(null);
               setPdfStatus("Reading PDF…");
               try {
@@ -148,11 +248,15 @@ export default function TiptapEditor({
                 if (urls.length) {
                   editor
                     .chain()
-                    .focus("end")
-                    .insertContent(
+                    .focus()
+                    .insertContentAt(
+                      insertPos,
                       urls.map((src, i) => ({
                         type: "image",
-                        attrs: { src, alt: urls.length > 1 ? `${altBase} (page ${i + 1} of ${urls.length})` : altBase },
+                        attrs: {
+                          src,
+                          alt: altBase ? (urls.length > 1 ? `${altBase} (page ${i + 1} of ${urls.length})` : altBase) : "",
+                        },
                       }))
                     )
                     .run();
@@ -167,6 +271,11 @@ export default function TiptapEditor({
         </label>
       </div>
       {uploadError && <p className="admin-upload-error">{uploadError}</p>}
+      <p className="admin-editor-hint">
+        Images upload to wherever your cursor is, and can be dragged to a new spot afterward. Select a paragraph and click
+        Panel/Highlight/Stat to box it — click the same variant again to remove the box. Box Color and Opacity only apply while
+        your cursor is inside a box.
+      </p>
       <EditorContent editor={editor} />
     </div>
   );

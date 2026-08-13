@@ -8,14 +8,16 @@ export type MagazineIssue = Database["public"]["Tables"]["magazine_issues"]["Row
 export type Product = Database["public"]["Tables"]["products"]["Row"];
 export type PostCategory = Database["public"]["Enums"]["post_category"];
 
-export async function getPostBySlug(slug: string): Promise<PostWithAuthor | null> {
+export async function getPostBySlug(
+  slug: string,
+  opts?: { includeUnpublished?: boolean }
+): Promise<PostWithAuthor | null> {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("posts")
-    .select("*, authors(*)")
-    .eq("slug", slug)
-    .eq("status", "published")
-    .single();
+  let query = supabase.from("posts").select("*, authors(*)").eq("slug", slug);
+  if (!opts?.includeUnpublished) {
+    query = query.eq("status", "published");
+  }
+  const { data } = await query.single();
   return data as PostWithAuthor | null;
 }
 

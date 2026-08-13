@@ -17,6 +17,7 @@ public/assets/hero-video-web.mp4
 
 # Next.js
 .next/
+.next_stale_*/
 next-env.d.ts
 tsconfig.tsbuildinfo
 
