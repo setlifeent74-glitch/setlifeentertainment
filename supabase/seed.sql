@@ -121,6 +121,11 @@ insert into public.magazine_issues (id, issue_number, title, summary, release_da
   ('30000000-0000-0000-0000-0000000000aa', 46, 'The Below the Line Issue', 'Seed content for route verification.', '2026-09-01', true)
 on conflict do nothing;
 
-insert into public.products (id, slug, name, description, price, published, digital_file_url) values
-  ('40000000-0000-0000-0000-0000000000aa', 'digital-issue-46', 'Issue 46 (Digital)', 'Seed content for route verification.', 500, true, 'https://example.com/issue46.pdf')
+-- §35 The Set Life Shop — one of each product shape (physical, digital,
+-- ticketed), all rendered by the same ProductCard component with no
+-- branching layout (§35 VERIFY).
+insert into public.products (id, slug, name, description, price, published, digital_file_url, image_url, event_date, event_location) values
+  ('40000000-0000-0000-0000-0000000000aa', 'digital-issue-46', 'Issue 46 (Digital)', 'Seed content for route verification.', 500, true, 'https://example.com/issue46.pdf', '/assets/covers/tray-chaney.jpg', null, null),
+  ('40000000-0000-0000-0000-0000000000ab', 'set-life-tee', 'Set Life Logo Tee', 'Seed content for route verification.', 2800, true, null, '/assets/covers/asia-clark.jpg', null, null),
+  ('40000000-0000-0000-0000-0000000000ac', 'launch-party-ticket', 'Issue 46 Launch Party — General Admission', 'Seed content for route verification.', 3500, true, null, '/assets/covers/blue-kimble.jpg', '2027-01-15T19:00:00Z', 'Atlanta, GA')
 on conflict do nothing;

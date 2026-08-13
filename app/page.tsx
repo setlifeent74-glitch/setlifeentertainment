@@ -14,6 +14,9 @@ import BehindTheLensSection from "@/components/homepage/BehindTheLensSection";
 import OpportunitiesSection from "@/components/homepage/OpportunitiesSection";
 import FestivalSection from "@/components/homepage/FestivalSection";
 import SetLife100Section from "@/components/homepage/SetLife100Section";
+import ShopSection from "@/components/homepage/ShopSection";
+import InstagramSection from "@/components/homepage/InstagramSection";
+import NewsletterSection from "@/components/homepage/NewsletterSection";
 
 export default async function HomePage() {
   const headerList = await headers();
@@ -33,8 +36,7 @@ export default async function HomePage() {
       />
 
       {/* §9 content readiness gates — each section below renders only above
-          its own minimum-content threshold (lib/gates.ts). §35-38
-          (Phase 8) continue this sequence. */}
+          its own minimum-content threshold (lib/gates.ts). */}
       <TodaySection />
       <CurrentIssueSection />
       <SpotlightSection />
@@ -48,6 +50,9 @@ export default async function HomePage() {
       <OpportunitiesSection />
       <FestivalSection />
       <SetLife100Section />
+      <ShopSection />
+      <InstagramSection />
+      <NewsletterSection />
     </>
   );
 }

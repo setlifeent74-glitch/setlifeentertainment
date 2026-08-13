@@ -302,6 +302,24 @@ export async function isSetLife100Enabled(): Promise<boolean> {
 }
 
 /**
+ * §36 CMS fallback grid — recent published posts with a hero image, across
+ * any placement. Used when the live Instagram Graph API isn't reachable
+ * (no INSTAGRAM_ACCESS_TOKEN configured, or the call fails) — §9/§36:
+ * "graceful degradation... never an empty region."
+ */
+export async function getInstagramFallbackPosts(): Promise<PostWithAuthor[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("posts")
+    .select("*, authors(*)")
+    .eq("status", "published")
+    .not("hero_image_url", "is", null)
+    .order("published_at", { ascending: false })
+    .limit(10);
+  return (data ?? []) as PostWithAuthor[];
+}
+
+/**
  * §16 link map — minimal search scope: a single ilike query against
  * published posts and products, no filters, no ranking, no predictive
  * suggestions. The scaled-up successor is Growth Roadmap 1.3.
