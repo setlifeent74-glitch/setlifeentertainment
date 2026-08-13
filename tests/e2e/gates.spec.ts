@@ -24,15 +24,14 @@ test.describe('§9 gate status — known seed data', () => {
     await page.goto('/admin/gates');
 
     // Met: §22 (3 today posts), §23 (1 current issue), §26 (3 crew posts),
-    // §27 (4 fresh faces), §35 (1 published product).
-    for (const id of ['today', 'current_issue', 'below_the_line', 'fresh_face', 'shop']) {
-      await expect(page.locator(`tr[data-gate-id="${id}"]`)).toHaveAttribute('data-gate-met', 'true');
-    }
-
-    // Unmet: everything else falls short of its §9 minimum with this seed data.
+    // §27 (4 fresh faces), §28 (3 productions), §29 (2 reviews), §30 (1
+    // video), §31 (1 qualifying post), §32 (3 opportunities), §33 (2
+    // festivals), §34 (3 honorees + admin enabled), §35 (1 published product).
     for (const id of [
-      'spotlight_feature',
-      'call_sheet',
+      'today',
+      'current_issue',
+      'below_the_line',
+      'fresh_face',
       'production',
       'cut',
       'screening_room',
@@ -40,7 +39,13 @@ test.describe('§9 gate status — known seed data', () => {
       'opportunity',
       'festival',
       'set_life_100',
+      'shop',
     ]) {
+      await expect(page.locator(`tr[data-gate-id="${id}"]`)).toHaveAttribute('data-gate-met', 'true');
+    }
+
+    // Unmet: everything else falls short of its §9 minimum with this seed data.
+    for (const id of ['spotlight_feature', 'call_sheet']) {
       await expect(page.locator(`tr[data-gate-id="${id}"]`)).toHaveAttribute('data-gate-met', 'false');
     }
 
