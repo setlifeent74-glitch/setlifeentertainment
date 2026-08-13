@@ -39,7 +39,27 @@ export async function updateSession(request: NextRequest) {
   // Required — do not remove. Calling getUser() (not getSession()) forces a
   // round-trip that validates the token and triggers refresh when needed;
   // skipping this silently lets expired sessions through.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // §45 VERIFY — "/admin while logged out redirects to login with no
+  // content leakage." Every /admin/* route except the login page itself
+  // requires a session; the flat-access model means any authenticated
+  // user is enough (no role check), so this one guard covers all of them.
+  const { pathname } = request.nextUrl;
+  if (pathname.startsWith("/admin") && pathname !== "/admin/login" && !user) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/admin/login";
+    loginUrl.searchParams.set("next", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+  if (pathname === "/admin/login" && user) {
+    const adminUrl = request.nextUrl.clone();
+    adminUrl.pathname = "/admin";
+    adminUrl.search = "";
+    return NextResponse.redirect(adminUrl);
+  }
 
   return supabaseResponse;
 }

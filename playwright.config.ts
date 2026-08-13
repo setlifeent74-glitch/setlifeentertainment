@@ -31,12 +31,26 @@ export default defineConfig({
   },
   projects: [
     {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
       name: 'desktop-1440',
-      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1440, height: 900 },
+        storageState: 'playwright/.auth/admin.json',
+      },
+      dependencies: ['setup'],
     },
     {
       name: 'mobile-390',
-      use: { ...devices['Desktop Chrome'], viewport: { width: 390, height: 844 } },
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        storageState: 'playwright/.auth/admin.json',
+      },
+      dependencies: ['setup'],
     },
   ],
 });

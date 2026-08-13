@@ -456,6 +456,45 @@ export type Database = {
         }
         Relationships: []
       }
+      submissions: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          instagram: string | null
+          portfolio_link: string | null
+          project_title: string | null
+          reviewed: boolean
+          role: string | null
+          story: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          instagram?: string | null
+          portfolio_link?: string | null
+          project_title?: string | null
+          reviewed?: boolean
+          role?: string | null
+          story: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          instagram?: string | null
+          portfolio_link?: string | null
+          project_title?: string | null
+          reviewed?: boolean
+          role?: string | null
+          story?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

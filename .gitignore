@@ -36,5 +36,6 @@ CLAUDE.md
 # Node / CI harness (Phase 0 — §49.1)
 node_modules/
 playwright-report/
+playwright/.auth/
 test-results/
 .lighthouseci/

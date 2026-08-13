@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Anton, Bebas_Neue, Archivo } from "next/font/google";
 import ConditionalMarquee from "@/components/ConditionalMarquee";
-import SiteFooter from "@/components/SiteFooter";
+import ConditionalFooter from "@/components/ConditionalFooter";
 import "../style.css";
 
 const anton = Anton({
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ConditionalMarquee />
         {children}
-        <SiteFooter />
+        <ConditionalFooter />
       </body>
     </html>
   );
