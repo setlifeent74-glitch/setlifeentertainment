@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import ParallaxNumeral from "./ParallaxNumeral";
-import { getCurrentIssue } from "@/lib/queries";
+import { getCurrentIssue, getSectionColors } from "@/lib/queries";
 
 function seasonFromDate(dateStr: string | null): string {
   if (!dateStr) return "";
@@ -14,11 +14,15 @@ function seasonFromDate(dateStr: string | null): string {
 
 /** §23 Current Magazine Issue — Gate: 1 current issue. */
 export default async function CurrentIssueSection() {
-  const issue = await getCurrentIssue();
+  const [issue, colors] = await Promise.all([getCurrentIssue(), getSectionColors()]);
   if (!issue) return null;
 
   return (
-    <ScrollReveal as="section" className="current-issue-section">
+    <ScrollReveal
+      as="section"
+      className="current-issue-section"
+      style={colors.current_issue ? { backgroundColor: colors.current_issue } : undefined}
+    >
       <ParallaxNumeral className="current-issue-numeral" aria-hidden="true">
         {issue.issue_number}
       </ParallaxNumeral>
@@ -34,7 +38,7 @@ export default async function CurrentIssueSection() {
           <p className="current-issue-meta">
             Issue {issue.issue_number} · {seasonFromDate(issue.release_date)}
           </p>
-          <h2 className="current-issue-title display">{issue.title}</h2>
+          <h2 className="current-issue-title display mask-reveal"><span>{issue.title}</span></h2>
           {issue.summary && <p className="current-issue-summary">{issue.summary}</p>}
           <div className="current-issue-cta">
             <Link href={`/issues/${issue.issue_number}`} className="btn btn-primary">

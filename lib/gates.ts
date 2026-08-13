@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
  * status page (§9 "Admin visibility") reads to build its display.
  */
 export const SECTION_GATES = {
-  today: { label: "§22 Today on Set Life", minimum: 3 },
+  today: { label: "§22 Today on the Set", minimum: 3 },
   current_issue: { label: "§23 Current Magazine Issue", minimum: 1 },
   spotlight_feature: { label: "§24 Indie Spotlight", minimum: 1 },
   call_sheet: { label: "§25 The Call Sheet", minimum: 5, staleAfterDays: 14 },

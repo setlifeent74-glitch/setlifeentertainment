@@ -415,6 +415,17 @@ export const isContentGatesEnabled = cache(async (): Promise<boolean> => {
 });
 
 /**
+ * Per-homepage-section canvas/background color overrides, keyed by section
+ * id (see SECTION_IDS in lib/section-colors.ts). Empty object = no section
+ * has a custom color set, every section keeps its normal CSS background.
+ */
+export const getSectionColors = cache(async (): Promise<Record<string, string>> => {
+  const supabase = await createClient();
+  const { data } = await supabase.from("site_settings").select("section_colors").eq("id", true).single();
+  return (data?.section_colors as Record<string, string> | null) ?? {};
+});
+
+/**
  * §36 CMS fallback grid — recent published posts with a hero image, across
  * any placement. Used when the live Instagram Graph API isn't reachable
  * (no INSTAGRAM_ACCESS_TOKEN configured, or the call fails) — §9/§36:

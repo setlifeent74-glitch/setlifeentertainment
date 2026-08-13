@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getBelowTheLinePosts, isContentGatesEnabled } from "@/lib/queries";
+import { getBelowTheLinePosts, isContentGatesEnabled, getSectionColors } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 import type { PostWithAuthor } from "@/lib/queries";
 
@@ -36,15 +36,23 @@ function MosaicTile({ post, span }: { post: PostWithAuthor; span: (typeof MOSAIC
 
 /** §26 Below the Line — Signature Section. Gate: 3 crew posts, placement=below_the_line (unless the §9 admin override is on). */
 export default async function BelowTheLineSection() {
-  const [posts, gatesEnabled] = await Promise.all([getBelowTheLinePosts(), isContentGatesEnabled()]);
+  const [posts, gatesEnabled, colors] = await Promise.all([
+    getBelowTheLinePosts(),
+    isContentGatesEnabled(),
+    getSectionColors(),
+  ]);
   if (gatesEnabled && posts.length < SECTION_GATES.below_the_line.minimum) return null;
   if (posts.length === 0) return null;
 
   return (
-    <ScrollReveal as="section" className="btl-section">
+    <ScrollReveal
+      as="section"
+      className="btl-section"
+      style={colors.below_the_line ? { backgroundColor: colors.below_the_line } : undefined}
+    >
       <div className="wrap">
         <div className="btl-header">
-          <h2 className="headline">BELOW THE LINE</h2>
+          <h2 className="headline mask-reveal"><span>BELOW THE LINE</span></h2>
           <p>THE PEOPLE WHO MAKE THE MOVIE POSSIBLE</p>
         </div>
 

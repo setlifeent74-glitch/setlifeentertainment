@@ -2,20 +2,28 @@ import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import FreshFacesRail from "./FreshFacesRail";
-import { getFreshFacesPosts, isContentGatesEnabled } from "@/lib/queries";
+import { getFreshFacesPosts, isContentGatesEnabled, getSectionColors } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
 /** §27 Fresh Faces — Gate: 4 spotlights, placement=fresh_face (unless the §9 admin override is on). */
 export default async function FreshFacesSection() {
-  const [posts, gatesEnabled] = await Promise.all([getFreshFacesPosts(), isContentGatesEnabled()]);
+  const [posts, gatesEnabled, colors] = await Promise.all([
+    getFreshFacesPosts(),
+    isContentGatesEnabled(),
+    getSectionColors(),
+  ]);
   if (gatesEnabled && posts.length < SECTION_GATES.fresh_face.minimum) return null;
   if (posts.length === 0) return null;
 
   return (
-    <ScrollReveal as="section" className="fresh-faces-section">
+    <ScrollReveal
+      as="section"
+      className="fresh-faces-section"
+      style={colors.fresh_face ? { backgroundColor: colors.fresh_face } : undefined}
+    >
       <div className="wrap">
         <div className="fresh-faces-header">
-          <h2 className="headline">FRESH FACES</h2>
+          <h2 className="headline mask-reveal"><span>FRESH FACES</span></h2>
           <p>THE NEXT NAMES YOU&apos;LL KNOW</p>
         </div>
       </div>

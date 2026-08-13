@@ -36,23 +36,27 @@ export default async function HomePage() {
       />
 
       {/* §9 content readiness gates — each section below renders only above
-          its own minimum-content threshold (lib/gates.ts). */}
-      <TodaySection />
-      <CurrentIssueSection />
-      <SpotlightSection />
-      <CallSheetSection />
-      <BelowTheLineSection />
-      <FreshFacesSection />
-      <ProductionSection />
-      <CutSection />
-      <ScreeningRoomSection />
-      <BehindTheLensSection />
-      <OpportunitiesSection />
-      <FestivalSection />
-      <SetLife100Section />
-      <ShopSection />
-      <InstagramSection />
-      <NewsletterSection />
+          its own minimum-content threshold (lib/gates.ts). `.homepage-sections`
+          gives every rendered pair of adjacent sections a divider (style.css)
+          regardless of which ones the gates let through. */}
+      <div className="homepage-sections">
+        <TodaySection />
+        <CurrentIssueSection />
+        <SpotlightSection />
+        <CallSheetSection />
+        <BelowTheLineSection />
+        <FreshFacesSection />
+        <ProductionSection />
+        <CutSection />
+        <ScreeningRoomSection />
+        <BehindTheLensSection />
+        <OpportunitiesSection />
+        <FestivalSection />
+        <SetLife100Section />
+        <ShopSection />
+        <InstagramSection />
+        <NewsletterSection />
+      </div>
     </>
   );
 }

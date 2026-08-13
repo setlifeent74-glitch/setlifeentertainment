@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getFestivalSectionPosts, isContentGatesEnabled } from "@/lib/queries";
+import { getFestivalSectionPosts, isContentGatesEnabled, getSectionColors } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
 type FestivalMeta = { city?: string; startDate?: string; endDate?: string; submissionDeadline?: string };
@@ -13,7 +13,11 @@ function formatDate(iso?: string) {
 
 /** §33 Festival Circuit — Gate: 2 upcoming festivals, placement=festival, chronological (unless the §9 admin override is on). */
 export default async function FestivalSection() {
-  const [posts, gatesEnabled] = await Promise.all([getFestivalSectionPosts(), isContentGatesEnabled()]);
+  const [posts, gatesEnabled, colors] = await Promise.all([
+    getFestivalSectionPosts(),
+    isContentGatesEnabled(),
+    getSectionColors(),
+  ]);
   if (gatesEnabled && posts.length < SECTION_GATES.festival.minimum) return null;
   if (posts.length === 0) return null;
 
@@ -21,10 +25,14 @@ export default async function FestivalSection() {
   const featuredMeta = (featured.meta ?? {}) as FestivalMeta;
 
   return (
-    <ScrollReveal as="section" className="festival-section">
+    <ScrollReveal
+      as="section"
+      className="festival-section"
+      style={colors.festival ? { backgroundColor: colors.festival } : undefined}
+    >
       <div className="wrap">
         <div className="festival-header">
-          <h2 className="headline">FESTIVAL CIRCUIT</h2>
+          <h2 className="headline mask-reveal"><span>FESTIVAL CIRCUIT</span></h2>
           <p>WHERE INDEPENDENT FILM MEETS THE WORLD</p>
         </div>
 

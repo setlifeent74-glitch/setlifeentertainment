@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, type ElementType, type ReactNode } from "react";
+import { useCallback, useRef, useState, type CSSProperties, type ElementType, type ReactNode } from "react";
 
 /**
  * Generic once-only scroll-in reveal wrapper, shared by every homepage
@@ -13,11 +13,13 @@ export default function ScrollReveal({
   className,
   as: Tag = "div",
   threshold = 0.15,
+  style,
 }: {
   children: ReactNode;
   className?: string;
   as?: ElementType;
   threshold?: number;
+  style?: CSSProperties;
 }) {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [inView, setInView] = useState(false);
@@ -42,7 +44,7 @@ export default function ScrollReveal({
   );
 
   return (
-    <Tag ref={setRef} className={`${className ?? ""}${inView ? " is-in-view" : ""}`}>
+    <Tag ref={setRef} className={`${className ?? ""}${inView ? " is-in-view" : ""}`} style={style}>
       {children}
     </Tag>
   );

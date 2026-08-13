@@ -1,24 +1,28 @@
 import Image from "next/image";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getCurrentHonorees, isSetLife100Enabled } from "@/lib/queries";
+import { getCurrentHonorees, isSetLife100Enabled, getSectionColors } from "@/lib/queries";
 
 /** §34 Set Life 100 — Gate: explicit admin enable AND published honorees for the current list_year. */
 export default async function SetLife100Section() {
   const enabled = await isSetLife100Enabled();
   if (!enabled) return null;
 
-  const honorees = await getCurrentHonorees();
+  const [honorees, colors] = await Promise.all([getCurrentHonorees(), getSectionColors()]);
   if (honorees.length === 0) return null;
 
   return (
-    <ScrollReveal as="section" className="set100-section">
+    <ScrollReveal
+      as="section"
+      className="set100-section"
+      style={colors.set_life_100 ? { backgroundColor: colors.set_life_100 } : undefined}
+    >
       <span className="set100-numeral" aria-hidden="true">
         100
       </span>
 
       <div className="wrap">
         <div className="set100-header">
-          <h2 className="headline">THE SET LIFE 100</h2>
+          <h2 className="headline mask-reveal"><span>THE SET LIFE 100</span></h2>
           <p>PEOPLE SHAPING THE FUTURE OF INDEPENDENT CINEMA</p>
         </div>
 

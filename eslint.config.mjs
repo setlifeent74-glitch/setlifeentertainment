@@ -5,6 +5,7 @@ const eslintConfig = [
   {
     ignores: [
       ".next/**",
+      ".next_stale_*/**",
       "node_modules/**",
       "public/**",
       "test-results/**",

@@ -446,16 +446,19 @@ export type Database = {
           id: boolean
           set_life_100_enabled: boolean
           content_gates_enabled: boolean
+          section_colors: Json
         }
         Insert: {
           id?: boolean
           set_life_100_enabled?: boolean
           content_gates_enabled?: boolean
+          section_colors?: Json
         }
         Update: {
           id?: boolean
           set_life_100_enabled?: boolean
           content_gates_enabled?: boolean
+          section_colors?: Json
         }
         Relationships: []
       }

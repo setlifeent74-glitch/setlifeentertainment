@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getBehindTheLensPost } from "@/lib/queries";
+import { getBehindTheLensPost, getSectionColors } from "@/lib/queries";
 
 type LensMeta = { camera?: string; frameNumber?: string; fps?: string };
 
@@ -13,14 +13,18 @@ type LensMeta = { camera?: string; frameNumber?: string; fps?: string };
  * split of that same order, not a reordering of it.
  */
 export default async function BehindTheLensSection() {
-  const post = await getBehindTheLensPost();
+  const [post, colors] = await Promise.all([getBehindTheLensPost(), getSectionColors()]);
   if (!post) return null;
 
   const meta = (post.meta ?? {}) as LensMeta;
   const technical = [meta.frameNumber, meta.camera, meta.fps].filter(Boolean).join(" · ");
 
   return (
-    <ScrollReveal as="section" className="lens-section">
+    <ScrollReveal
+      as="section"
+      className="lens-section"
+      style={colors.behind_the_lens ? { backgroundColor: colors.behind_the_lens } : undefined}
+    >
       <div className="wrap lens-grid">
         <div className="lens-still">
           {post.hero_image_url && <Image src={post.hero_image_url} alt="" fill sizes="(max-width: 767px) 100vw, 58vw" />}
@@ -28,7 +32,9 @@ export default async function BehindTheLensSection() {
 
         <div className="lens-content">
           <p className="eyebrow">Behind the Lens</p>
-          <h2 className="headline lens-title">DIRECTORS, CINEMATOGRAPHERS &amp; THE LANGUAGE OF FILM</h2>
+          <h2 className="headline lens-title mask-reveal">
+            <span>DIRECTORS, CINEMATOGRAPHERS &amp; THE LANGUAGE OF FILM</span>
+          </h2>
 
           <div className="lens-byline">
             <span className="lens-name">{post.title}</span>

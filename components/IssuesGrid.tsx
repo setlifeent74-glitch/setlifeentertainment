@@ -39,20 +39,39 @@ export default function IssuesGrid({ issues }: { issues: MagazineIssue[] }) {
               className={`cover-card${issue.cover_image_url ? " has-img" : ""}`}
               href={`/issues/${issue.issue_number}`}
             >
-              <span className="issue-no">
-                {issue.is_current ? "Current Issue" : `Issue ${issue.issue_number}`}
-              </span>
-              {issue.cover_image_url && (
-                <Image src={issue.cover_image_url} alt={issue.title} fill sizes="(max-width: 767px) 50vw, 25vw" />
-              )}
-              <div className="card-body">
-                <span className="card-name">{issue.title}</span>
-                {issue.release_date && (
-                  <span className="card-role">
-                    {new Date(issue.release_date).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+              {issue.cover_image_url ? (
+                <>
+                  {/* Image is its own clean block — no text ever renders on top of it. */}
+                  <div className="cover-card-image">
+                    <Image src={issue.cover_image_url} alt={issue.title} fill sizes="(max-width: 767px) 50vw, 25vw" />
+                  </div>
+                  <div className="card-body">
+                    <span className="issue-no">
+                      {issue.is_current ? "Current Issue" : `Issue ${issue.issue_number}`}
+                    </span>
+                    <span className="card-name">{issue.title}</span>
+                    {issue.release_date && (
+                      <span className="card-role">
+                        {new Date(issue.release_date).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                      </span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className="issue-no">
+                    {issue.is_current ? "Current Issue" : `Issue ${issue.issue_number}`}
                   </span>
-                )}
-              </div>
+                  <div className="card-body">
+                    <span className="card-name">{issue.title}</span>
+                    {issue.release_date && (
+                      <span className="card-role">
+                        {new Date(issue.release_date).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
             </Link>
           ))}
         </div>

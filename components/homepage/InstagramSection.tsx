@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getInstagramFallbackPosts } from "@/lib/queries";
+import { getInstagramFallbackPosts, getSectionColors } from "@/lib/queries";
 
 type GridItem = { href: string; imageUrl: string; caption: string; isInstagram: boolean };
 
@@ -49,14 +49,18 @@ async function getGridItems(): Promise<{ items: GridItem[]; isLive: boolean }> {
 }
 
 export default async function InstagramSection() {
-  const { items } = await getGridItems();
+  const [{ items }, colors] = await Promise.all([getGridItems(), getSectionColors()]);
   if (items.length === 0) return null;
 
   return (
-    <ScrollReveal as="section" className="instagram-section">
+    <ScrollReveal
+      as="section"
+      className="instagram-section"
+      style={colors.instagram ? { backgroundColor: colors.instagram } : undefined}
+    >
       <div className="wrap">
         <div className="instagram-header">
-          <h2 className="headline">FROM @SETLIFEENTERTAINMENT</h2>
+          <h2 className="headline mask-reveal"><span>FROM @SETLIFEENTERTAINMENT</span></h2>
           <a href="https://www.instagram.com/setlifeentertainment/" target="_blank" rel="noopener">
             Follow on Instagram
           </a>

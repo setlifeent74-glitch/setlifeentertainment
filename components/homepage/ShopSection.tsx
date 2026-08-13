@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import ProductCard from "@/components/ProductCard";
-import { getPublishedProducts, isContentGatesEnabled } from "@/lib/queries";
+import { getPublishedProducts, isContentGatesEnabled, getSectionColors } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
 /**
@@ -13,15 +13,23 @@ import { SECTION_GATES } from "@/lib/gates";
  * disabled state until then, not faked here either.
  */
 export default async function ShopSection() {
-  const [products, gatesEnabled] = await Promise.all([getPublishedProducts(), isContentGatesEnabled()]);
+  const [products, gatesEnabled, colors] = await Promise.all([
+    getPublishedProducts(),
+    isContentGatesEnabled(),
+    getSectionColors(),
+  ]);
   if (gatesEnabled && products.length < SECTION_GATES.shop.minimum) return null;
   if (products.length === 0) return null;
 
   return (
-    <ScrollReveal as="section" className="shop-section">
+    <ScrollReveal
+      as="section"
+      className="shop-section"
+      style={colors.shop ? { backgroundColor: colors.shop } : undefined}
+    >
       <div className="wrap">
         <div className="shop-header">
-          <h2 className="headline">THE SET LIFE SHOP</h2>
+          <h2 className="headline mask-reveal"><span>THE SET LIFE SHOP</span></h2>
           <p>WEAR IT. PLAY IT. BE THERE.</p>
         </div>
 

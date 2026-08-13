@@ -1,21 +1,25 @@
 import ScrollReveal from "@/components/ScrollReveal";
-import { getScreeningRoomVideo } from "@/lib/queries";
+import { getScreeningRoomVideo, getSectionColors } from "@/lib/queries";
 
 type VideoMeta = { videoUrl?: string; captionsUrl?: string; runtime?: string; series?: string };
 
 /** §30 The Screening Room — Gate: 1 video entry, placement=screening_room. */
 export default async function ScreeningRoomSection() {
-  const post = await getScreeningRoomVideo();
+  const [post, colors] = await Promise.all([getScreeningRoomVideo(), getSectionColors()]);
   if (!post) return null;
 
   const meta = (post.meta ?? {}) as VideoMeta;
   if (!meta.videoUrl) return null;
 
   return (
-    <ScrollReveal as="section" className="screening-room-section">
+    <ScrollReveal
+      as="section"
+      className="screening-room-section"
+      style={colors.screening_room ? { backgroundColor: colors.screening_room } : undefined}
+    >
       <div className="wrap">
         <div className="screening-room-header">
-          <h2 className="headline">THE SCREENING ROOM</h2>
+          <h2 className="headline mask-reveal"><span>THE SCREENING ROOM</span></h2>
           <p>WATCH SET LIFE</p>
         </div>
 

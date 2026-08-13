@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { getSectionGateStatuses } from "@/lib/gates";
-import { isContentGatesEnabled } from "@/lib/queries";
+import { isContentGatesEnabled, getSectionColors } from "@/lib/queries";
 import ContentGatesToggle from "@/components/admin/ContentGatesToggle";
+import SectionColorsPanel from "@/components/admin/SectionColorsPanel";
 
 export const metadata: Metadata = {
   title: "Content Gate Status — Set Life Entertainment",
@@ -19,7 +20,11 @@ export const metadata: Metadata = {
  * override (site_settings.content_gates_enabled).
  */
 export default async function GateStatusPage() {
-  const [gates, gatesEnabled] = await Promise.all([getSectionGateStatuses(), isContentGatesEnabled()]);
+  const [gates, gatesEnabled, sectionColors] = await Promise.all([
+    getSectionGateStatuses(),
+    isContentGatesEnabled(),
+    getSectionColors(),
+  ]);
   const metCount = gates.filter((g) => g.met).length;
 
   return (
@@ -61,6 +66,11 @@ export default async function GateStatusPage() {
           ))}
         </tbody>
       </table>
+
+      <h2 style={{ fontSize: "clamp(24px, 3vw, 34px)", marginTop: 56, marginBottom: 16 }}>
+        SECTION CANVAS COLORS
+      </h2>
+      <SectionColorsPanel initialColors={sectionColors} />
     </div>
   );
 }

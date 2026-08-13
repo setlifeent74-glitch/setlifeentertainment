@@ -51,7 +51,7 @@ export default function TiptapEditor({
   // touches the editor until the Apply button is clicked.
   const [pendingTextColor, setPendingTextColor] = useState("#f5f0e6");
   const [pendingBoxColor, setPendingBoxColor] = useState("#d9a441");
-  const [colorNotice, setColorNotice] = useState<string | null>(null);
+  const [colorNotice, setColorNotice] = useState<{ message: string; isError: boolean } | null>(null);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -130,16 +130,25 @@ export default function TiptapEditor({
   // just blinking somewhere (no selection), clicking Apply used to silently
   // set a "stored mark" that only affects the *next* characters typed, which
   // reads as "nothing happened" if you were expecting existing text to
-  // change. Guard it explicitly instead of failing silently, and use
-  // extendMarkRange so clicking Apply with the cursor in the middle of an
-  // already-colored word recolors that whole word, not just half of it.
+  // change. Guard it explicitly instead of failing silently. Kept as close
+  // as possible to the Bold/Italic buttons' own working pattern
+  // (chain().focus().<command>().run()) rather than adding extra commands
+  // (extendMarkRange, etc.) that aren't needed for a plain selection and
+  // only add places for something to go wrong. Verifies the mark actually
+  // landed afterward and says so explicitly either way, since "did it
+  // silently fail" is otherwise impossible to tell from outside the editor.
   const applyTextColor = () => {
     if (editor.state.selection.empty) {
-      setColorNotice("Select the text you want colored first, then click Apply Text Color.");
+      setColorNotice({ message: "Select the text you want colored first, then click Apply Text Color.", isError: true });
       return;
     }
-    setColorNotice(null);
-    editor.chain().focus().extendMarkRange("textStyle").setColor(pendingTextColor).run();
+    editor.chain().focus().setColor(pendingTextColor).run();
+    const applied = editor.isActive("textStyle", { color: pendingTextColor });
+    setColorNotice(
+      applied
+        ? { message: `Applied ${pendingTextColor} to the selected text.`, isError: false }
+        : { message: "Apply ran but the color mark didn't stick — please screenshot this and tell Claude.", isError: true }
+    );
   };
 
   return (
@@ -298,13 +307,24 @@ export default function TiptapEditor({
             }}
           />
         </label>
+        <button
+          type="button"
+          title="Click an image in the body to select it, then click here to remove it"
+          onClick={() => editor.chain().focus().deleteSelection().run()}
+          disabled={!editor.isActive("image")}
+        >
+          Delete Image
+        </button>
       </div>
       {uploadError && <p className="admin-upload-error">{uploadError}</p>}
-      {colorNotice && <p className="admin-upload-error">{colorNotice}</p>}
+      {colorNotice && (
+        <p className={colorNotice.isError ? "admin-upload-error" : "admin-editor-status"}>{colorNotice.message}</p>
+      )}
       <p className="admin-editor-hint">
-        Images upload to wherever your cursor is, and can be dragged to a new spot afterward. Select a paragraph and click
-        Panel/Highlight/Stat to box it — click the same variant again to remove the box. For any color swatch, pick the color
-        first, then click its Apply button to commit it — nothing changes until you click Apply.
+        Images upload to wherever your cursor is, and can be dragged to a new spot afterward. Click an image once to select it,
+        then click Delete Image to remove it. Select a paragraph and click Panel/Highlight/Stat to box it — click the same
+        variant again to remove the box. For any color swatch, pick the color first, then click its Apply button to commit it —
+        nothing changes until you click Apply.
       </p>
       <EditorContent editor={editor} />
     </div>
