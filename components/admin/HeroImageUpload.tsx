@@ -5,12 +5,19 @@ import { uploadMedia } from "@/lib/admin-media";
 
 export default function HeroImageUpload({ value, onChange }: { value: string; onChange: (url: string) => void }) {
   const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFile = async (file: File) => {
     setIsUploading(true);
-    const url = await uploadMedia(file, "hero");
-    setIsUploading(false);
-    if (url) onChange(url);
+    setError(null);
+    try {
+      const url = await uploadMedia(file, "hero");
+      if (url) onChange(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -32,6 +39,7 @@ export default function HeroImageUpload({ value, onChange }: { value: string; on
           }}
         />
       </label>
+      {error && <p className="admin-upload-error">{error}</p>}
     </div>
   );
 }

@@ -2083,6 +2083,7 @@ footer.site-footer{
   color: var(--gold);
 }
 .admin-editor-body .ProseMirror img{ max-width: 100%; margin: var(--space-16) 0; }
+.admin-upload-error{ font-size: 13px; color: var(--red); margin: var(--space-8) 0 0; }
 
 /* ---------- Media library ---------- */
 .admin-media-grid{
@@ -2332,3 +2333,88 @@ h3.article-section-header{ font-size: var(--type-card-headline); }
     transform: none;
   }
 }
+
+/* ============================================================
+   §13 Phase 13 — Interior page components
+   ============================================================ */
+
+/* Opportunity archive list */
+.opportunity-list{ display: flex; flex-direction: column; }
+.opportunity-row{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-24);
+  padding: var(--space-24) 0;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.opportunity-row:first-child{ border-top: 1px solid var(--line); }
+.opportunity-row:hover{ background: var(--black-2); }
+.opportunity-meta{ flex: 1; }
+.opportunity-title{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: clamp(18px, 2.5vw, 24px); margin: 4px 0 8px; }
+.opportunity-details{ display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--gray); }
+.opportunity-deadline{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.opportunity-arrow{ color: var(--gold); font-size: 18px; margin-top: 4px; }
+
+@media (max-width: 599px){
+  .opportunity-row{ flex-direction: column; gap: var(--space-12); }
+  .opportunity-deadline{ align-items: flex-start; flex-direction: row; gap: 8px; align-items: center; }
+  .opportunity-arrow{ display: none; }
+}
+
+/* Festival archive — featured block */
+.festival-featured{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-48);
+  align-items: center;
+}
+.festival-featured-image{
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: var(--black-2);
+}
+.festival-featured-img{ object-fit: cover; }
+.festival-featured-body{ display: flex; flex-direction: column; gap: var(--space-16); }
+.festival-featured-name{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: clamp(28px, 4vw, 52px); line-height: 1; }
+.festival-featured-dates{ font-size: 18px; color: var(--gray); }
+.festival-featured-deadline{ font-size: 15px; }
+
+/* Festival archive — timeline */
+.festival-timeline{ display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.festival-timeline-item{
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: var(--space-24);
+  align-items: center;
+  padding: var(--space-20) 0;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+}
+.festival-timeline-item:hover .festival-timeline-name{ color: var(--gold); }
+.festival-timeline-date{ font-family: var(--font-bebas), sans-serif; letter-spacing: 0.06em; color: var(--gold); font-size: 14px; }
+.festival-timeline-name{ font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: clamp(16px, 2vw, 22px); }
+.festival-timeline-meta{ display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--gray); margin-top: 4px; }
+.festival-timeline-arrow{ color: var(--gold); font-size: 18px; }
+
+@media (max-width: 767px){
+  .festival-featured{ grid-template-columns: 1fr; }
+  .festival-timeline-item{ grid-template-columns: 60px 1fr; }
+  .festival-timeline-arrow{ display: none; }
+}
+
+/* Contact / form feedback */
+.form-success{ color: #4caf50; font-size: 15px; padding: var(--space-16) 0; }
+.form-error{ color: var(--red); font-size: 14px; margin-top: var(--space-8); }

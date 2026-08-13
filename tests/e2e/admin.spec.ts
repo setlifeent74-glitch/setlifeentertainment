@@ -81,8 +81,12 @@ test.describe('§45 admin CMS — full editorial workflow', () => {
     await h2Button.click();
 
     // Inline image upload via the toolbar's file input (drag-and-drop isn't
-    // simulable through Playwright's input events the same way).
-    await page.locator('.admin-editor-image-btn input[type="file"]').setInputFiles(IMAGE_FIXTURE);
+    // simulable through Playwright's input events the same way). §41 now
+    // enforces alt text via a window.prompt() before insertion — Playwright
+    // auto-dismisses dialogs unless handled, which would make promptForAltText()
+    // return null and skip the insert entirely, so this must accept it first.
+    page.once('dialog', (dialog) => dialog.accept('E2E test image alt text'));
+    await page.getByLabel('Image', { exact: true }).setInputFiles(IMAGE_FIXTURE);
     await expect(editorBody.locator('img')).toBeVisible({ timeout: 15_000 });
 
     // Spotlight meta fields — role_line, 3+ credits, 2+ platform badges.

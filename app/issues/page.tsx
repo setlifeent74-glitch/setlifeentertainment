@@ -2,13 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import IssuesGrid from "@/components/IssuesGrid";
+import { getAllIssues } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Issues — Set Life Entertainment",
   description: "Browse every Set Life Entertainment cover story — indie actors, directors, and filmmakers on the rise.",
 };
 
-export default function IssuesPage() {
+export default async function IssuesPage() {
+  const issues = await getAllIssues();
+
   return (
     <>
       <TopNav active="/issues" />
@@ -26,7 +29,7 @@ export default function IssuesPage() {
 
       <section className="section" style={{ borderBottom: "none" }}>
         <div className="wrap">
-          <IssuesGrid />
+          <IssuesGrid issues={issues} />
         </div>
       </section>
 

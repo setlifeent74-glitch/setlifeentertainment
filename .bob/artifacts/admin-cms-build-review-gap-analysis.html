@@ -1,0 +1,198 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin CMS — Build Review &amp; Gap Analysis</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    background: #ffffff;
+    color: #1f2328;
+    padding: 32px 16px 48px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .meta { font-size: 13px; color: #57606a; margin-bottom: 32px; }
+  h2 { font-size: 15px; font-weight: 700; margin: 28px 0 10px; color: #1f2328; }
+  h3 { font-size: 13px; font-weight: 600; margin: 16px 0 6px; color: #1f2328; }
+  p { margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 13px; }
+  th { background: #f7f8fa; text-align: left; padding: 7px 10px; font-weight: 600; border: 1px solid #e5e7eb; }
+  td { padding: 7px 10px; border: 1px solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .done   { background: #dcfce7; color: #166534; }
+  .gap    { background: #fef9c3; color: #854d0e; }
+  .missing{ background: #fee2e2; color: #991b1b; }
+  .minor  { background: #ede9fe; color: #5b21b6; }
+  ul { padding-left: 20px; margin-bottom: 8px; }
+  li { margin-bottom: 4px; }
+  .section-box {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    background: #f7f8fa;
+  }
+  .section-box p { margin: 0; font-size: 13px; color: #57606a; }
+  .divider { border: none; border-top: 1px solid #e5e7eb; margin: 28px 0; }
+  footer { margin-top: 40px; padding-top: 14px; border-top: 1px solid #e5e7eb; text-align: center; font-size: 12px; color: #57606a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Admin CMS — Build Review &amp; Gap Analysis</h1>
+  <p class="meta">Set Life Entertainment · feat/admin-cms branch · reviewed against Platform Overview (Part 7)</p>
+
+  <h2>Overall Status</h2>
+  <p>The admin console foundation is <strong>substantially complete</strong>. Auth, all major CRUD surfaces, the block editor, media library, and gate-status dashboard are all present and wired to the database. The gaps are real but narrow — mostly missing route pages, one missing nav item, and a few behavioural details.</p>
+
+  <hr class="divider" />
+
+  <h2>Route Coverage</h2>
+  <table>
+    <thead>
+      <tr><th>Route</th><th>Status</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>/admin/login</td><td><span class="badge done">Done</span></td><td>LoginForm + Supabase email/password + redirect on success</td></tr>
+      <tr><td>/admin</td><td><span class="badge done">Done</span></td><td>Section-tile dashboard with live gate statuses + "Add to this section" links</td></tr>
+      <tr><td>/admin/posts</td><td><span class="badge done">Done</span></td><td>Filterable table by status &amp; category; links to editor</td></tr>
+      <tr><td>/admin/posts/new</td><td><span class="badge done">Done</span></td><td>Accepts ?category= &amp; ?placement= from dashboard tiles</td></tr>
+      <tr><td>/admin/posts/[id]</td><td><span class="badge done">Done</span></td><td>Full PostEditor with revision history</td></tr>
+      <tr><td>/admin/issues</td><td><span class="badge done">Done</span></td><td>List with issue number, title, date, current flag</td></tr>
+      <tr><td>/admin/issues/new</td><td><span class="badge done">Done</span></td><td>IssueForm wired to saveIssue action; sets is_current exclusively</td></tr>
+      <tr><td>/admin/issues/[id]</td><td><span class="badge done">Done</span></td><td>Edit + delete</td></tr>
+      <tr><td>/admin/products</td><td><span class="badge done">Done</span></td><td>Store product list</td></tr>
+      <tr><td>/admin/products/new + [id]</td><td><span class="badge done">Done</span></td><td>ProductForm — merch, digital file, ticketed events all in one form</td></tr>
+      <tr><td>/admin/media</td><td><span class="badge done">Done</span></td><td>MediaLibrary — upload, copy URL, remove</td></tr>
+      <tr><td>/admin/authors</td><td><span class="badge done">Done</span></td><td>Roster list</td></tr>
+      <tr><td>/admin/authors/new + [id]</td><td><span class="badge done">Done</span></td><td>AuthorForm — name, slug, bio, location, avatar, social links</td></tr>
+      <tr><td>/admin/honorees</td><td><span class="badge done">Done</span></td><td>Set Life 100 list by year + rank</td></tr>
+      <tr><td>/admin/honorees/new + [id]</td><td><span class="badge done">Done</span></td><td>HonoreeForm — portrait, citation, discipline, related post</td></tr>
+      <tr><td>/admin/submissions</td><td><span class="badge done">Done</span></td><td>SubmissionRow — mark reviewed / delete</td></tr>
+      <tr><td>/admin/gates</td><td><span class="badge done">Done</span></td><td>Full gate-status table; exists as a standalone page but also surfaced on the dashboard</td></tr>
+      <tr><td>/admin/ads</td><td><span class="badge missing">Missing</span></td><td>Not built. Platform Overview §5 describes homepage banner + article inline slot management</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="divider" />
+
+  <h2>Component &amp; Action Coverage</h2>
+  <table>
+    <thead>
+      <tr><th>Area</th><th>Status</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>LoginForm</td><td><span class="badge done">Done</span></td><td>Client-side Supabase signInWithPassword, generic error message, redirect</td></tr>
+      <tr><td>AdminLayout</td><td><span class="badge done">Done</span></td><td>Auth-aware shell; unauthenticated renders login wrapper, authenticated renders full nav</td></tr>
+      <tr><td>Middleware auth guard</td><td><span class="badge done">Done</span></td><td>/admin/* → /admin/login if no session; /admin/login → /admin if already signed in</td></tr>
+      <tr><td>PostEditor</td><td><span class="badge done">Done</span></td><td>Title, slug (auto + manual), dek, category, placement, author, hero image, body, meta, SEO, revisions, publish/unpublish/delete</td></tr>
+      <tr><td>TiptapEditor</td><td><span class="badge done">Done</span></td><td>H2/H3, bold, italic, blockquote (pull quote), bullet list, drag-and-drop image upload, toolbar image picker</td></tr>
+      <tr><td>MetaFieldsPanel</td><td><span class="badge done">Done</span></td><td>Category-driven: review score/verdict, video URL/runtime, opportunity deadline, festival dates, production stage/director, credits list, platform badges</td></tr>
+      <tr><td>HeroImageUpload</td><td><span class="badge done">Done</span></td><td>Uploads to media bucket; shows preview; replace flow</td></tr>
+      <tr><td>MediaLibrary</td><td><span class="badge done">Done</span></td><td>Upload, thumbnail grid, copy URL, remove from library</td></tr>
+      <tr><td>SubmissionRow</td><td><span class="badge done">Done</span></td><td>Mark reviewed toggle + delete; shows name, role, email, instagram, portfolio link, story</td></tr>
+      <tr><td>posts actions</td><td><span class="badge done">Done</span></td><td>savePost, publishPost, unpublishPost, deletePost + recordRevision + readingTime</td></tr>
+      <tr><td>authors actions</td><td><span class="badge done">Done</span></td><td>saveAuthor, deleteAuthor</td></tr>
+      <tr><td>issues actions</td><td><span class="badge done">Done</span></td><td>saveIssue (exclusive is_current logic), deleteIssue</td></tr>
+      <tr><td>products actions</td><td><span class="badge done">Done</span></td><td>saveProduct, deleteProduct; price stored in cents</td></tr>
+      <tr><td>honorees actions</td><td><span class="badge done">Done</span></td><td>saveHonoree, deleteHonoree</td></tr>
+      <tr><td>submissions-admin actions</td><td><span class="badge done">Done</span></td><td>markSubmissionReviewed, deleteSubmission</td></tr>
+      <tr><td>admin-media lib</td><td><span class="badge done">Done</span></td><td>uploadMedia — uploads to Supabase storage, records in media table</td></tr>
+      <tr><td>admin-queries lib</td><td><span class="badge done">Done</span></td><td>All read queries for every admin list and edit page</td></tr>
+      <tr><td>admin-sections lib</td><td><span class="badge done">Done</span></td><td>DASHBOARD_TILES + tileLabel — maps gate IDs to placement/category defaults</td></tr>
+      <tr><td>admin-meta-fields lib</td><td><span class="badge done">Done</span></td><td>META_FIELDS_BY_CATEGORY covers all 8 categories that need structured meta</td></tr>
+      <tr><td>Ads management component</td><td><span class="badge missing">Missing</span></td><td>No AdsForm or ads action — needed for /admin/ads route</td></tr>
+      <tr><td>Scheduled publishing</td><td><span class="badge gap">Gap</span></td><td>Platform Overview describes Scheduled status (auto-publish at future datetime). savePost only writes "draft"; no scheduled_at field or cron/background job</td></tr>
+      <tr><td>PostEditor scheduled field</td><td><span class="badge gap">Gap</span></td><td>No "Schedule for" datetime input in PostEditor UI</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="divider" />
+
+  <h2>Identified Gaps — by Priority</h2>
+
+  <h3>🔴 Missing — /admin/ads route + Ads management</h3>
+  <div class="section-box">
+    <p>The Platform Overview (Part 5) defines two ad placements — a homepage banner (between hero and Today on Set Life) and one inline article slot — sold and uploaded manually. The nav lists /admin/ads. There is no <code>ads</code> table action, no AdsForm component, and no route. This is the only route in the spec that is completely absent.</p>
+  </div>
+
+  <h3>🟡 Gap — Scheduled publishing not implemented</h3>
+  <div class="section-box">
+    <p>Platform Overview §6 says posts can be set to <em>Scheduled</em> and auto-publish at a future date/time. The current <code>savePost</code> action only knows "draft" status on insert. There is no <code>scheduled_at</code> column write, no UI datetime picker for scheduling, and no mechanism (cron or background job) to flip status to "published" at the right moment.</p>
+  </div>
+
+  <h3>🟡 Gap — /admin/gates not linked in nav</h3>
+  <div class="section-box">
+    <p>The <code>/admin/gates</code> page exists and works, but the <code>AdminLayout</code> nav array does not include a link to it. It's only reachable by typing the URL directly. The dashboard tiles already surface individual gate statuses, but the standalone gates page provides the full table view and is referenced in the overview.</p>
+  </div>
+
+  <h3>🟡 Gap — TiptapEditor missing alt-text prompt on image insert</h3>
+  <div class="section-box">
+    <p>The Platform Overview calls out "required alt text" for images. The TiptapEditor inserts images with <code>alt: ""</code> (empty string) both on drag-and-drop and on toolbar upload. There is no prompt or field for the contributor to enter alt text at insert time.</p>
+  </div>
+
+  <h3>🟣 Minor — posts/[id] page has no link back to the live story</h3>
+  <div class="section-box">
+    <p>When editing a published post, there's no "View on site" link to <code>/story/[slug]</code>. Minor UX gap but useful for contributors to verify what went live.</p>
+  </div>
+
+  <h3>🟣 Minor — submissions page has no "unreviewed first" sort or filter</h3>
+  <div class="section-box">
+    <p><code>getAllSubmissions</code> orders by <code>created_at DESC</code> only. Once there are many submissions, reviewed and unreviewed are mixed. A filter or default sort putting unreviewed first would be more practical.</p>
+  </div>
+
+  <h3>🟣 Minor — MediaLibrary refreshes via a second DB query after upload</h3>
+  <div class="section-box">
+    <p>After uploading, <code>MediaLibrary</code> fires a fresh Supabase select to get the newest row, rather than using the URL returned by <code>uploadMedia</code>. This works but is an extra round-trip; the upload already returns the public URL and the filename is available from the file object.</p>
+  </div>
+
+  <hr class="divider" />
+
+  <h2>What Is Not Missing</h2>
+  <ul>
+    <li>All 9 server actions (posts, authors, issues, products, honorees, submissions, admin-auth) are present and correctly use the Supabase server client</li>
+    <li>Middleware auth guard correctly redirects unauthenticated requests and bounces logged-in users away from /admin/login</li>
+    <li>The exclusive <code>is_current</code> logic for magazine issues (only one issue can be current at a time) is correctly implemented</li>
+    <li>Reading time is auto-calculated on every save from the body JSON word count</li>
+    <li>Revision history is recorded on every save (both insert and update)</li>
+    <li>All revalidatePath calls are in place so published content appears on the public site without a redeploy</li>
+    <li>The dashboard tile grid mirrors the exact homepage section order from the Platform Overview</li>
+    <li>Category-specific meta fields cover all structured content types: review scores, video URLs, opportunity deadlines, festival dates, production stage, credits lists, platform badges</li>
+    <li>The three custom Tiptap block types from the spec (credits list, platform badges, callout box) are all implemented — credits-list and badges as MetaFieldsPanel types, blockquote as pull quote</li>
+  </ul>
+
+  <hr class="divider" />
+
+  <h2>Summary Table</h2>
+  <table>
+    <thead>
+      <tr><th>Item</th><th>Effort</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>/admin/ads — full route, form, and action</td><td>Medium (new table action + form component + route pages)</td><td><span class="badge missing">Must-do</span></td></tr>
+      <tr><td>Scheduled publishing — UI field + action field + cron/trigger</td><td>Medium-Large</td><td><span class="badge gap">Should-do</span></td></tr>
+      <tr><td>Add /admin/gates to the nav</td><td>Trivial (one line in AdminLayout)</td><td><span class="badge gap">Should-do</span></td></tr>
+      <tr><td>Alt-text prompt on image insert in TiptapEditor</td><td>Small</td><td><span class="badge gap">Should-do</span></td></tr>
+      <tr><td>"View on site" link in PostEditor for published posts</td><td>Trivial</td><td><span class="badge minor">Nice to have</span></td></tr>
+      <tr><td>Unreviewed-first sort/filter on submissions</td><td>Trivial</td><td><span class="badge minor">Nice to have</span></td></tr>
+      <tr><td>MediaLibrary upload refresh cleanup</td><td>Trivial</td><td><span class="badge minor">Nice to have</span></td></tr>
+    </tbody>
+  </table>
+
+  <footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>

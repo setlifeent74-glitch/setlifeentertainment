@@ -1118,6 +1118,26 @@ One branch, one pull request, one verification gate, one owner confirmation per 
 | 12 | `feat/store` | §48 storefront, checkout, webhook, product admin. §48.2 ad placements. §48.3 paid editorial placements (write-up + cover). All three share one Stripe integration. | §48 · §48.2 · §48.3 |
 | 13 | `feat/interior-pages` | About, Submit (with admin queue), Contact, Issues archive, category indexes, Opportunities and Festival listing pages. | §40 · §41 |
 
+**Phase 13 outcome — §13 / §32 / §33 / §38 / §40 / §41.** All interior routes were already present from prior phases — Phase 13 upgraded them from minimal stubs to full spec-compliant pages and removed the last remaining interim-page patterns.
+
+**Contact form** (`/contact`) replaced `DemoForm`'s client-only fake submit with a real server action (`app/actions/contact.ts` → `contact_messages` table, migration `20260814000001_contact_messages.sql`). `components/ContactForm.tsx` uses `useActionState` for server-validated error/success states, proper `autoComplete` attributes, and accessible labels. No client-side "Sent ✓" fake.
+
+**Opportunities archive** (`/opportunities`) upgraded from a plain `cover-grid` list to the full §32 tabbed layout: a `role="group"` / `aria-pressed` filter-pill row (seven tab types: Casting / Crew / Jobs / Grants / Labs / Fellowships / Festivals), client-side filtering in `components/OpportunitiesList.tsx`, full metadata display (type, organization, location, compensation, deadline in `--gold`). Deadline expiry filtering is server-side in `getLiveOpportunities()` (already in place from Phase 7) — satisfies §32 VERIFY.
+
+**Festivals archive** (`/festivals`) upgraded from a plain `cover-grid` list to the §33 featured + timeline layout: the first upcoming festival gets the `FestivalFeatured` large photographic block (hero image via `next/image`, dates, submission deadline, coverage link); remaining festivals render as a date-driven `festival-timeline`. Empty state renders cleanly.
+
+**Issues cover image** (`/issues/[number]`) replaced a raw `<img>` with `next/image` (`fill` + `sizes`), satisfying §41's `next/image` requirement for all CMS content.
+
+**Admin nav** — `/admin/gates` added to `AdminLayout`'s NAV array (previously unreachable without typing the URL directly).
+
+**Test coverage** — `tests/e2e/routes.ts` extended with all eight new interior routes so `accessibility.spec.ts` and `mobile-overflow.spec.ts` cover them on every PR. New `tests/e2e/interior.spec.ts` adds Phase 13-specific assertions: route resolution (no 404, no `href="#"`), §32 filter tab ARIA structure and `aria-pressed` toggle, §33 featured/timeline structure, §38 legal heading + body content, contact form server-action confirmation, and `next/image` srcset presence on the issues page.
+
+**No interim pages remain** at this phase boundary. All routes in the §8 URL architecture resolve to real pages. The only remaining "Coming Soon" pattern is the `/shop/[slug]` buy button, which is §48 (Phase 12) scope and correctly deferred.
+
+**Phase 13 outcome, continued — the "no interim pages" claim above was not actually true yet.** `tests/e2e/interior.spec.ts`'s own `href="#"` sweep test covers `/issues` in its route list, but `components/IssuesGrid.tsx` — the component that page actually renders — was still the pre-CMS, pre-Supabase static demo grid: a hardcoded `COVERS` array (`lib/covers.ts`, comment: "Order and content match issues.html exactly (§7 Phase 1 — zero visual change)") of fictional cover subjects with category filters (Actor/Director/Producer) that don't correspond to anything in the `magazine_issues` schema, and every card linked `href="#"`. This predates the CMS entirely and was never migrated when `/issues/[number]` (the detail page) became real. Fixed: `IssuesGrid.tsx` now takes real `MagazineIssue[]` rows from `getAllIssues()` as a prop, links each card to `/issues/[issue_number]`, shows a "Current Issue" badge from `is_current`, and searches by real issue title instead of filtering by a category concept that doesn't exist in the data model. `lib/covers.ts` deleted (no longer referenced anywhere). Confirmed via `interior.spec.ts`'s existing sweep, which now genuinely passes rather than happening to not catch this.
+
+**Also closed, directly required by §41's own text, not a nice-to-have:** "The admin editor (§45) enforces alt text before an image can be inserted" was not implemented — `TiptapEditor.tsx` inserted every image (drag-and-drop, toolbar upload, and the PDF-to-images batch upload) with `alt: ""`, no prompt, no requirement. Added `promptForAltText()` — blocks insertion entirely if the contributor cancels or leaves it blank, applied to all three insertion paths (the PDF batch path prompts once and auto-suffixes with a page number per image, since prompting per-page across a multi-page PDF would be impractical). `tests/e2e/admin.spec.ts`'s image-upload step updated to handle the resulting `window.prompt()` dialog (Playwright auto-dismisses unhandled dialogs, which would have silently skipped every image insertion in that test).
+
 Phase 4 carries the highest risk and visibility. Phase 9 unblocks the editorial team — consider prioritizing it earlier if contributors are waiting to produce content.
 
 ## §49.1 Verification Enforcement — Continuous Integration
