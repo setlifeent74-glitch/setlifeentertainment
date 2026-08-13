@@ -12,6 +12,13 @@ async function uploadImage(file: File): Promise<string | null> {
   return uploadMedia(file, "body");
 }
 
+/** §41 — "The admin editor (§45) enforces alt text before an image can be inserted." Returns null (do not insert) if the contributor cancels or leaves it blank. */
+function promptForAltText(): string | null {
+  const text = window.prompt("Alt text for this image (required for accessibility):", "");
+  if (!text || !text.trim()) return null;
+  return text.trim();
+}
+
 /**
  * §45 — "Block-based rich editor... Large section headers... Body copy...
  * Inline image upload via drag-and-drop... Pull quotes." Headers use
@@ -45,12 +52,14 @@ export default function TiptapEditor({
         const file = event.dataTransfer?.files?.[0];
         if (!file || !file.type.startsWith("image/")) return false;
         event.preventDefault();
+        const alt = promptForAltText();
+        if (!alt) return true; // cancelled or blank — do not insert, per §41
         setUploadError(null);
         uploadImage(file)
           .then((url) => {
             if (!url) return;
             const { schema } = view.state;
-            const node = schema.nodes.image.create({ src: url, alt: "" });
+            const node = schema.nodes.image.create({ src: url, alt });
             const tr = view.state.tr.insert(view.state.selection.from, node);
             view.dispatch(tr);
           })
@@ -102,10 +111,12 @@ export default function TiptapEditor({
               const file = e.target.files?.[0];
               e.target.value = "";
               if (!file) return;
+              const alt = promptForAltText();
+              if (!alt) return; // cancelled or blank — do not insert, per §41
               setUploadError(null);
               try {
                 const url = await uploadImage(file);
-                if (url) editor.chain().focus().setImage({ src: url, alt: "" }).run();
+                if (url) editor.chain().focus().setImage({ src: url, alt }).run();
               } catch (err) {
                 setUploadError(err instanceof Error ? err.message : "Upload failed.");
               }
@@ -123,6 +134,11 @@ export default function TiptapEditor({
               const file = e.target.files?.[0];
               e.target.value = "";
               if (!file) return;
+              // One prompt covers every page — per-page prompts would be
+              // impractical for a multi-page PDF — auto-suffixed with the
+              // page number so each image still gets distinct alt text.
+              const altBase = promptForAltText();
+              if (!altBase) return;
               setUploadError(null);
               setPdfStatus("Reading PDF…");
               try {
@@ -133,7 +149,12 @@ export default function TiptapEditor({
                   editor
                     .chain()
                     .focus("end")
-                    .insertContent(urls.map((src) => ({ type: "image", attrs: { src, alt: "" } })))
+                    .insertContent(
+                      urls.map((src, i) => ({
+                        type: "image",
+                        attrs: { src, alt: urls.length > 1 ? `${altBase} (page ${i + 1} of ${urls.length})` : altBase },
+                      }))
+                    )
                     .run();
                 }
               } catch (err) {

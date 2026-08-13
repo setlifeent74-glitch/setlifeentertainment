@@ -2,72 +2,61 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { COVERS, type Category } from "@/lib/covers";
+import Link from "next/link";
+import type { MagazineIssue } from "@/lib/queries";
 
-const FILTERS: { key: Category | "all"; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "actor", label: "Actors" },
-  { key: "director", label: "Directors" },
-  { key: "producer", label: "Producers" },
-];
-
-export default function IssuesGrid() {
-  const [filter, setFilter] = useState<Category | "all">("all");
+/** §41 archive — replaces the pre-CMS static demo grid (fake `href="#"` cards over hardcoded cover people) with real `magazine_issues` rows and links to `/issues/[number]`. */
+export default function IssuesGrid({ issues }: { issues: MagazineIssue[] }) {
   const [query, setQuery] = useState("");
+
+  const visibleIssues = issues.filter(
+    (issue) => !query.trim() || issue.title.toLowerCase().includes(query.trim().toLowerCase())
+  );
 
   return (
     <>
       <div className="filter-bar">
-        <div className="pill-row" style={{ marginBottom: 0 }}>
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              className={`pill${filter === f.key ? " active" : ""}`}
-              data-filter={f.key}
-              onClick={() => setFilter(f.key)}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
         <div className="search-box">
           <input
             type="text"
-            placeholder="Search by name…"
+            placeholder="Search issues by title…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            aria-label="Search issues by title"
           />
         </div>
       </div>
 
-      <div className="cover-grid">
-        {COVERS.map((cover) => {
-          const name = `${cover.namePrefix} ${cover.nameEm}`.toLowerCase();
-          const matchesCategory = filter === "all" || cover.category === filter;
-          const matchesSearch = !query.trim() || name.includes(query.trim().toLowerCase());
-          const visible = matchesCategory && matchesSearch;
-          return (
-            <a
-              key={cover.slug}
-              className="cover-card has-img"
-              href="#"
-              data-category={cover.category}
-              data-name={`${cover.namePrefix} ${cover.nameEm}`}
-              style={{ display: visible ? "" : "none" }}
+      {issues.length === 0 ? (
+        <p>No issues published yet.</p>
+      ) : visibleIssues.length === 0 ? (
+        <p>No issues match &quot;{query}&quot;.</p>
+      ) : (
+        <div className="cover-grid">
+          {visibleIssues.map((issue) => (
+            <Link
+              key={issue.id}
+              className={`cover-card${issue.cover_image_url ? " has-img" : ""}`}
+              href={`/issues/${issue.issue_number}`}
             >
-              <span className="issue-no">{cover.issueLabel}</span>
-              <Image src={cover.image} alt={cover.alt} fill sizes="(max-width: 767px) 50vw, 25vw" />
+              <span className="issue-no">
+                {issue.is_current ? "Current Issue" : `Issue ${issue.issue_number}`}
+              </span>
+              {issue.cover_image_url && (
+                <Image src={issue.cover_image_url} alt={issue.title} fill sizes="(max-width: 767px) 50vw, 25vw" />
+              )}
               <div className="card-body">
-                <span className="card-name">
-                  {cover.namePrefix}
-                  <em>{cover.nameEm}</em>
-                </span>
-                <span className="card-role">{cover.role}</span>
+                <span className="card-name">{issue.title}</span>
+                {issue.release_date && (
+                  <span className="card-role">
+                    {new Date(issue.release_date).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                  </span>
+                )}
               </div>
-            </a>
-          );
-        })}
-      </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </>
   );
 }
