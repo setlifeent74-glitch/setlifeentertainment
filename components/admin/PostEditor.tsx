@@ -110,8 +110,13 @@ export default function PostEditor({
       seoDescription,
     });
 
+  // Same underlying call whether the post is a draft or already live —
+  // savePost only ever updates the row's content, never `status`, so
+  // editing a published post and clicking this never unpublishes it. The
+  // label/status text below just make that honest for an already-published
+  // post: "Update" republishes the edits in place, not "Save Draft".
   const handleSave = async (): Promise<string | null> => {
-    setStatus("Saving…");
+    setStatus(isPublished ? "Updating…" : "Saving…");
     const result = await savePostRaw();
     if (result.error) {
       setStatus(`Error: ${result.error}`);
@@ -121,7 +126,7 @@ export default function PostEditor({
       setPostId(result.id);
       router.replace(`/admin/posts/${result.id}`);
     }
-    setStatus("Saved");
+    setStatus(isPublished ? "Updated — live now" : "Saved");
     return result.id;
   };
 
@@ -321,8 +326,8 @@ export default function PostEditor({
         )}
 
         <div className="admin-editor-actions">
-          <button type="button" className="btn" onClick={handleSave}>
-            Save Draft
+          <button type="button" className={isPublished ? "btn btn-primary" : "btn"} onClick={handleSave}>
+            {isPublished ? "Update" : "Save Draft"}
           </button>
           <button type="button" className="btn" onClick={handlePreview}>
             Preview

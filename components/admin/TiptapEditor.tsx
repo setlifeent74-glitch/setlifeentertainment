@@ -51,6 +51,7 @@ export default function TiptapEditor({
   // touches the editor until the Apply button is clicked.
   const [pendingTextColor, setPendingTextColor] = useState("#f5f0e6");
   const [pendingBoxColor, setPendingBoxColor] = useState("#d9a441");
+  const [colorNotice, setColorNotice] = useState<string | null>(null);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -125,6 +126,22 @@ export default function TiptapEditor({
     editor.chain().focus().insertContentAt(insertPos, { type: "pill", attrs: { label: label.trim(), color: pillColor } }).run();
   };
 
+  // A color mark can't recolor text that isn't selected — with the cursor
+  // just blinking somewhere (no selection), clicking Apply used to silently
+  // set a "stored mark" that only affects the *next* characters typed, which
+  // reads as "nothing happened" if you were expecting existing text to
+  // change. Guard it explicitly instead of failing silently, and use
+  // extendMarkRange so clicking Apply with the cursor in the middle of an
+  // already-colored word recolors that whole word, not just half of it.
+  const applyTextColor = () => {
+    if (editor.state.selection.empty) {
+      setColorNotice("Select the text you want colored first, then click Apply Text Color.");
+      return;
+    }
+    setColorNotice(null);
+    editor.chain().focus().extendMarkRange("textStyle").setColor(pendingTextColor).run();
+  };
+
   return (
     <div className="admin-editor-body">
       <div className="admin-editor-toolbar">
@@ -150,7 +167,7 @@ export default function TiptapEditor({
           <input type="color" value={pendingTextColor} onChange={(e) => setPendingTextColor(e.target.value)} />
           Color
         </label>
-        <button type="button" onClick={() => editor.chain().focus().setColor(pendingTextColor).run()}>
+        <button type="button" onClick={applyTextColor}>
           Apply Text Color
         </button>
         <button
@@ -283,6 +300,7 @@ export default function TiptapEditor({
         </label>
       </div>
       {uploadError && <p className="admin-upload-error">{uploadError}</p>}
+      {colorNotice && <p className="admin-upload-error">{colorNotice}</p>}
       <p className="admin-editor-hint">
         Images upload to wherever your cursor is, and can be dragged to a new spot afterward. Select a paragraph and click
         Panel/Highlight/Stat to box it — click the same variant again to remove the box. For any color swatch, pick the color
