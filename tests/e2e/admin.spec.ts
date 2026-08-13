@@ -100,10 +100,10 @@ test.describe('§45 admin CMS — full editorial workflow', () => {
     await page.getByLabel('Prime Video').check();
 
     await page.getByRole('button', { name: 'Publish' }).click();
-    // Allow 30 s — on a loaded CI runner the save + publish round-trip
-    // reliably exceeds the old 10 s ceiling, producing a flaky failure
-    // that has no relation to the code under test.
-    await expect(page.locator('.admin-editor-status')).toHaveText('Published', { timeout: 30_000 });
+    // Allow 60 s — save + publish each call revalidatePath("/") which triggers
+    // a full cache invalidation pass on a loaded CI runner. 30 s proved
+    // insufficient (Saving… → Publishing… seen but not resolving to Published).
+    await expect(page.locator('.admin-editor-status')).toHaveText('Published', { timeout: 60_000 });
     await expect(page).toHaveURL(/\/admin\/posts\/[0-9a-f-]+$/);
     await expect(page.locator('.admin-status-badge')).toHaveText('Published');
 

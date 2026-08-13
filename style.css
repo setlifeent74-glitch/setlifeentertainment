@@ -1947,6 +1947,9 @@ footer.site-footer{
   text-transform: uppercase;
   font-size: 12px;
   color: var(--gray);
+  /* §45.1 — long category-hint labels (e.g. the News one) must wrap rather
+     than force the containing fieldset wider than its parent panel column. */
+  overflow-wrap: break-word;
 }
 .admin-field input, .admin-field select, .admin-field textarea{
   background: var(--black-2);
@@ -1962,10 +1965,16 @@ footer.site-footer{
 }
 .admin-field label input[type="checkbox"]{ margin-right: 8px; width: auto; }
 
-/* §45.1 — fieldset elements have a browser-default intrinsic width based on
-   min-content, which ignores the parent's padding and bleeds past it.
-   `width:100%` and `box-sizing:border-box` constrain it to the panel column. */
-.admin-meta-panel{ border: 1px solid var(--line); padding: var(--space-16); display: flex; flex-direction: column; gap: var(--space-16); width: 100%; box-sizing: border-box; }
+/* §45.1 — fieldset browser-default min-width is min-content, not 0. Inside
+   a flex column, width:100% alone is insufficient — the fieldset still won't
+   shrink below its content's natural width, so a long category label (e.g.
+   News: "Casting/Development/In Production/Acquisition/Distribution/Awards/
+   Streaming/Business") sets a wide min-content that bleeds past the panel.
+   Fix: min-width:0 overrides the fieldset default and lets flex actually
+   constrain it. width:100% + box-sizing:border-box (already present) then
+   hold it within the sidebar's padding. overflow-wrap on .admin-field label
+   above handles the label text wrapping within the now-constrained box. */
+.admin-meta-panel{ border: 1px solid var(--line); padding: var(--space-16); display: flex; flex-direction: column; gap: var(--space-16); width: 100%; box-sizing: border-box; min-width: 0; }
 .admin-meta-panel legend{
   font-family: var(--font-bebas), sans-serif;
   letter-spacing: 0.08em;
