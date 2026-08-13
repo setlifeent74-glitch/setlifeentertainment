@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Image from "next/image";
 import TopNav from "@/components/TopNav";
 import JsonLd from "@/components/JsonLd";
 import { getIssueByNumber } from "@/lib/queries";
@@ -66,8 +67,12 @@ export default async function IssuePage({ params }: { params: Promise<{ number: 
         <section className="section">
           <div className="wrap two-col">
             <div className="panel panel-cover">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={issue.cover_image_url} alt={issue.title} />
+              <Image
+                src={issue.cover_image_url}
+                alt={issue.title}
+                fill
+                sizes="(max-width: 767px) 90vw, 45vw"
+              />
             </div>
             <div>
               {issue.release_date && (

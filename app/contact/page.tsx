@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import TopNav from "@/components/TopNav";
-import DemoForm from "@/components/DemoForm";
+import ContactForm from "@/components/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact — Set Life Entertainment",
@@ -43,32 +43,7 @@ export default function ContactPage() {
             </div>
           </div>
           <div className="form-wrap">
-            <DemoForm submitLabel="Send Message">
-              <div className="field-row">
-                <div className="field">
-                  <label htmlFor="cname">Name</label>
-                  <input type="text" id="cname" name="cname" required />
-                </div>
-                <div className="field">
-                  <label htmlFor="cemail">Email</label>
-                  <input type="email" id="cemail" name="cemail" required />
-                </div>
-              </div>
-              <div className="field">
-                <label htmlFor="subject">Subject</label>
-                <select id="subject" name="subject" defaultValue="General Inquiry">
-                  <option>General Inquiry</option>
-                  <option>Press / Media</option>
-                  <option>Advertising</option>
-                  <option>Feature Follow-up</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div className="field">
-                <label htmlFor="message">Message</label>
-                <textarea id="message" name="message" required></textarea>
-              </div>
-            </DemoForm>
+            <ContactForm />
           </div>
         </div>
       </section>

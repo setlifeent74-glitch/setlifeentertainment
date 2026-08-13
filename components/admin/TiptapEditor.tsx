@@ -4,8 +4,8 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useEffect } from "react";
-import { uploadMedia } from "@/lib/admin-media";
+import { useEffect, useState } from "react";
+import { uploadMedia, uploadPdfAsImages } from "@/lib/admin-media";
 import type { Json } from "@/lib/supabase/types";
 
 async function uploadImage(file: File): Promise<string | null> {
@@ -26,6 +26,9 @@ export default function TiptapEditor({
   content: Json;
   onChange: (json: Json) => void;
 }) {
+  const [pdfStatus, setPdfStatus] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -42,13 +45,16 @@ export default function TiptapEditor({
         const file = event.dataTransfer?.files?.[0];
         if (!file || !file.type.startsWith("image/")) return false;
         event.preventDefault();
-        uploadImage(file).then((url) => {
-          if (!url) return;
-          const { schema } = view.state;
-          const node = schema.nodes.image.create({ src: url, alt: "" });
-          const tr = view.state.tr.insert(view.state.selection.from, node);
-          view.dispatch(tr);
-        });
+        setUploadError(null);
+        uploadImage(file)
+          .then((url) => {
+            if (!url) return;
+            const { schema } = view.state;
+            const node = schema.nodes.image.create({ src: url, alt: "" });
+            const tr = view.state.tr.insert(view.state.selection.from, node);
+            view.dispatch(tr);
+          })
+          .catch((err) => setUploadError(err instanceof Error ? err.message : "Upload failed."));
         return true;
       },
     },
@@ -96,12 +102,50 @@ export default function TiptapEditor({
               const file = e.target.files?.[0];
               e.target.value = "";
               if (!file) return;
-              const url = await uploadImage(file);
-              if (url) editor.chain().focus().setImage({ src: url, alt: "" }).run();
+              setUploadError(null);
+              try {
+                const url = await uploadImage(file);
+                if (url) editor.chain().focus().setImage({ src: url, alt: "" }).run();
+              } catch (err) {
+                setUploadError(err instanceof Error ? err.message : "Upload failed.");
+              }
+            }}
+          />
+        </label>
+        <label className="admin-editor-image-btn">
+          {pdfStatus ?? "PDF"}
+          <input
+            type="file"
+            accept="application/pdf"
+            hidden
+            disabled={!!pdfStatus}
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (!file) return;
+              setUploadError(null);
+              setPdfStatus("Reading PDF…");
+              try {
+                const urls = await uploadPdfAsImages(file, (current, total) => {
+                  setPdfStatus(`Uploading page ${current}/${total}…`);
+                });
+                if (urls.length) {
+                  editor
+                    .chain()
+                    .focus("end")
+                    .insertContent(urls.map((src) => ({ type: "image", attrs: { src, alt: "" } })))
+                    .run();
+                }
+              } catch (err) {
+                setUploadError(err instanceof Error ? err.message : "PDF upload failed.");
+              } finally {
+                setPdfStatus(null);
+              }
             }}
           />
         </label>
       </div>
+      {uploadError && <p className="admin-upload-error">{uploadError}</p>}
       <EditorContent editor={editor} />
     </div>
   );

@@ -5,4 +5,12 @@ export const ROUTES = [
   { path: '/submit', label: 'submit' },
   { path: '/contact', label: 'contact' },
   { path: '/search', label: 'search' },
+  { path: '/opportunities', label: 'opportunities' },
+  { path: '/festivals', label: 'festivals' },
+  { path: '/category/news', label: 'category-news' },
+  { path: '/privacy', label: 'privacy' },
+  { path: '/terms', label: 'terms' },
+  { path: '/editorial-policy', label: 'editorial-policy' },
+  { path: '/review-policy', label: 'review-policy' },
+  { path: '/accessibility', label: 'accessibility' },
 ];
