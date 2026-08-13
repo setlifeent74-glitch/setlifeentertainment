@@ -1,13 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getTodayPosts } from "@/lib/queries";
+import { getTodayPosts, isContentGatesEnabled } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
-/** §22 Today on Set Life — Gate: 3 posts, placement=today. */
+/** §22 Today on Set Life — Gate: 3 posts, placement=today (unless the §9 admin override is on). */
 export default async function TodaySection() {
-  const posts = await getTodayPosts();
-  if (posts.length < SECTION_GATES.today.minimum) return null;
+  const [posts, gatesEnabled] = await Promise.all([getTodayPosts(), isContentGatesEnabled()]);
+  if (gatesEnabled && posts.length < SECTION_GATES.today.minimum) return null;
+  if (posts.length === 0) return null;
 
   const [primary, ...secondary] = posts;
   const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });

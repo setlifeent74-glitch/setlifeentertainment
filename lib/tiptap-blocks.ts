@@ -1,4 +1,5 @@
 import { Node, mergeAttributes } from "@tiptap/core";
+import TiptapImage from "@tiptap/extension-image";
 
 /**
  * Magazine-layout blocks for the §45 admin editor: styled boxes (panel /
@@ -72,5 +73,28 @@ export const Pill = Node.create({
       }),
       node.attrs.label ?? "",
     ];
+  },
+});
+
+/**
+ * Standard Image node plus one extra attribute: `fullBleed`. A PDF page
+ * rendered to an image is often a whole magazine-page graphic with fine
+ * detail baked in — squeezed into the ~760px body-text column it becomes
+ * illegibly small. PDF uploads set fullBleed: true; the regular Image
+ * button/drag-drop leave it at the default false. The public renderer
+ * (app/story/[slug]/page.tsx) reads this to pick a wide breakout layout
+ * instead of the normal in-column image treatment.
+ */
+export const FullBleedImage = TiptapImage.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      fullBleed: {
+        default: false,
+        parseHTML: (element: HTMLElement) => element.hasAttribute("data-full-bleed"),
+        renderHTML: (attributes: { fullBleed?: boolean }) =>
+          attributes.fullBleed ? { "data-full-bleed": "" } : {},
+      },
+    };
   },
 });

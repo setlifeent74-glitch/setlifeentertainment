@@ -1,20 +1,21 @@
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import ProductCard from "@/components/ProductCard";
-import { getPublishedProducts } from "@/lib/queries";
+import { getPublishedProducts, isContentGatesEnabled } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
 /**
- * §35 The Set Life Shop — Gate: 1 published product. Reuses ProductCard
- * (built Phase 2) — one component, no branching layout across physical,
- * digital, and ticketed shapes, already satisfying that half of VERIFY §35.
- * "Buy reaches Stripe Checkout" is §48/Phase 12 — the product page's own
- * Buy button is already an honest disabled state until then, not faked
- * here either.
+ * §35 The Set Life Shop — Gate: 1 published product (unless the §9 admin
+ * override is on). Reuses ProductCard (built Phase 2) — one component, no
+ * branching layout across physical, digital, and ticketed shapes, already
+ * satisfying that half of VERIFY §35. "Buy reaches Stripe Checkout" is
+ * §48/Phase 12 — the product page's own Buy button is already an honest
+ * disabled state until then, not faked here either.
  */
 export default async function ShopSection() {
-  const products = await getPublishedProducts();
-  if (products.length < SECTION_GATES.shop.minimum) return null;
+  const [products, gatesEnabled] = await Promise.all([getPublishedProducts(), isContentGatesEnabled()]);
+  if (gatesEnabled && products.length < SECTION_GATES.shop.minimum) return null;
+  if (products.length === 0) return null;
 
   return (
     <ScrollReveal as="section" className="shop-section">

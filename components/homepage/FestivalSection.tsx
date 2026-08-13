@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getFestivalSectionPosts } from "@/lib/queries";
+import { getFestivalSectionPosts, isContentGatesEnabled } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
 type FestivalMeta = { city?: string; startDate?: string; endDate?: string; submissionDeadline?: string };
@@ -11,10 +11,11 @@ function formatDate(iso?: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-/** §33 Festival Circuit — Gate: 2 upcoming festivals, placement=festival, chronological. */
+/** §33 Festival Circuit — Gate: 2 upcoming festivals, placement=festival, chronological (unless the §9 admin override is on). */
 export default async function FestivalSection() {
-  const posts = await getFestivalSectionPosts();
-  if (posts.length < SECTION_GATES.festival.minimum) return null;
+  const [posts, gatesEnabled] = await Promise.all([getFestivalSectionPosts(), isContentGatesEnabled()]);
+  if (gatesEnabled && posts.length < SECTION_GATES.festival.minimum) return null;
+  if (posts.length === 0) return null;
 
   const [featured, ...upcoming] = posts;
   const featuredMeta = (featured.meta ?? {}) as FestivalMeta;

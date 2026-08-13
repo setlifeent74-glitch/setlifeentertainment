@@ -76,6 +76,11 @@ export default function PostEditor({
   const [status, setStatus] = useState<string | null>(null);
   const [postId, setPostId] = useState(post?.id);
   const [isPublished, setIsPublished] = useState(post?.status === "published");
+  // Same pick-then-Apply pattern as the Tiptap toolbar's color controls —
+  // this whole-article background color lives in meta.canvasColor and only
+  // takes effect (in local state, then on the next Save/Publish) once
+  // Apply is clicked.
+  const [pendingCanvasColor, setPendingCanvasColor] = useState((meta.canvasColor as string) || "#0a0a0a");
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
@@ -248,6 +253,39 @@ export default function PostEditor({
         <div className="admin-field">
           <label>Hero Image</label>
           <HeroImageUpload value={heroImageUrl} onChange={setHeroImageUrl} />
+        </div>
+
+        <div className="admin-field">
+          <label>Article Canvas Color</label>
+          <div className="admin-canvas-color-row">
+            <input
+              type="color"
+              value={pendingCanvasColor}
+              onChange={(e) => setPendingCanvasColor(e.target.value)}
+            />
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setMeta({ ...meta, canvasColor: pendingCanvasColor })}
+            >
+              Apply
+            </button>
+            {typeof meta.canvasColor === "string" && meta.canvasColor && (
+              <button
+                type="button"
+                onClick={() => {
+                  const { canvasColor: _drop, ...rest } = meta;
+                  setMeta(rest);
+                  setPendingCanvasColor("#0a0a0a");
+                }}
+              >
+                Reset
+              </button>
+            )}
+          </div>
+          <p className="admin-editor-hint" style={{ padding: 0 }}>
+            Background color behind the whole article. Pick a color, then click Apply — takes effect on the next Save/Publish.
+          </p>
         </div>
 
         <MetaFieldsPanel category={category} meta={meta} onChange={setMeta} />

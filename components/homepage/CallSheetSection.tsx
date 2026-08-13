@@ -1,6 +1,6 @@
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getCallSheetPosts } from "@/lib/queries";
+import { getCallSheetPosts, isContentGatesEnabled } from "@/lib/queries";
 import { SECTION_GATES, ageInDays } from "@/lib/gates";
 
 const CATEGORY_ACCENT: Record<string, "gold" | "red"> = {
@@ -14,13 +14,15 @@ const CATEGORY_ACCENT: Record<string, "gold" | "red"> = {
   Business: "gold",
 };
 
-/** §25 The Call Sheet — Gate: 5 posts, placement=call_sheet, newest within 14 days. */
+/** §25 The Call Sheet — Gate: 5 posts, placement=call_sheet, newest within 14 days (unless the §9 admin override is on). */
 export default async function CallSheetSection() {
-  const posts = await getCallSheetPosts();
-  if (posts.length < SECTION_GATES.call_sheet.minimum) return null;
-
-  const newest = posts[0];
-  if (ageInDays(newest.published_at ?? newest.created_at) > SECTION_GATES.call_sheet.staleAfterDays) return null;
+  const [posts, gatesEnabled] = await Promise.all([getCallSheetPosts(), isContentGatesEnabled()]);
+  if (posts.length === 0) return null;
+  if (gatesEnabled) {
+    if (posts.length < SECTION_GATES.call_sheet.minimum) return null;
+    const newest = posts[0];
+    if (ageInDays(newest.published_at ?? newest.created_at) > SECTION_GATES.call_sheet.staleAfterDays) return null;
+  }
 
   return (
     <ScrollReveal as="section" className="call-sheet-section">

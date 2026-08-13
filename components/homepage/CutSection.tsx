@@ -1,15 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getReviewPosts } from "@/lib/queries";
+import { getReviewPosts, isContentGatesEnabled } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
 type ReviewMeta = { score?: number; verdict?: string };
 
-/** §29 The Cut — Reviews. Gate: 1 review, placement=cut. */
+/** §29 The Cut — Reviews. Gate: 1 review, placement=cut (unless the §9 admin override is on). */
 export default async function CutSection() {
-  const posts = await getReviewPosts();
-  if (posts.length < SECTION_GATES.cut.minimum) return null;
+  const [posts, gatesEnabled] = await Promise.all([getReviewPosts(), isContentGatesEnabled()]);
+  if (gatesEnabled && posts.length < SECTION_GATES.cut.minimum) return null;
+  if (posts.length === 0) return null;
 
   const [lead, ...secondary] = posts;
   const leadMeta = (lead.meta ?? {}) as ReviewMeta;

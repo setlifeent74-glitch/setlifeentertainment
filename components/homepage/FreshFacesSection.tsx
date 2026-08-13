@@ -2,13 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import FreshFacesRail from "./FreshFacesRail";
-import { getFreshFacesPosts } from "@/lib/queries";
+import { getFreshFacesPosts, isContentGatesEnabled } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
-/** §27 Fresh Faces — Gate: 4 spotlights, placement=fresh_face. */
+/** §27 Fresh Faces — Gate: 4 spotlights, placement=fresh_face (unless the §9 admin override is on). */
 export default async function FreshFacesSection() {
-  const posts = await getFreshFacesPosts();
-  if (posts.length < SECTION_GATES.fresh_face.minimum) return null;
+  const [posts, gatesEnabled] = await Promise.all([getFreshFacesPosts(), isContentGatesEnabled()]);
+  if (gatesEnabled && posts.length < SECTION_GATES.fresh_face.minimum) return null;
+  if (posts.length === 0) return null;
 
   return (
     <ScrollReveal as="section" className="fresh-faces-section">

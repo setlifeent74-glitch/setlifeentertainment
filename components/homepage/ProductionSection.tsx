@@ -1,12 +1,13 @@
 import ScrollReveal from "@/components/ScrollReveal";
 import ProductionFilter from "./ProductionFilter";
-import { getProductionPosts } from "@/lib/queries";
+import { getProductionPosts, isContentGatesEnabled } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 
-/** §28 Now in Production — Gate: 3 entries, placement=production. */
+/** §28 Now in Production — Gate: 3 entries, placement=production (unless the §9 admin override is on). */
 export default async function ProductionSection() {
-  const posts = await getProductionPosts();
-  if (posts.length < SECTION_GATES.production.minimum) return null;
+  const [posts, gatesEnabled] = await Promise.all([getProductionPosts(), isContentGatesEnabled()]);
+  if (gatesEnabled && posts.length < SECTION_GATES.production.minimum) return null;
+  if (posts.length === 0) return null;
 
   return (
     <ScrollReveal as="section" className="production-section">

@@ -64,6 +64,7 @@ type ArticleMeta = {
   callout?: Callout;
   videoUrl?: string;
   captionsUrl?: string;
+  canvasColor?: string;
 };
 
 export default async function StoryPage({
@@ -112,7 +113,7 @@ export default async function StoryPage({
       <ArticleJsonLd post={post} url={url} />
       <ReadingProgress targetId="article-body" />
 
-      <article>
+      <article style={meta.canvasColor ? { backgroundColor: meta.canvasColor } : undefined}>
         <section className="article-header">
           <div className="wrap">
             <p className="eyebrow">{post.category.replace(/_/g, " ")}</p>
@@ -219,6 +220,7 @@ type TiptapNodeShape = {
     color?: string;
     opacity?: number;
     label?: string;
+    fullBleed?: boolean;
   };
   content?: TiptapNodeShape[];
   text?: string;
@@ -281,7 +283,7 @@ function TiptapNode({ node }: { node: TiptapNodeShape }) {
       // as an ugly caption underneath. There's no separate visible-caption
       // field, so nothing is shown here now.
       return node.attrs?.src ? (
-        <figure className="article-image-block">
+        <figure className={`article-image-block${node.attrs.fullBleed ? " article-image-block--full-bleed" : ""}`}>
           {/* eslint-disable-next-line @next/next/no-img-element -- article body image, arbitrary uploaded URL */}
           <img src={node.attrs.src} alt={node.attrs.alt ?? ""} />
         </figure>

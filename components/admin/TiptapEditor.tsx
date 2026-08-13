@@ -2,13 +2,12 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import { useEffect, useState } from "react";
 import { uploadMedia, uploadPdfAsImages } from "@/lib/admin-media";
-import { StyledBox, Pill, type BoxVariant } from "@/lib/tiptap-blocks";
+import { StyledBox, Pill, FullBleedImage, type BoxVariant } from "@/lib/tiptap-blocks";
 import type { Json } from "@/lib/supabase/types";
 
 async function uploadImage(file: File): Promise<string | null> {
@@ -44,12 +43,20 @@ export default function TiptapEditor({
   const [pdfStatus, setPdfStatus] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [pillColor, setPillColor] = useState("#d9a441");
+  // Text/box color pickers used to bind their <input type="color"> value
+  // directly to editor.getAttributes(...) — a native color-picker
+  // interaction can shift focus/selection mid-pick, which made the read-back
+  // attribute go empty and the swatch visibly "reset to white" before the
+  // color ever got applied. Picking now only updates local state; nothing
+  // touches the editor until the Apply button is clicked.
+  const [pendingTextColor, setPendingTextColor] = useState("#f5f0e6");
+  const [pendingBoxColor, setPendingBoxColor] = useState("#d9a441");
 
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] } }),
-      Image,
+      FullBleedImage,
       Placeholder.configure({ placeholder: "Write the story…" }),
       TextStyle,
       Color,
@@ -139,14 +146,13 @@ export default function TiptapEditor({
         <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive("bulletList") ? "active" : ""}>
           List
         </button>
-        <label className="admin-editor-color-btn" title="Text color">
-          <input
-            type="color"
-            value={editor.getAttributes("textStyle").color || "#f5f0e6"}
-            onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
-          />
+        <label className="admin-editor-color-btn" title="Pick a text color, then click Apply">
+          <input type="color" value={pendingTextColor} onChange={(e) => setPendingTextColor(e.target.value)} />
           Color
         </label>
+        <button type="button" onClick={() => editor.chain().focus().setColor(pendingTextColor).run()}>
+          Apply Text Color
+        </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().unsetColor().run()}
@@ -164,15 +170,17 @@ export default function TiptapEditor({
         <button type="button" onClick={() => toggleBox("stat")} className={editor.isActive("styledBox", { variant: "stat" }) ? "active" : ""}>
           Stat
         </button>
-        <label className="admin-editor-color-btn" title="Box color (select a Panel/Highlight/Stat box first)">
-          <input
-            type="color"
-            value={editor.getAttributes("styledBox").color || "#d9a441"}
-            onChange={(e) => editor.chain().focus().updateAttributes("styledBox", { color: e.target.value }).run()}
-            disabled={!editor.isActive("styledBox")}
-          />
+        <label className="admin-editor-color-btn" title="Pick a box color, then click Apply (cursor must be inside a Panel/Highlight/Stat box)">
+          <input type="color" value={pendingBoxColor} onChange={(e) => setPendingBoxColor(e.target.value)} />
           Box Color
         </label>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().updateAttributes("styledBox", { color: pendingBoxColor }).run()}
+          disabled={!editor.isActive("styledBox")}
+        >
+          Apply Box Color
+        </button>
         <label className="admin-editor-opacity-control" title="Box background opacity">
           Opacity
           <input
@@ -256,6 +264,10 @@ export default function TiptapEditor({
                         attrs: {
                           src,
                           alt: altBase ? (urls.length > 1 ? `${altBase} (page ${i + 1} of ${urls.length})` : altBase) : "",
+                          // PDF pages are full magazine-page graphics, not
+                          // inline photos — render wide, not squeezed into
+                          // the narrow body-text column.
+                          fullBleed: true,
                         },
                       }))
                     )
@@ -273,8 +285,8 @@ export default function TiptapEditor({
       {uploadError && <p className="admin-upload-error">{uploadError}</p>}
       <p className="admin-editor-hint">
         Images upload to wherever your cursor is, and can be dragged to a new spot afterward. Select a paragraph and click
-        Panel/Highlight/Stat to box it — click the same variant again to remove the box. Box Color and Opacity only apply while
-        your cursor is inside a box.
+        Panel/Highlight/Stat to box it — click the same variant again to remove the box. For any color swatch, pick the color
+        first, then click its Apply button to commit it — nothing changes until you click Apply.
       </p>
       <EditorContent editor={editor} />
     </div>

@@ -445,14 +445,17 @@ export type Database = {
         Row: {
           id: boolean
           set_life_100_enabled: boolean
+          content_gates_enabled: boolean
         }
         Insert: {
           id?: boolean
           set_life_100_enabled?: boolean
+          content_gates_enabled?: boolean
         }
         Update: {
           id?: boolean
           set_life_100_enabled?: boolean
+          content_gates_enabled?: boolean
         }
         Relationships: []
       }

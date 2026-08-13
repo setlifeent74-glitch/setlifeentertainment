@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getSectionGateStatuses } from "@/lib/gates";
+import { isContentGatesEnabled } from "@/lib/queries";
+import ContentGatesToggle from "@/components/admin/ContentGatesToggle";
 
 export const metadata: Metadata = {
   title: "Content Gate Status — Set Life Entertainment",
@@ -11,15 +13,13 @@ export const metadata: Metadata = {
  * status (met/unmet, with shortfall) so contributors can see exactly what
  * the homepage needs.
  *
- * Not yet behind auth. §45 (Phase 9) wraps every /admin/* route in the
- * shared-login check in one pass rather than each admin page rolling its
- * own; this page is content-gate metadata, not editorial content, so
- * shipping it unauthenticated for one phase is a deliberately small,
- * temporary gap — not sensitive, not writable, and closed the moment
- * Phase 9 lands.
+ * Behind auth via the shared /admin/* middleware check (lib/supabase/
+ * middleware.ts) — same flat-access model as the rest of the admin surface.
+ * Now also writable: the ContentGatesToggle below flips the site-wide §9
+ * override (site_settings.content_gates_enabled).
  */
 export default async function GateStatusPage() {
-  const gates = await getSectionGateStatuses();
+  const [gates, gatesEnabled] = await Promise.all([getSectionGateStatuses(), isContentGatesEnabled()]);
   const metCount = gates.filter((g) => g.met).length;
 
   return (
@@ -30,7 +30,12 @@ export default async function GateStatusPage() {
       </h1>
       <p style={{ color: "var(--gray)", marginTop: 10 }}>
         {metCount} of {gates.length} homepage sections currently meet their §9 minimum-to-render threshold.
+        {!gatesEnabled && " Override is ON, so every section shows regardless of this table."}
       </p>
+
+      <div style={{ marginTop: 24 }}>
+        <ContentGatesToggle initialEnabled={gatesEnabled} />
+      </div>
 
       <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 32 }}>
         <thead>

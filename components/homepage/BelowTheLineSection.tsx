@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
-import { getBelowTheLinePosts } from "@/lib/queries";
+import { getBelowTheLinePosts, isContentGatesEnabled } from "@/lib/queries";
 import { SECTION_GATES } from "@/lib/gates";
 import type { PostWithAuthor } from "@/lib/queries";
 
@@ -34,10 +34,11 @@ function MosaicTile({ post, span }: { post: PostWithAuthor; span: (typeof MOSAIC
   );
 }
 
-/** §26 Below the Line — Signature Section. Gate: 3 crew posts, placement=below_the_line. */
+/** §26 Below the Line — Signature Section. Gate: 3 crew posts, placement=below_the_line (unless the §9 admin override is on). */
 export default async function BelowTheLineSection() {
-  const posts = await getBelowTheLinePosts();
-  if (posts.length < SECTION_GATES.below_the_line.minimum) return null;
+  const [posts, gatesEnabled] = await Promise.all([getBelowTheLinePosts(), isContentGatesEnabled()]);
+  if (gatesEnabled && posts.length < SECTION_GATES.below_the_line.minimum) return null;
+  if (posts.length === 0) return null;
 
   return (
     <ScrollReveal as="section" className="btl-section">

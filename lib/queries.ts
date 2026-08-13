@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
 
@@ -394,6 +395,24 @@ export async function isSetLife100Enabled(): Promise<boolean> {
   const { data } = await supabase.from("site_settings").select("set_life_100_enabled").eq("id", true).single();
   return data?.set_life_100_enabled ?? false;
 }
+
+/**
+ * §9 global override — every minimum-to-render gate in lib/gates.ts checks
+ * this before applying its threshold, so the whole content-readiness system
+ * can be switched off in one place while there isn't yet enough staff/
+ * content to hit each section's usual minimum. Defaults to true (gates
+ * active) so a missing/unmigrated column fails toward the original
+ * behavior, not toward accidentally publishing everything.
+ *
+ * Wrapped in React's `cache()` so the ~9 homepage sections that each call
+ * this independently only hit the DB once per request, not once per
+ * section — same request-level dedup React uses for `fetch`.
+ */
+export const isContentGatesEnabled = cache(async (): Promise<boolean> => {
+  const supabase = await createClient();
+  const { data } = await supabase.from("site_settings").select("content_gates_enabled").eq("id", true).single();
+  return data?.content_gates_enabled ?? true;
+});
 
 /**
  * §36 CMS fallback grid — recent published posts with a hero image, across
