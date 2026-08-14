@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import { getBehindTheLensPost, getSectionColors, cardImage } from "@/lib/queries";
@@ -27,7 +26,8 @@ export default async function BehindTheLensSection() {
     >
       <div className="wrap lens-grid">
         <div className="lens-still">
-          {cardImage(post) && <Image src={cardImage(post)!} alt="" fill sizes="(max-width: 767px) 100vw, 58vw" />}
+          {/* eslint-disable-next-line @next/next/no-img-element -- card image, natural aspect ratio, no crop */}
+          {cardImage(post) && <img src={cardImage(post)!} alt="" />}
         </div>
 
         <div className="lens-content">

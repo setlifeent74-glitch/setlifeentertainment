@@ -659,15 +659,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible{
   justify-content: flex-start;
 }
 .cover-card.has-img .cover-card-image{
-  position: relative;
   width: 100%;
-  aspect-ratio: 3/4;
   overflow: hidden;
   background: var(--black-2);
+  line-height: 0;
 }
 .cover-card.has-img .cover-card-image img{
-  object-fit: cover;
-  object-position: top center;
+  display: block;
+  width: 100%;
+  height: auto;
   transition: transform 0.4s ease;
 }
 .cover-card.has-img:hover .cover-card-image img{ transform: scale(1.05); }
@@ -903,6 +903,21 @@ footer.site-footer{
 }
 .page-header .display{ font-size: clamp(40px,6vw,72px); }
 .page-header p{ color: var(--gray); max-width: 560px; margin-top: 14px; }
+
+.author-header{ display: flex; align-items: center; gap: var(--space-32); flex-wrap: wrap; }
+.author-avatar{
+  position: relative;
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--black-2);
+}
+.author-avatar img{ width: 100%; height: 100%; }
+@media (max-width: 600px){
+  .author-avatar{ width: 88px; height: 88px; }
+}
 
 /* ---------- Legal pages (§38) ---------- */
 .legal-body{ max-width: 720px; }
@@ -1206,16 +1221,10 @@ footer.site-footer{
 }
 .today-primary{ color: inherit; display: block; }
 .today-primary > a{ color: inherit; display: block; }
-.today-primary-image{
-  position: relative;
-  aspect-ratio: 3/2;
-  background: var(--black-2);
-  overflow: hidden;
-}
-.today-primary-image img{ object-fit: contain; }
+.today-primary-image{ background: var(--black-2); line-height: 0; }
+.today-primary-image img{ display: block; width: 100%; height: auto; }
 .today-primary-image-placeholder{
-  position: absolute;
-  inset: 0;
+  aspect-ratio: 3/2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1298,13 +1307,12 @@ footer.site-footer{
   align-items: center;
 }
 .current-issue-cover{
-  position: relative;
-  aspect-ratio: 3/4;
   width: 100%;
   max-width: 480px;
   background: var(--black-2);
+  line-height: 0;
 }
-.current-issue-cover img{ object-fit: cover; }
+.current-issue-cover img{ display: block; width: 100%; height: auto; }
 .current-issue-details .eyebrow{ font-size: 14px; }
 .current-issue-meta{ color: var(--gray); font-size: 14px; margin: 10px 0; }
 .current-issue-title{ font-size: clamp(36px, 4vw, 64px); color: var(--off-white); margin: var(--space-16) 0; }
@@ -1328,7 +1336,7 @@ footer.site-footer{
   background: var(--black-2);
   overflow: hidden;
 }
-.spotlight-portrait img{ object-fit: contain; }
+.spotlight-portrait img{ object-fit: cover; }
 .spotlight-bg-word{
   position: absolute;
   left: 50%;
@@ -1421,7 +1429,7 @@ footer.site-footer{
   background: var(--black-3);
   overflow: hidden;
 }
-.btl-tile img{ object-fit: contain; transition: transform 400ms var(--motion-ease); }
+.btl-tile img{ object-fit: cover; transition: transform 400ms var(--motion-ease); }
 .btl-tile:hover img{ transform: scale(1.04); }
 .btl-tile-overlay{
   position: absolute;
@@ -1478,7 +1486,7 @@ footer.site-footer{
   overflow: hidden;
   transition: transform 280ms var(--motion-ease);
 }
-.fresh-face-image img{ object-fit: contain; transition: transform 280ms var(--motion-ease); }
+.fresh-face-image img{ object-fit: cover; transition: transform 280ms var(--motion-ease); }
 .fresh-face-card:hover .fresh-face-image img{ transform: scale(1.025); }
 .fresh-face-name{
   display: block;
@@ -1548,8 +1556,8 @@ footer.site-footer{
 .production-empty{ color: var(--gray); padding: var(--space-48) 0; text-align: center; }
 .production-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-24); }
 .production-card{ display: block; color: inherit; background: var(--white); border: 1px solid var(--line); }
-.production-card-image{ position: relative; aspect-ratio: 4/3; background: var(--black-2); }
-.production-card-image img{ object-fit: contain; }
+.production-card-image{ position: relative; background: var(--black-2); line-height: 0; }
+.production-card-image img{ display: block; width: 100%; height: auto; }
 .production-status{
   position: absolute;
   top: var(--space-12); left: var(--space-12);
@@ -1579,8 +1587,8 @@ footer.site-footer{
 .cut-header{ margin-bottom: var(--space-32); }
 .cut-header .headline{ font-size: clamp(32px, 4vw, 52px); color: var(--black); }
 .cut-lead{ display: grid; grid-template-columns: 800fr 500fr; gap: var(--space-48); align-items: center; }
-.cut-lead-image{ position: relative; aspect-ratio: 16/9; background: var(--black-2); }
-.cut-lead-image img{ object-fit: contain; }
+.cut-lead-image{ background: var(--black-2); line-height: 0; }
+.cut-lead-image img{ display: block; width: 100%; height: auto; }
 .cut-score{
   display: block;
   font-family: var(--font-anton), sans-serif;
@@ -1593,8 +1601,8 @@ footer.site-footer{
 .cut-byline{ display: block; color: var(--gray); font-size: 13px; margin: 6px 0 var(--space-16); }
 .cut-secondary{ display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-16); margin-top: var(--space-48); }
 .cut-secondary-card{ display: block; color: inherit; position: relative; }
-.cut-secondary-image{ position: relative; aspect-ratio: 4/3; background: var(--black-2); margin-bottom: var(--space-8); }
-.cut-secondary-image img{ object-fit: contain; }
+.cut-secondary-image{ background: var(--black-2); margin-bottom: var(--space-8); line-height: 0; }
+.cut-secondary-image img{ display: block; width: 100%; height: auto; }
 .cut-secondary-score{
   position: absolute; top: var(--space-8); right: var(--space-8);
   background: rgba(10,10,10,0.75); color: var(--gold);
@@ -1623,8 +1631,8 @@ footer.site-footer{
 /* ---------- §31 Behind the Lens ---------- */
 .lens-section{ background: var(--off-white); color: var(--black); padding: var(--space-120) 0; }
 .lens-grid{ display: grid; grid-template-columns: 58fr 42fr; gap: var(--space-48); align-items: center; }
-.lens-still{ position: relative; aspect-ratio: 4/3; background: var(--black-2); }
-.lens-still img{ object-fit: contain; }
+.lens-still{ background: var(--black-2); line-height: 0; }
+.lens-still img{ display: block; width: 100%; height: auto; }
 .lens-title{ font-size: clamp(28px, 3vw, 44px); color: var(--black); margin: var(--space-8) 0 var(--space-24); }
 .lens-byline{ margin-bottom: var(--space-16); }
 .lens-name{ display: block; font-family: var(--font-anton), sans-serif; text-transform: uppercase; font-size: 22px; }
@@ -1668,7 +1676,7 @@ footer.site-footer{
   color: var(--off-white);
   margin-bottom: var(--space-48);
 }
-.festival-featured img{ object-fit: contain; }
+.festival-featured img{ object-fit: cover; }
 .festival-featured-overlay{
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: flex-end;
@@ -1733,7 +1741,6 @@ footer.site-footer{
   .screening-room-section{ min-height: 0; }
 
   .lens-grid{ grid-template-columns: 1fr; }
-  .lens-still{ aspect-ratio: 4/3; }
 
   .opportunities-row a{ grid-template-columns: 1fr auto; grid-template-areas: "type deadline" "title title" "org paid"; row-gap: 4px; padding: var(--space-12) 0; }
   .opportunities-type{ grid-area: type; }
@@ -1792,7 +1799,7 @@ footer.site-footer{
 .instagram-header a{ font-family: var(--font-bebas), sans-serif; letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; border-bottom: 1px solid var(--black); padding-bottom: 2px; }
 .instagram-grid{ display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-4); }
 .instagram-item{ position: relative; display: block; aspect-ratio: 1; background: var(--black-2); overflow: hidden; }
-.instagram-item img{ object-fit: contain; }
+.instagram-item img{ object-fit: cover; }
 .instagram-item-overlay{
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: flex-end;

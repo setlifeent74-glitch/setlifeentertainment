@@ -18,6 +18,8 @@ export type SaveAuthorInput = {
   instagram: string;
   twitter: string;
   website: string;
+  avatarFit: "cover" | "contain";
+  avatarPosition: "top" | "center" | "bottom";
 };
 
 export async function saveAuthor(input: SaveAuthorInput): Promise<{ id: string; error?: string }> {
@@ -28,6 +30,8 @@ export async function saveAuthor(input: SaveAuthorInput): Promise<{ id: string; 
     title: input.title || null,
     bio: input.bio || null,
     avatar_url: input.avatarUrl || null,
+    avatar_fit: input.avatarFit,
+    avatar_position: input.avatarPosition,
     location: input.location || null,
     social_links: {
       instagram: input.instagram || undefined,

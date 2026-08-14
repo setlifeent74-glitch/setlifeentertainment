@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import { getReviewPosts, isContentGatesEnabled, getSectionColors, cardImage } from "@/lib/queries";
@@ -29,7 +28,8 @@ export default async function CutSection() {
 
         <div className="cut-lead">
           <div className="cut-lead-image">
-            {cardImage(lead) && <Image src={cardImage(lead)!} alt="" fill sizes="(max-width: 767px) 100vw, 800px" />}
+            {/* eslint-disable-next-line @next/next/no-img-element -- card image, natural aspect ratio, no crop */}
+            {cardImage(lead) && <img src={cardImage(lead)!} alt="" />}
           </div>
           <div className="cut-lead-body">
             {typeof leadMeta.score === "number" && <span className="cut-score">{leadMeta.score}</span>}
@@ -52,7 +52,8 @@ export default async function CutSection() {
                 <Link href={`/story/${post.slug}`} key={post.id} className="cut-secondary-card">
                   {cardImage(post) && (
                     <div className="cut-secondary-image">
-                      <Image src={cardImage(post)!} alt="" fill sizes="(max-width: 767px) 100vw, 25vw" />
+                      {/* eslint-disable-next-line @next/next/no-img-element -- card image, natural aspect ratio, no crop */}
+                      <img src={cardImage(post)!} alt="" />
                     </div>
                   )}
                   {typeof meta.score === "number" && <span className="cut-secondary-score">{meta.score}</span>}

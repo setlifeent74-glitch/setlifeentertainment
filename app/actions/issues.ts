@@ -15,6 +15,8 @@ export type SaveIssueInput = {
   releaseDate: string;
   summary: string;
   isCurrent: boolean;
+  coverFit: "cover" | "contain";
+  coverPosition: "top" | "center" | "bottom";
 };
 
 export async function saveIssue(input: SaveIssueInput): Promise<{ id: string; error?: string }> {
@@ -23,6 +25,8 @@ export async function saveIssue(input: SaveIssueInput): Promise<{ id: string; er
     issue_number: input.issueNumber,
     title: input.title,
     cover_image_url: input.coverImageUrl || null,
+    cover_fit: input.coverFit,
+    cover_position: input.coverPosition,
     release_date: input.releaseDate || null,
     summary: input.summary || null,
     is_current: input.isCurrent,

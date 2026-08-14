@@ -5,6 +5,7 @@ import { useState } from "react";
 import TiptapEditor from "./TiptapEditor";
 import MetaFieldsPanel, { type MetaValue } from "./MetaFieldsPanel";
 import HeroImageUpload from "./HeroImageUpload";
+import ImageFitControl, { type ImageFit, type ImagePosition } from "./ImageFitControl";
 import CalloutField, { type Callout } from "./CalloutField";
 import { savePost, publishPost, unpublishPost, deletePost } from "@/app/actions/posts";
 import type { Post, Author, PostCategory } from "@/lib/queries";
@@ -275,43 +276,22 @@ export default function PostEditor({
           </p>
         </div>
 
-        <div className="admin-field">
-          <label>Hero Image Display</label>
-          <div className="hero-fit-row">
-            <button
-              type="button"
-              className={(meta.heroFit ?? "cover") === "cover" ? "btn btn-primary" : "btn"}
-              onClick={() => setMeta({ ...meta, heroFit: "cover" })}
-            >
-              Crop to Fill
-            </button>
-            <button
-              type="button"
-              className={meta.heroFit === "contain" ? "btn btn-primary" : "btn"}
-              onClick={() => setMeta({ ...meta, heroFit: "contain" })}
-            >
-              Show Full Image
-            </button>
-          </div>
-          {(meta.heroFit ?? "cover") === "cover" && (
-            <div className="hero-fit-row" style={{ marginTop: 8 }}>
-              {(["top", "center", "bottom"] as const).map((pos) => (
-                <button
-                  key={pos}
-                  type="button"
-                  className={(meta.heroPosition ?? "center") === pos ? "btn btn-primary" : "btn"}
-                  onClick={() => setMeta({ ...meta, heroPosition: pos })}
-                >
-                  {pos[0].toUpperCase() + pos.slice(1)}
-                </button>
-              ))}
-            </div>
-          )}
-          <p className="admin-editor-hint" style={{ padding: 0 }}>
-            &quot;Crop to Fill&quot; fills the banner and may cut off the top or bottom of tall photos — pick which
-            part stays visible above. &quot;Show Full Image&quot; never crops, letterboxing instead if needed.
-          </p>
-        </div>
+        <ImageFitControl
+          label="Card Image Crop Position"
+          hideFitToggle
+          fit="cover"
+          position={((meta.cardPosition as ImagePosition) ?? "center")}
+          onFitChange={() => {}}
+          onPositionChange={(position) => setMeta({ ...meta, cardPosition: position })}
+        />
+
+        <ImageFitControl
+          label="Hero Image Display"
+          fit={((meta.heroFit as ImageFit) ?? "cover")}
+          position={((meta.heroPosition as ImagePosition) ?? "center")}
+          onFitChange={(fit) => setMeta({ ...meta, heroFit: fit })}
+          onPositionChange={(position) => setMeta({ ...meta, heroPosition: position })}
+        />
 
         <div className="admin-field">
           <label>Article Canvas Color</label>

@@ -2,6 +2,7 @@
 
 import { META_FIELDS_BY_CATEGORY, PLATFORM_OPTIONS, type MetaFieldDef } from "@/lib/admin-meta-fields";
 import type { PostCategory } from "@/lib/queries";
+import VideoUpload from "./VideoUpload";
 
 type Credit = { title: string; year: string; tag?: string };
 export type MetaValue = Record<string, unknown>;
@@ -119,6 +120,9 @@ export default function MetaFieldsPanel({
             )}
             {field.type === "badges" && (
               <BadgesField value={(meta[field.key] as string[]) ?? []} onChange={(v) => setField(field.key, v)} />
+            )}
+            {field.type === "video" && (
+              <VideoUpload value={(meta[field.key] as string) ?? ""} onChange={(v) => setField(field.key, v)} />
             )}
           </div>
         );

@@ -18,6 +18,8 @@ export type SaveHonoreeInput = {
   citation: string;
   relatedPostId: string;
   published: boolean;
+  portraitFit: "cover" | "contain";
+  portraitPosition: "top" | "center" | "bottom";
 };
 
 export async function saveHonoree(input: SaveHonoreeInput): Promise<{ id: string; error?: string }> {
@@ -29,6 +31,8 @@ export async function saveHonoree(input: SaveHonoreeInput): Promise<{ id: string
     title: input.title || null,
     discipline: input.discipline || null,
     portrait_url: input.portraitUrl || null,
+    portrait_fit: input.portraitFit,
+    portrait_position: input.portraitPosition,
     citation: input.citation || null,
     related_post_id: input.relatedPostId || null,
     published: input.published,

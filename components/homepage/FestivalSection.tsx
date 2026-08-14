@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import { getFestivalSectionPosts, isContentGatesEnabled, getSectionColors, cardImage } from "@/lib/queries";
+import { cardImagePosition } from "@/lib/post-image";
 import { SECTION_GATES } from "@/lib/gates";
 
 type FestivalMeta = { city?: string; startDate?: string; endDate?: string; submissionDeadline?: string };
@@ -37,7 +38,15 @@ export default async function FestivalSection() {
         </div>
 
         <Link href={`/story/${featured.slug}`} className="festival-featured">
-          {cardImage(featured) && <Image src={cardImage(featured)!} alt="" fill sizes="(max-width: 767px) 100vw, 1200px" />}
+          {cardImage(featured) && (
+            <Image
+              src={cardImage(featured)!}
+              alt=""
+              fill
+              sizes="(max-width: 767px) 100vw, 1200px"
+              style={cardImagePosition(featured)}
+            />
+          )}
           <div className="festival-featured-overlay">
             <h3>{featured.title}</h3>
             <p>

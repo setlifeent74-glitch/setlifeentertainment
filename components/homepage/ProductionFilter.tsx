@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import type { PostWithAuthor } from "@/lib/queries";
@@ -66,7 +65,8 @@ export default function ProductionFilter({ posts }: { posts: PostWithAuthor[] })
             return (
               <Link href={`/story/${post.slug}`} key={post.id} className="production-card">
                 <div className="production-card-image">
-                  {cardImage(post) && <Image src={cardImage(post)!} alt="" fill sizes="(max-width: 767px) 100vw, 33vw" />}
+                  {/* eslint-disable-next-line @next/next/no-img-element -- card image, natural aspect ratio, no crop */}
+                  {cardImage(post) && <img src={cardImage(post)!} alt="" />}
                   <span className="production-status">{statusLabel}</span>
                 </div>
                 <h3>{post.title}</h3>

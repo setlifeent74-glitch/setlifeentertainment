@@ -3,6 +3,7 @@ import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import FreshFacesRail from "./FreshFacesRail";
 import { getFreshFacesPosts, isContentGatesEnabled, getSectionColors, cardImage } from "@/lib/queries";
+import { cardImagePosition } from "@/lib/post-image";
 import { SECTION_GATES } from "@/lib/gates";
 
 /** §27 Fresh Faces — Gate: 4 spotlights, placement=fresh_face (unless the §9 admin override is on). */
@@ -35,7 +36,13 @@ export default async function FreshFacesSection() {
             <Link href={`/story/${post.slug}`} key={post.id} className="fresh-face-card">
               <div className="fresh-face-image">
                 {cardImage(post) && (
-                  <Image src={cardImage(post)!} alt="" fill sizes="(max-width: 767px) 78vw, 300px" />
+                  <Image
+                    src={cardImage(post)!}
+                    alt=""
+                    fill
+                    sizes="(max-width: 767px) 78vw, 300px"
+                    style={cardImagePosition(post)}
+                  />
                 )}
               </div>
               <span className="fresh-face-name">{post.title}</span>

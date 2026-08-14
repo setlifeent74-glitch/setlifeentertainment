@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import HeroImageUpload from "./HeroImageUpload";
+import ImageFitControl, { type ImageFit, type ImagePosition } from "./ImageFitControl";
 import { saveHonoree, deleteHonoree } from "@/app/actions/honorees";
 import type { Database } from "@/lib/supabase/types";
 
@@ -22,6 +23,10 @@ export default function HonoreeForm({
   const [title, setTitle] = useState(honoree?.title ?? "");
   const [discipline, setDiscipline] = useState(honoree?.discipline ?? "");
   const [portraitUrl, setPortraitUrl] = useState(honoree?.portrait_url ?? "");
+  const [portraitFit, setPortraitFit] = useState<ImageFit>((honoree?.portrait_fit as ImageFit) ?? "cover");
+  const [portraitPosition, setPortraitPosition] = useState<ImagePosition>(
+    (honoree?.portrait_position as ImagePosition) ?? "center"
+  );
   const [citation, setCitation] = useState(honoree?.citation ?? "");
   const [relatedPostId, setRelatedPostId] = useState(honoree?.related_post_id ?? "");
   const [published, setPublished] = useState(honoree?.published ?? false);
@@ -37,6 +42,8 @@ export default function HonoreeForm({
       title,
       discipline,
       portraitUrl,
+      portraitFit,
+      portraitPosition,
       citation,
       relatedPostId,
       published,
@@ -80,6 +87,13 @@ export default function HonoreeForm({
           <label>Portrait</label>
           <HeroImageUpload value={portraitUrl ?? ""} onChange={setPortraitUrl} />
         </div>
+        <ImageFitControl
+          label="Portrait Display"
+          fit={portraitFit}
+          position={portraitPosition}
+          onFitChange={setPortraitFit}
+          onPositionChange={setPortraitPosition}
+        />
         <div className="admin-field">
           <label htmlFor="honoree-related-post">Related Post</label>
           <select id="honoree-related-post" value={relatedPostId ?? ""} onChange={(e) => setRelatedPostId(e.target.value)}>

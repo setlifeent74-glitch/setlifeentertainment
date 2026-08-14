@@ -5,6 +5,7 @@ import JsonLd from "@/components/JsonLd";
 import { getProductBySlug } from "@/lib/queries";
 import { productJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 import { getSiteUrl } from "@/lib/site-url";
+import { imageFitStyle } from "@/lib/image-fit";
 
 export async function generateMetadata({
   params,
@@ -57,7 +58,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="panel panel-cover">
             {product.image_url && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={product.image_url} alt={product.name} />
+              <img
+                src={product.image_url}
+                alt={product.name}
+                style={imageFitStyle(product.image_fit, product.image_position)}
+              />
             )}
           </div>
           <div>

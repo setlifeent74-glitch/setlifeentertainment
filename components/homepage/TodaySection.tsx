@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import { getTodayPosts, isContentGatesEnabled, getSectionColors, cardImage } from "@/lib/queries";
@@ -29,7 +28,8 @@ export default async function TodaySection() {
             <Link href={`/story/${primary.slug}`}>
               <div className="today-primary-image">
                 {cardImage(primary) ? (
-                  <Image src={cardImage(primary)!} alt="" fill sizes="(max-width: 767px) 100vw, 58vw" />
+                  // eslint-disable-next-line @next/next/no-img-element -- card image, natural aspect ratio, no crop
+                  <img src={cardImage(primary)!} alt="" />
                 ) : (
                   // No hero image on the lead post yet — a branded placeholder
                   // so the slot never reads as broken/empty.

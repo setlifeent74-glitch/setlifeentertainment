@@ -6,7 +6,8 @@ export type MetaFieldDef =
   | { key: string; label: string; type: "number" }
   | { key: string; label: string; type: "datetime" }
   | { key: string; label: string; type: "credits-list" }
-  | { key: string; label: string; type: "badges" };
+  | { key: string; label: string; type: "badges" }
+  | { key: string; label: string; type: "video" };
 
 /**
  * §45 — category-specific `meta` fields, generically rendered
@@ -26,7 +27,7 @@ export const META_FIELDS_BY_CATEGORY: Partial<Record<PostCategory, MetaFieldDef[
     { key: "verdict", label: "Verdict", type: "text" },
   ],
   video: [
-    { key: "videoUrl", label: "Video URL", type: "text" },
+    { key: "videoUrl", label: "Video", type: "video" },
     { key: "captionsUrl", label: "Captions URL (WebVTT)", type: "text" },
     { key: "runtime", label: "Runtime", type: "text" },
     { key: "series", label: "Series", type: "text" },

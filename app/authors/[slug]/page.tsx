@@ -6,6 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import { getAuthorBySlug } from "@/lib/queries";
 import { personJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 import { getSiteUrl } from "@/lib/site-url";
+import { imageFitStyle } from "@/lib/image-fit";
 
 export async function generateMetadata({
   params,
@@ -52,11 +53,23 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
       />
 
       <section className="page-header">
-        <div className="wrap">
-          <p className="eyebrow">Contributor</p>
-          <h1 className="display">{author.name}</h1>
-          {author.title && <p>{author.title}</p>}
-          {author.bio && <p>{author.bio}</p>}
+        <div className="wrap author-header">
+          {author.avatar_url && (
+            <div className="author-avatar">
+              {/* eslint-disable-next-line @next/next/no-img-element -- author avatar, arbitrary uploaded URL */}
+              <img
+                src={author.avatar_url}
+                alt={author.name}
+                style={imageFitStyle(author.avatar_fit, author.avatar_position)}
+              />
+            </div>
+          )}
+          <div>
+            <p className="eyebrow">Contributor</p>
+            <h1 className="display">{author.name}</h1>
+            {author.title && <p>{author.title}</p>}
+            {author.bio && <p>{author.bio}</p>}
+          </div>
         </div>
       </section>
 

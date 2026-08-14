@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import HeroImageUpload from "./HeroImageUpload";
+import ImageFitControl, { type ImageFit, type ImagePosition } from "./ImageFitControl";
 import { saveIssue, deleteIssue } from "@/app/actions/issues";
 import type { MagazineIssue } from "@/lib/queries";
 
@@ -11,6 +12,10 @@ export default function IssueForm({ issue }: { issue?: MagazineIssue }) {
   const [issueNumber, setIssueNumber] = useState(issue?.issue_number?.toString() ?? "");
   const [title, setTitle] = useState(issue?.title ?? "");
   const [coverImageUrl, setCoverImageUrl] = useState(issue?.cover_image_url ?? "");
+  const [coverFit, setCoverFit] = useState<ImageFit>((issue?.cover_fit as ImageFit) ?? "cover");
+  const [coverPosition, setCoverPosition] = useState<ImagePosition>(
+    (issue?.cover_position as ImagePosition) ?? "center"
+  );
   const [releaseDate, setReleaseDate] = useState(issue?.release_date ?? "");
   const [summary, setSummary] = useState(issue?.summary ?? "");
   const [isCurrent, setIsCurrent] = useState(issue?.is_current ?? false);
@@ -23,6 +28,8 @@ export default function IssueForm({ issue }: { issue?: MagazineIssue }) {
       issueNumber: Number(issueNumber),
       title,
       coverImageUrl,
+      coverFit,
+      coverPosition,
       releaseDate,
       summary,
       isCurrent,
@@ -58,6 +65,13 @@ export default function IssueForm({ issue }: { issue?: MagazineIssue }) {
           <label>Cover Image</label>
           <HeroImageUpload value={coverImageUrl ?? ""} onChange={setCoverImageUrl} />
         </div>
+        <ImageFitControl
+          label="Cover Display"
+          fit={coverFit}
+          position={coverPosition}
+          onFitChange={setCoverFit}
+          onPositionChange={setCoverPosition}
+        />
         <div className="admin-field">
           <label htmlFor="issue-current">
             <input id="issue-current" type="checkbox" checked={isCurrent} onChange={(e) => setIsCurrent(e.target.checked)} />

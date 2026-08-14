@@ -6,6 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import { getIssueByNumber } from "@/lib/queries";
 import { creativeWorkJsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 import { getSiteUrl } from "@/lib/site-url";
+import { imageFitStyle } from "@/lib/image-fit";
 
 export async function generateMetadata({
   params,
@@ -72,6 +73,7 @@ export default async function IssuePage({ params }: { params: Promise<{ number: 
                 alt={issue.title}
                 fill
                 sizes="(max-width: 767px) 90vw, 45vw"
+                style={imageFitStyle(issue.cover_fit, issue.cover_position)}
               />
             </div>
             <div>

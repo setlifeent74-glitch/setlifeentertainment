@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import ParallaxNumeral from "./ParallaxNumeral";
@@ -30,7 +29,8 @@ export default async function CurrentIssueSection() {
       <div className="wrap current-issue-grid">
         <div className="current-issue-cover">
           {issue.cover_image_url && (
-            <Image src={issue.cover_image_url} alt={`Issue ${issue.issue_number} cover — ${issue.title}`} fill sizes="(max-width: 767px) 80vw, 480px" />
+            // eslint-disable-next-line @next/next/no-img-element -- card image, natural aspect ratio, no crop
+            <img src={issue.cover_image_url} alt={`Issue ${issue.issue_number} cover — ${issue.title}`} />
           )}
         </div>
         <div className="current-issue-details">

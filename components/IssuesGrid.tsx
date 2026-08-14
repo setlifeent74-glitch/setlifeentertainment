@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import type { MagazineIssue } from "@/lib/queries";
 
@@ -43,7 +42,8 @@ export default function IssuesGrid({ issues }: { issues: MagazineIssue[] }) {
                 <>
                   {/* Image is its own clean block — no text ever renders on top of it. */}
                   <div className="cover-card-image">
-                    <Image src={issue.cover_image_url} alt={issue.title} fill sizes="(max-width: 767px) 50vw, 25vw" />
+                    {/* eslint-disable-next-line @next/next/no-img-element -- card image, natural aspect ratio, no crop */}
+                    <img src={issue.cover_image_url} alt={issue.title} />
                   </div>
                   <div className="card-body">
                     <span className="issue-no">

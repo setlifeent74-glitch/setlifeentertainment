@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Product } from "@/lib/queries";
+import { imageFitStyle } from "@/lib/image-fit";
 
 /**
  * §35 VERIFY — one component, no branching layout per product shape.
@@ -10,7 +11,13 @@ export default function ProductCard({ product }: { product: Product }) {
   const isTicketed = Boolean(product.event_date);
 
   return (
-    <Link href={`/shop/${product.slug}`} className="cover-card">
+    <Link href={`/shop/${product.slug}`} className={`cover-card${product.image_url ? " has-img" : ""}`}>
+      {product.image_url && (
+        <div className="cover-card-image">
+          {/* eslint-disable-next-line @next/next/no-img-element -- product image, arbitrary uploaded URL */}
+          <img src={product.image_url} alt="" style={imageFitStyle(product.image_fit, product.image_position)} />
+        </div>
+      )}
       <div className="card-body">
         <span className="card-name">{product.name}</span>
         <span className="card-role">${(product.price / 100).toFixed(2)}</span>

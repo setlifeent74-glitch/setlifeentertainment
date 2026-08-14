@@ -2,8 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import { getInstagramFallbackPosts, getSectionColors, cardImage } from "@/lib/queries";
+import { cardImagePosition } from "@/lib/post-image";
 
-type GridItem = { href: string; imageUrl: string; caption: string; isInstagram: boolean };
+type GridItem = { href: string; imageUrl: string; caption: string; isInstagram: boolean; position: string };
 
 /**
  * §36 From @setlifeentertainment — Gate: API reachable or CMS fallback
@@ -28,6 +29,7 @@ async function getGridItems(): Promise<{ items: GridItem[]; isLive: boolean }> {
           imageUrl: m.media_url,
           caption: m.caption ?? "",
           isInstagram: true,
+          position: "center",
         }));
         if (items.length > 0) return { items, isLive: true };
       }
@@ -43,6 +45,7 @@ async function getGridItems(): Promise<{ items: GridItem[]; isLive: boolean }> {
       imageUrl: cardImage(post)!,
       caption: post.dek ?? post.title,
       isInstagram: false,
+      position: String(cardImagePosition(post).objectPosition ?? "center"),
     })),
     isLive: false,
   };
@@ -75,7 +78,13 @@ export default async function InstagramSection() {
               target={item.isInstagram ? "_blank" : undefined}
               rel={item.isInstagram ? "noopener" : undefined}
             >
-              <Image src={item.imageUrl} alt="" fill sizes="(max-width: 767px) 50vw, 20vw" />
+              <Image
+                src={item.imageUrl}
+                alt=""
+                fill
+                sizes="(max-width: 767px) 50vw, 20vw"
+                style={{ objectFit: "cover", objectPosition: item.position }}
+              />
               <div className="instagram-item-overlay">
                 <span className="instagram-mark" aria-hidden="true">
                   {item.isInstagram ? "IG" : "SLE"}

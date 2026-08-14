@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
 import { getSpotlightFeature, getSectionColors, cardImage } from "@/lib/queries";
+import { cardImagePosition } from "@/lib/post-image";
 
 /** §24 Indie Spotlight — Gate: 1 spotlight, placement=spotlight_feature. */
 export default async function SpotlightSection() {
@@ -21,7 +22,14 @@ export default async function SpotlightSection() {
           INDIE
         </span>
         {cardImage(post) && (
-          <Image src={cardImage(post)!} alt="" fill sizes="(max-width: 767px) 100vw, 58vw" priority={false} />
+          <Image
+            src={cardImage(post)!}
+            alt=""
+            fill
+            sizes="(max-width: 767px) 100vw, 58vw"
+            priority={false}
+            style={cardImagePosition(post)}
+          />
         )}
         <span className="spotlight-bg-word spotlight-bg-word--bottom" aria-hidden="true">
           SPOTLIGHT

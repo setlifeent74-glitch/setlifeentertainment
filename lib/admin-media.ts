@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/client";
 /** Uploads to the `media` storage bucket and records the asset in the `media` table for the §45 library. */
 export class MediaUploadError extends Error {}
 
-export async function uploadMedia(file: File, folder: "body" | "hero"): Promise<string | null> {
+export async function uploadMedia(file: File, folder: "body" | "hero" | "video"): Promise<string | null> {
   const supabase = createClient();
   const ext = file.name.split(".").pop();
   const path = `${folder}/${crypto.randomUUID()}.${ext}`;

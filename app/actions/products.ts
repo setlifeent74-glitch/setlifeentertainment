@@ -20,6 +20,8 @@ export type SaveProductInput = {
   eventDate: string;
   eventLocation: string;
   published: boolean;
+  imageFit: "cover" | "contain";
+  imagePosition: "top" | "center" | "bottom";
 };
 
 export async function saveProduct(input: SaveProductInput): Promise<{ id: string; error?: string }> {
@@ -30,6 +32,8 @@ export async function saveProduct(input: SaveProductInput): Promise<{ id: string
     description: input.description || null,
     price: Math.round(input.priceDollars * 100),
     image_url: input.imageUrl || null,
+    image_fit: input.imageFit,
+    image_position: input.imagePosition,
     stripe_price_id: input.stripePriceId || null,
     inventory: input.inventory === "" ? null : Number(input.inventory),
     digital_file_url: input.digitalFileUrl || null,
@@ -43,6 +47,7 @@ export async function saveProduct(input: SaveProductInput): Promise<{ id: string
     if (error) return { id: input.id, error: error.message };
     revalidatePath("/admin/products");
     revalidatePath("/shop");
+    revalidatePath(`/shop/${input.slug}`);
     return { id: input.id };
   }
 

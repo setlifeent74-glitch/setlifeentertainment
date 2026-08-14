@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import HeroImageUpload from "./HeroImageUpload";
+import ImageFitControl, { type ImageFit, type ImagePosition } from "./ImageFitControl";
 import { saveAuthor, deleteAuthor } from "@/app/actions/authors";
 import type { Author } from "@/lib/queries";
 
@@ -23,6 +24,10 @@ export default function AuthorForm({ author }: { author?: Author }) {
   const [bio, setBio] = useState(author?.bio ?? "");
   const [location, setLocation] = useState(author?.location ?? "");
   const [avatarUrl, setAvatarUrl] = useState(author?.avatar_url ?? "");
+  const [avatarFit, setAvatarFit] = useState<ImageFit>((author?.avatar_fit as ImageFit) ?? "cover");
+  const [avatarPosition, setAvatarPosition] = useState<ImagePosition>(
+    (author?.avatar_position as ImagePosition) ?? "center"
+  );
   const [instagram, setInstagram] = useState(socialLinks.instagram ?? "");
   const [twitter, setTwitter] = useState(socialLinks.twitter ?? "");
   const [website, setWebsite] = useState(socialLinks.website ?? "");
@@ -42,6 +47,8 @@ export default function AuthorForm({ author }: { author?: Author }) {
       title,
       bio,
       avatarUrl,
+      avatarFit,
+      avatarPosition,
       location,
       instagram,
       twitter,
@@ -94,6 +101,14 @@ export default function AuthorForm({ author }: { author?: Author }) {
           <label>Avatar</label>
           <HeroImageUpload value={avatarUrl} onChange={setAvatarUrl} />
         </div>
+
+        <ImageFitControl
+          label="Avatar Display"
+          fit={avatarFit}
+          position={avatarPosition}
+          onFitChange={setAvatarFit}
+          onPositionChange={setAvatarPosition}
+        />
 
         <fieldset className="admin-meta-panel">
           <legend>Social Links</legend>

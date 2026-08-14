@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import HeroImageUpload from "./HeroImageUpload";
+import ImageFitControl, { type ImageFit, type ImagePosition } from "./ImageFitControl";
 import { saveProduct, deleteProduct } from "@/app/actions/products";
 import type { Product } from "@/lib/queries";
 
@@ -21,6 +22,10 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [description, setDescription] = useState(product?.description ?? "");
   const [priceDollars, setPriceDollars] = useState(product ? (product.price / 100).toString() : "");
   const [imageUrl, setImageUrl] = useState(product?.image_url ?? "");
+  const [imageFit, setImageFit] = useState<ImageFit>((product?.image_fit as ImageFit) ?? "cover");
+  const [imagePosition, setImagePosition] = useState<ImagePosition>(
+    (product?.image_position as ImagePosition) ?? "center"
+  );
   const [stripePriceId, setStripePriceId] = useState(product?.stripe_price_id ?? "");
   const [inventory, setInventory] = useState(product?.inventory?.toString() ?? "");
   const [digitalFileUrl, setDigitalFileUrl] = useState(product?.digital_file_url ?? "");
@@ -43,6 +48,8 @@ export default function ProductForm({ product }: { product?: Product }) {
       description,
       priceDollars: Number(priceDollars) || 0,
       imageUrl,
+      imageFit,
+      imagePosition,
       stripePriceId,
       inventory,
       digitalFileUrl,
@@ -88,6 +95,13 @@ export default function ProductForm({ product }: { product?: Product }) {
           <label>Image</label>
           <HeroImageUpload value={imageUrl ?? ""} onChange={setImageUrl} />
         </div>
+        <ImageFitControl
+          label="Image Display"
+          fit={imageFit}
+          position={imagePosition}
+          onFitChange={setImageFit}
+          onPositionChange={setImagePosition}
+        />
         <div className="admin-field">
           <label htmlFor="product-stripe-price">Stripe Price ID</label>
           <input id="product-stripe-price" placeholder="price_..." value={stripePriceId ?? ""} onChange={(e) => setStripePriceId(e.target.value)} />

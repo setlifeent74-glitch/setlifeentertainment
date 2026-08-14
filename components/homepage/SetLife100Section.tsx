@@ -1,6 +1,7 @@
 import Image from "next/image";
 import ScrollReveal from "@/components/ScrollReveal";
 import { getCurrentHonorees, isSetLife100Enabled, getSectionColors } from "@/lib/queries";
+import { imageFitStyle } from "@/lib/image-fit";
 
 /** §34 Set Life 100 — Gate: explicit admin enable AND published honorees for the current list_year. */
 export default async function SetLife100Section() {
@@ -31,7 +32,13 @@ export default async function SetLife100Section() {
             <div className="set100-portrait" key={honoree.id} style={{ transitionDelay: `${i * 60}ms` }}>
               {honoree.portrait_url && (
                 <div className="set100-portrait-image">
-                  <Image src={honoree.portrait_url} alt="" fill sizes="(max-width: 767px) 45vw, 220px" />
+                  <Image
+                    src={honoree.portrait_url}
+                    alt=""
+                    fill
+                    sizes="(max-width: 767px) 45vw, 220px"
+                    style={imageFitStyle(honoree.portrait_fit, honoree.portrait_position)}
+                  />
                 </div>
               )}
               <span className="set100-name">{honoree.name}</span>

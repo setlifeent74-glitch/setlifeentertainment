@@ -36,6 +36,8 @@ export type Database = {
     Tables: {
       authors: {
         Row: {
+          avatar_fit: string
+          avatar_position: string
           avatar_url: string | null
           bio: string | null
           created_at: string
@@ -47,6 +49,8 @@ export type Database = {
           title: string | null
         }
         Insert: {
+          avatar_fit?: string
+          avatar_position?: string
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
@@ -58,6 +62,8 @@ export type Database = {
           title?: string | null
         }
         Update: {
+          avatar_fit?: string
+          avatar_position?: string
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
@@ -78,6 +84,8 @@ export type Database = {
           id: string
           list_year: number
           name: string
+          portrait_fit: string
+          portrait_position: string
           portrait_url: string | null
           published: boolean
           rank: number | null
@@ -91,6 +99,8 @@ export type Database = {
           id?: string
           list_year: number
           name: string
+          portrait_fit?: string
+          portrait_position?: string
           portrait_url?: string | null
           published?: boolean
           rank?: number | null
@@ -104,6 +114,8 @@ export type Database = {
           id?: string
           list_year?: number
           name?: string
+          portrait_fit?: string
+          portrait_position?: string
           portrait_url?: string | null
           published?: boolean
           rank?: number | null
@@ -122,7 +134,9 @@ export type Database = {
       }
       magazine_issues: {
         Row: {
+          cover_fit: string
           cover_image_url: string | null
+          cover_position: string
           created_at: string
           id: string
           is_current: boolean
@@ -132,7 +146,9 @@ export type Database = {
           title: string
         }
         Insert: {
+          cover_fit?: string
           cover_image_url?: string | null
+          cover_position?: string
           created_at?: string
           id?: string
           is_current?: boolean
@@ -142,7 +158,9 @@ export type Database = {
           title: string
         }
         Update: {
+          cover_fit?: string
           cover_image_url?: string | null
+          cover_position?: string
           created_at?: string
           id?: string
           is_current?: boolean
@@ -404,6 +422,8 @@ export type Database = {
           event_date: string | null
           event_location: string | null
           id: string
+          image_fit: string
+          image_position: string
           image_url: string | null
           inventory: number | null
           name: string
@@ -419,6 +439,8 @@ export type Database = {
           event_date?: string | null
           event_location?: string | null
           id?: string
+          image_fit?: string
+          image_position?: string
           image_url?: string | null
           inventory?: number | null
           name: string
@@ -434,6 +456,8 @@ export type Database = {
           event_date?: string | null
           event_location?: string | null
           id?: string
+          image_fit?: string
+          image_position?: string
           image_url?: string | null
           inventory?: number | null
           name?: string
