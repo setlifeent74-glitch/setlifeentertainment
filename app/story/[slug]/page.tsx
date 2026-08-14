@@ -10,6 +10,7 @@ import PlatformBadges from "@/components/story/PlatformBadges";
 import CalloutBox from "@/components/story/CalloutBox";
 import RelatedContent from "@/components/story/RelatedContent";
 import { getPostBySlug, getRedirectTargetSlug, getRelatedPosts, getNextArticle } from "@/lib/queries";
+import { getVideoEmbedUrl } from "@/lib/video-embed";
 import { getSiteUrl } from "@/lib/site-url";
 import ArticleJsonLd from "@/components/story/ArticleJsonLd";
 import { createClient } from "@/lib/supabase/server";
@@ -167,14 +168,26 @@ export default async function StoryPage({
           <div id="article-body" className="article-body">
             <PostBody body={post.body} />
 
-            {post.category === "video" && meta.videoUrl && (
-              <div className="article-video-embed">
-                <video controls poster={post.hero_image_url ?? undefined} preload="none">
-                  <source src={meta.videoUrl} type="video/mp4" />
-                  {meta.captionsUrl && <track kind="captions" src={meta.captionsUrl} label="English" default />}
-                </video>
-              </div>
-            )}
+            {post.category === "video" && meta.videoUrl && (() => {
+              const embedUrl = getVideoEmbedUrl(meta.videoUrl);
+              return (
+                <div className="article-video-embed">
+                  {embedUrl ? (
+                    <iframe
+                      src={embedUrl}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title={post.title}
+                    />
+                  ) : (
+                    <video controls poster={post.hero_image_url ?? undefined} preload="none">
+                      <source src={meta.videoUrl} type="video/mp4" />
+                      {meta.captionsUrl && <track kind="captions" src={meta.captionsUrl} label="English" default />}
+                    </video>
+                  )}
+                </div>
+              );
+            })()}
 
             <CreditsList credits={meta.credits ?? []} />
             <PlatformBadges platforms={meta.platformBadges ?? []} />

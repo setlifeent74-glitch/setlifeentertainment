@@ -1,5 +1,6 @@
 import ScrollReveal from "@/components/ScrollReveal";
 import { getScreeningRoomVideo, getSectionColors, cardImage } from "@/lib/queries";
+import { getVideoEmbedUrl } from "@/lib/video-embed";
 
 type VideoMeta = { videoUrl?: string; captionsUrl?: string; runtime?: string; series?: string };
 
@@ -27,10 +28,22 @@ export default async function ScreeningRoomSection() {
           {/* §30 VERIFY: no autoplay on any video but the hero — controls
               require an explicit click, native keyboard support (space,
               arrows) comes free with the browser's own <video> controls. */}
-          <video controls poster={cardImage(post) ?? undefined} preload="none">
-            <source src={meta.videoUrl} type="video/mp4" />
-            {meta.captionsUrl && <track kind="captions" src={meta.captionsUrl} label="English" default />}
-          </video>
+          {(() => {
+            const embedUrl = getVideoEmbedUrl(meta.videoUrl!);
+            return embedUrl ? (
+              <iframe
+                src={embedUrl}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title={post.title}
+              />
+            ) : (
+              <video controls poster={cardImage(post) ?? undefined} preload="none">
+                <source src={meta.videoUrl} type="video/mp4" />
+                {meta.captionsUrl && <track kind="captions" src={meta.captionsUrl} label="English" default />}
+              </video>
+            );
+          })()}
         </div>
 
         <div className="screening-room-details">

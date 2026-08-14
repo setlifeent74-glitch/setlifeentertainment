@@ -40,3 +40,4 @@ playwright-report/
 playwright/.auth/
 test-results/
 .lighthouseci/
+.next_stale2_*/
